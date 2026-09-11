@@ -16,7 +16,14 @@ public:
     void getBaseInfo();
     void betterMap();
     void getPriest();
+    void gethomeBuilder();
     void priestExplore();
+    void checkWorkState();
+    void manageBuild();
+    bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
+    bool hasBuilding(int type,bool onlyFinished);
+    bool hasUnfinishedBuilding(int type);
+    bool nearFinishedBuilding(int type,int dr,int ur,int range);
     
 private:
     void processData() override;

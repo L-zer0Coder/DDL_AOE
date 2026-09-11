@@ -34,6 +34,11 @@ pair<int,int> angle1,angle2,angle3,angle4;
 int homeSN=-1;
 int homeBlockDR=-1;
 int homeBlockUR=-1;
+int dir_home=-1;// 1-左 2-上 3-右 4-下
+
+
+
+
 
 int arrowTowerSN=-1;
 int arrowTowerBlockDR=-1;
@@ -64,11 +69,16 @@ unordered_map<int,bool>farIsgotten;
 
 
 
-int dx_build[]={-3,-3,-3,0,3,3,3,0};
-int dy_build[]={-3,0,3,3,3,0,-3,-3};
+
+int dx_build[]={-2,-2,-2,0,2,2,2,0};
+int dy_build[]={-2,0,2,2,2,0,-2,-2};
 
 int homeBuilderSN=-1;
-bool builderGotten=false;
+int homeBuilderDR=-1;
+int homeBuilderUR=-1;
+int homeBuilderState=-1;
+
+
 
 int cnt=0;
 int cnt_build=0;
@@ -77,22 +87,16 @@ bool stockOnce=false;
 const int goHomeFrame=5250;
 
 
-int id=-1;
+
 void UsrAI::processData()
 {   
     
-    farIsgotten.clear();
+    
     info=getInfo();
     if(!getOnlyOnce)getBaseInfo();
     BuildingAction(centerSN,BUILDING_CENTER_CREATEFARMER);
     betterMap();
-    // for(int dr=0;dr<100;dr++){
-    //     for(int ur=0;ur<100;ur++){
-    //         if(MAP[dr][ur]==Unknown)HumanMove(priestSN,dr*BLOCKSIDELENGTH,ur*BLOCKSIDELENGTH);
-    //         break;
-    //     }
-    // }
-    //HumanMove(priestSN,1300,1300);
+    
     priestExplore();
 
 
@@ -101,31 +105,33 @@ void UsrAI::processData()
             homeBuilderSN=f.SN;
         }
     }
+    
     int maxNum=info.Human_MaxNum;
     double haveNum=info.Human_Num;
     int spaceNum=maxNum-haveNum;
     if(spaceNum<=3){
-        int dr=homeBlockDR+dx_build[cnt_build%8];
-        int ur=homeBlockUR+dy_build[cnt_build%8];
+        gethomeBuilder();
+        int dr=homeBlockDR+dx_build[cnt_build++%8];
+        int ur=homeBlockUR+dy_build[cnt_build++%8];
+        
         bool undo=false;
         for(auto&b:info.buildings){
             if(b.Type==BUILDING_HOME&&b.Percent<100)undo=true;
             
         }
-        if(!undo)id=HumanBuild(homeBuilderSN,BUILDING_HOME,dr,ur);
-        if(MAP[dr][ur]!=Open||info.ins_ret[id])cnt++;
-        if(!info.ins_ret[id]){
-            homeBlockDR=dr;
-            homeBlockUR=ur;
-        }
-    }
-    for(auto&b:info.buildings){
-        if(b.Type==BUILDING_HOME){
-            if(b.Percent<100){
-                HumanAction(homeBuilderSN,b.SN);
+        if(!undo&&homeBuilderSN!=-1){
+            if(calDistance(homeBuilderDR,homeBuilderUR,dr-2,ur-2)>2&&homeBuilderState==HUMAN_STATE_IDLE&&(MAP[dr][ur]==Open||MAP[dr][ur]==Unknown)){
+                HumanMove(homeBuilderSN,dr*BLOCKSIDELENGTH,ur*BLOCKSIDELENGTH);
             }
+            if(homeBuilderState==HUMAN_STATE_IDLE){
+                HumanBuild(homeBuilderSN,BUILDING_HOME,dr,ur);
+                homeBlockDR=dr,homeBlockUR=ur;
+            }
+            
         }
+        
     }
+    
     for(auto&r:info.resources){
         if(r.Type==RESOURCE_BUSH||r.Type==RESOURCE_GAZELLE){
             if(resIsgotten.find(r.SN)!=resIsgotten.end())continue;
@@ -139,16 +145,20 @@ void UsrAI::processData()
             }   
         }
     }
-    
-    // for(auto&r:info.resources){
-    //     if(r.Type==RESOURCE_GAZELLE){
-    //         for(auto&f:info.farmers){
-    //             if(f.NowState!=HUMAN_STATE_IDLE||farIsgotten.find(f.SN)!=farIsgotten.end())continue;
-    //             HumanBuild(f.SN,BUILDING_STOCK,gazelleBlockDR+3,gazelleBlockUR+3);
-                
-    //         }   
-    //     }
-    // }
+    for(auto&r:info.resources){
+        if(r.Type==RESOURCE_TREE){
+            if(resIsgotten.find(r.SN)!=resIsgotten.end())continue;
+            for(auto&f:info.farmers){
+                if(f.SN==homeBuilderSN)continue;
+                if(f.NowState!=HUMAN_STATE_IDLE||farIsgotten.find(f.SN)!=farIsgotten.end())continue;
+                HumanAction(f.SN,r.SN);
+                resIsgotten[r.SN]=true;
+                farIsgotten[f.SN]=true;
+                break;
+            }
+        }
+    }
+    checkWorkState();
     
 
 }
@@ -176,6 +186,8 @@ void UsrAI::getBaseInfo(){
     for(auto&b:info.buildings){
         if(b.Type==BUILDING_CENTER){
             centerSN=b.SN;
+            centerBlockDR=b.BlockDR;   
+            centerBlockUR=b.BlockUR;
             int dx1=centerBlockDR-25;
             int dx2=centerBlockDR+25;
             int dy1=centerBlockUR-25;
@@ -211,6 +223,16 @@ void UsrAI::getBaseInfo(){
             stockBlockUR=b.BlockUR;
         }
     }
+    if(centerBlockDR<50){
+        if(centerBlockUR<50)dir_home=1;
+        else dir_home=2;
+    }
+    else{
+        if(centerBlockUR>50)dir_home=3;
+        else dir_home=4;
+    }
+
+
     for(auto&r:info.resources){
         if(r.Type==RESOURCE_GAZELLE){
             gazelleSN=r.SN;
@@ -252,47 +274,59 @@ void UsrAI::betterMap(){
     }
 }
 
-
-
 void UsrAI::priestExplore(){
     
-    static int startFrame=-1;
     getPriest();
-    
+    // ---- 临时调试 ----
+    static bool dbg=false;
+    if(!dbg){
+        dbg=true;
+        DebugText("priestSN="+to_string(priestSN)+" state="+to_string(priestState));
+        DebugText("center=("+to_string(centerBlockDR)+","+to_string(centerBlockUR)+")");
+    }
+    // ------------------
     if(priestState!=HUMAN_STATE_IDLE)return;
-    if(startFrame!=-1&&info.GameFrame-startFrame<50)return;
-    int dirDR=(priestBlockDR>50?-1:1);
-    int dirUR=(priestBlockUR>50?-1:1);
+    static int phase=0;//0-转市镇中心周围 1-绕地图中心转 2-探索另外三个角
+    
+    
+    // static int lastMoveFrame=-1;
+    if(priestSN==-1)return;
 
-    for(int i=10;i>=0;i--){
-        int desDR=priestBlockDR+dirDR*i;
-        int desUR=priestBlockUR+dirUR*i;
-        if(desDR<0||desDR>=100||desUR<0||desUR>=100)continue;
-        if(MAP[desDR][desUR]==RESOURCE_TREE+100||MAP[desDR][desUR]==Ocean){
-            for(int i=5;i<50;i++){
-                for(int j=5;j<50;j++){
-                    int dx[]={-15,-15,-15,0,15,15,15,0};
-                    int dy[]={-15,0,15,15,15,0,-15,-15};
-                    for(int k1=0;k1<8;k1++){
-                        for(int k2=0;k2<8;k2++){
-                            if(MAP[50+dx[k1]][50+dy[k2]]==Open){
-                                
-                                HumanMove(priestSN,(50+dx[k1])*BLOCKSIDELENGTH,(50+dy[k2])*BLOCKSIDELENGTH);
-                                startFrame=info.GameFrame;
-                                return;
-                            }
-                        }
-                    }
-                    
-                }
+    
+
+    int cx_center=centerBlockDR,cy_center=centerBlockUR;
+    int cx_map=50,cy_map=50;
+
+    int center_dx=min(centerBlockDR,90-centerBlockDR);
+    int center_dy=min(centerBlockUR,90-centerBlockUR);
+    int radius0=min(center_dx,center_dy)-5;
+    if(phase==0){
+        for(int dr=centerBlockDR-radius0;dr<=centerBlockDR+radius0;dr++){
+            for(int ur=centerBlockUR-radius0;ur<=centerBlockUR+radius0;ur++){
+                if(dr<2||dr>=98||ur<2||ur>=98)continue;
+                if(MAP[dr][ur]!=Open&&MAP[dr][ur]!=Unknown)continue;
+                
+                HumanMove(priestSN,dr*BLOCKSIDELENGTH,ur*BLOCKSIDELENGTH);
+                
+                return;
             }
-            
-            
-            
         }
-        if(MAP[desDR][desUR]!=Open)continue;
-        HumanMove(priestSN,desDR*BLOCKSIDELENGTH,desUR*BLOCKSIDELENGTH);
-        startFrame=info.GameFrame;
-        break;
+    }
+
+}
+void UsrAI::checkWorkState(){
+    for(auto&f:info.farmers){
+        if(farIsgotten.find(f.SN)!=farIsgotten.end()&&f.NowState!=HUMAN_STATE_WORKING){
+            farIsgotten.erase(f.SN);
+        }
+    }
+}
+void UsrAI::gethomeBuilder(){
+    for(auto&f:info.farmers){
+        if(f.SN==homeBuilderSN){
+            homeBuilderDR=f.BlockDR;
+            homeBuilderUR=f.BlockUR;
+            homeBuilderState=f.NowState;
+        }
     }
 }
