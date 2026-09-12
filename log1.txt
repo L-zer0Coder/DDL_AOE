@@ -1,0 +1,1576 @@
+00:00:00 游戏开始 
+00:00:00 产生了新的祭司(编号:91101) 
+00:00:00 产生了新的村民(编号:41102) 
+00:00:00 产生了新的村民(编号:41113) 
+00:00:00 产生了新的村民(编号:41124) 
+00:00:00 产生了新的村民(编号:41135) 
+00:00:00 产生了新的村民(编号:41146) 
+00:00:00 产生了新的村民(编号:41157) 
+00:00:00 产生了新的村民(编号:41158) 
+00:00:00 产生了新的村民(编号:41159) 
+00:00:04打开的地图是:map1.njust，顺时针旋转:90度 
+00:00:44 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=0 
+00:00:48 BuildAction:市镇中心 11089 执行行动 ACTION_1 
+00:00:48 BuildAction:谷仓 11095 执行行动 ACTION_3 
+00:00:48 HumanBuild:村民 41102 开始在块坐标 (22,1) 处建造 Building_0 
+00:00:48 HumanAction:村民 41124 设置工作目标为 树 50022 
+00:00:48 HumanAction:村民 41146 设置工作目标为 树 50020 
+00:00:48 HumanAction:村民 41157 设置工作目标为 树 50908 
+00:00:48 HumanMove:祭司 91101 移动至 (465.102,715.542) 
+00:00:48 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=3 
+00:00:52 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=6 
+00:00:56 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=9 
+00:00:60 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=12 
+00:00:64 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=15 
+00:00:68 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=18 
+00:00:72 UsrAI打印：建市场门: bush=0 gaz=0 gazState=0 wood=21 
+00:00:76 HumanAction:村民 41135 设置工作目标为 浆果丛 21218 
+00:00:76 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=24 
+00:00:80 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=27 
+00:00:84 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=30 
+00:00:88 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=33 
+00:00:92 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=36 
+00:00:96 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=39 
+00:01:00 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=42 
+00:01:04 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=45 
+00:01:08 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=48 
+00:01:12 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=51 
+00:01:16 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=54 
+00:01:20 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=57 
+00:01:24 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=60 
+00:01:28 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=63 
+00:01:32 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=66 
+00:01:36 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=69 
+00:01:40 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=72 
+00:01:44 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=75 
+00:01:48 UsrAI打印：建市场门: bush=1 gaz=0 gazState=0 wood=78 
+00:01:52 HumanAction:村民 41158 设置工作目标为 浆果丛 21192 
+00:01:52 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=81 
+00:01:56 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=84 
+00:01:60 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=87 
+00:01:64 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=90 
+00:01:68 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=93 
+00:01:72 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=96 
+00:01:76 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=99 
+00:01:80 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=102 
+00:01:84 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=105 
+00:01:88 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=108 
+00:01:92 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=111 
+00:01:96 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=114 
+00:02:00 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=117 
+00:02:04 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=120 
+00:02:08 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=123 
+00:02:12 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=126 
+00:02:16 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=129 
+00:02:20 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=132 
+00:02:24 UsrAI打印：建市场门: bush=2 gaz=0 gazState=0 wood=135 
+00:02:28 HumanAction:村民 41113 设置工作目标为 浆果丛 21226 
+00:02:28 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=138 
+00:02:32 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=141 
+00:02:36 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=144 
+00:02:40 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=147 
+00:02:44 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=150 
+00:02:48 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=153 
+00:02:52 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=156 
+00:02:56 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=159 
+00:02:60 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=162 
+00:02:64 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=165 
+00:02:68 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=168 
+00:02:72 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=171 
+00:02:76 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=174 
+00:02:80 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=177 
+00:02:84 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=180 
+00:02:88 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=183 
+00:02:92 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=186 
+00:02:96 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=189 
+00:03:00 UsrAI打印：建市场门: bush=3 gaz=0 gazState=0 wood=192 
+00:03:04 HumanAction:村民 41159 设置工作目标为 浆果丛 21193 
+00:03:04 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=195 
+00:03:08 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=198 
+00:03:12 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=201 
+00:03:16 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=204 
+00:03:20 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=207 
+00:03:24 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=210 
+00:03:28 玩家 采集到新资源，分数+5 
+00:03:28 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=213 
+00:03:32 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=216 
+00:03:36 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=219 
+00:03:40 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=222 
+00:03:44 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=225 
+00:03:48 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=228 
+00:03:52 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=231 
+00:03:56 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=234 
+00:03:60 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=237 
+00:03:64 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=240 
+00:03:68 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=243 
+00:03:72 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=246 
+00:03:76 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=249 
+00:03:80 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=252 
+00:03:84 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=255 
+00:03:88 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=258 
+00:03:92 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=261 
+00:03:96 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=264 
+00:04:00 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=267 
+00:04:04 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=270 
+00:04:08 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=273 
+00:04:12 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=276 
+00:04:16 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=279 
+00:04:20 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=282 
+00:04:24 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=285 
+00:04:28 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=288 
+00:04:32 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=291 
+00:04:36 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=294 
+00:04:40 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=297 
+00:04:44 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=300 
+00:04:48 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=303 
+00:04:52 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=306 
+00:04:56 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=309 
+00:04:60 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=312 
+00:04:64 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=315 
+00:04:68 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=318 
+00:04:72 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=321 
+00:04:76 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=324 
+00:04:80 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=327 
+00:04:84 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=330 
+00:04:88 UsrAI打印：建市场门: bush=4 gaz=0 gazState=0 wood=333 
+00:04:92 HumanAction:村民 41124 设置工作目标为 浆果丛 21208 
+00:04:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=335 
+00:04:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=337 
+00:05:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=339 
+00:05:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=341 
+00:05:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=343 
+00:05:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=345 
+00:05:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=347 
+00:05:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=349 
+00:05:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=351 
+00:05:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=353 
+00:05:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=355 
+00:05:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=357 
+00:05:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=359 
+00:05:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=361 
+00:05:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=363 
+00:05:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=365 
+00:05:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=367 
+00:05:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=369 
+00:05:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=371 
+00:05:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=373 
+00:05:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=375 
+00:05:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=377 
+00:05:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=379 
+00:05:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=381 
+00:05:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=383 
+00:05:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=385 
+00:05:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=387 
+00:06:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=389 
+00:06:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=391 
+00:06:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=393 
+00:06:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=395 
+00:06:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=397 
+00:06:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=399 
+00:06:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=401 
+00:06:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=403 
+00:06:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=405 
+00:06:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=407 
+00:06:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=409 
+00:06:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=411 
+00:06:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=413 
+00:06:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=415 
+00:06:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=417 
+00:06:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=419 
+00:06:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=421 
+00:06:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=423 
+00:06:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=425 
+00:06:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=427 
+00:06:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=429 
+00:06:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=431 
+00:06:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=433 
+00:06:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=435 
+00:06:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=437 
+00:07:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=439 
+00:07:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=441 
+00:07:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=443 
+00:07:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=445 
+00:07:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=447 
+00:07:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=449 
+00:07:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=451 
+00:07:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=453 
+00:07:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=455 
+00:07:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=457 
+00:07:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=459 
+00:07:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=461 
+00:07:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=463 
+00:07:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=465 
+00:07:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=467 
+00:07:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=469 
+00:07:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=471 
+00:07:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=473 
+00:07:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=475 
+00:07:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=477 
+00:07:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=479 
+00:07:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=481 
+00:07:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=483 
+00:07:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=485 
+00:07:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=487 
+00:08:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=489 
+00:08:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=491 
+00:08:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=493 
+00:08:12 玩家 采集到新资源，分数+5 
+00:08:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=495 
+00:08:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=497 
+00:08:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=499 
+00:08:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=501 
+00:08:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=503 
+00:08:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=505 
+00:08:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=507 
+00:08:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=509 
+00:08:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=511 
+00:08:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=513 
+00:08:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=515 
+00:08:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=517 
+00:08:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=519 
+00:08:64 HumanMove:祭司 91101 移动至 (143.108,608.21) 
+00:08:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=521 
+00:08:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=523 
+00:08:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=525 
+00:08:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=527 
+00:08:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=529 
+00:08:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=531 
+00:08:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=533 
+00:08:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=535 
+00:08:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=537 
+00:09:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=539 
+00:09:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=541 
+00:09:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=543 
+00:09:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=545 
+00:09:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=547 
+00:09:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=549 
+00:09:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=551 
+00:09:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=553 
+00:09:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=555 
+00:09:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=557 
+00:09:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=559 
+00:09:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=561 
+00:09:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=563 
+00:09:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=565 
+00:09:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=567 
+00:09:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=569 
+00:09:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=571 
+00:09:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=573 
+00:09:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=575 
+00:09:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=577 
+00:09:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=579 
+00:09:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=581 
+00:09:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=583 
+00:09:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=585 
+00:09:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=587 
+00:10:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=589 
+00:10:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=591 
+00:10:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=593 
+00:10:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=595 
+00:10:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=597 
+00:10:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=599 
+00:10:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=601 
+00:10:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=603 
+00:10:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=605 
+00:10:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=607 
+00:10:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=609 
+00:10:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=611 
+00:10:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=613 
+00:10:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=615 
+00:10:56 玩家 解锁新科技，分数+2 
+00:10:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=617 
+00:10:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=619 
+00:10:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=621 
+00:10:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=623 
+00:10:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=625 
+00:10:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=627 
+00:10:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=629 
+00:10:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=631 
+00:10:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=633 
+00:10:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=635 
+00:10:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=637 
+00:11:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=639 
+00:11:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=641 
+00:11:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=643 
+00:11:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=645 
+00:11:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=647 
+00:11:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=649 
+00:11:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=651 
+00:11:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=653 
+00:11:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=655 
+00:11:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=657 
+00:11:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=659 
+00:11:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=661 
+00:11:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=663 
+00:11:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=665 
+00:11:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=667 
+00:11:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=669 
+00:11:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=671 
+00:11:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=673 
+00:11:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=675 
+00:11:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=677 
+00:11:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=679 
+00:11:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=681 
+00:11:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=683 
+00:11:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=685 
+00:11:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=687 
+00:12:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=689 
+00:12:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=691 
+00:12:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=693 
+00:12:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=695 
+00:12:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=697 
+00:12:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=699 
+00:12:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=701 
+00:12:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=703 
+00:12:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=705 
+00:12:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=707 
+00:12:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=709 
+00:12:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=711 
+00:12:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=713 
+00:12:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=715 
+00:12:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=717 
+00:12:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=719 
+00:12:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=721 
+00:12:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=723 
+00:12:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=725 
+00:12:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=727 
+00:12:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=729 
+00:12:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=731 
+00:12:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=733 
+00:12:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=735 
+00:12:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=737 
+00:13:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=739 
+00:13:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=741 
+00:13:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=743 
+00:13:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=745 
+00:13:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=747 
+00:13:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=749 
+00:13:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=751 
+00:13:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=753 
+00:13:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=755 
+00:13:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=757 
+00:13:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=759 
+00:13:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=761 
+00:13:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=763 
+00:13:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=765 
+00:13:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=767 
+00:13:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=769 
+00:13:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=771 
+00:13:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=773 
+00:13:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=775 
+00:13:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=777 
+00:13:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=779 
+00:13:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=781 
+00:13:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=783 
+00:13:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=785 
+00:13:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=787 
+00:14:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=789 
+00:14:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=791 
+00:14:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=793 
+00:14:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=795 
+00:14:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=797 
+00:14:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=799 
+00:14:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=801 
+00:14:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=803 
+00:14:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=805 
+00:14:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=807 
+00:14:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=809 
+00:14:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=811 
+00:14:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=813 
+00:14:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=815 
+00:14:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=817 
+00:14:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=819 
+00:14:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=821 
+00:14:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=823 
+00:14:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=825 
+00:14:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=827 
+00:14:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=829 
+00:14:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=831 
+00:14:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=833 
+00:14:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=835 
+00:14:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=837 
+00:15:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=839 
+00:15:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=841 
+00:15:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=843 
+00:15:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=845 
+00:15:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=847 
+00:15:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=849 
+00:15:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=851 
+00:15:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=853 
+00:15:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=855 
+00:15:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=857 
+00:15:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=859 
+00:15:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=861 
+00:15:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=863 
+00:15:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=865 
+00:15:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=867 
+00:15:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=869 
+00:15:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=871 
+00:15:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=873 
+00:15:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=875 
+00:15:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=877 
+00:15:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=879 
+00:15:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=881 
+00:15:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=883 
+00:15:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=885 
+00:15:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=887 
+00:16:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=889 
+00:16:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=891 
+00:16:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=893 
+00:16:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=895 
+00:16:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=897 
+00:16:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=899 
+00:16:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=901 
+00:16:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=903 
+00:16:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=905 
+00:16:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=907 
+00:16:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=909 
+00:16:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=911 
+00:16:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=913 
+00:16:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=915 
+00:16:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=917 
+00:16:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=919 
+00:16:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=921 
+00:16:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=923 
+00:16:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=925 
+00:16:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=927 
+00:16:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=929 
+00:16:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=931 
+00:16:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=933 
+00:16:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=935 
+00:16:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=937 
+00:17:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=939 
+00:17:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=941 
+00:17:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=943 
+00:17:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=945 
+00:17:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=947 
+00:17:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=949 
+00:17:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=951 
+00:17:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=953 
+00:17:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=955 
+00:17:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=957 
+00:17:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=959 
+00:17:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=961 
+00:17:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=963 
+00:17:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=965 
+00:17:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=967 
+00:17:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=969 
+00:17:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=971 
+00:17:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=973 
+00:17:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=975 
+00:17:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=977 
+00:17:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=979 
+00:17:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=981 
+00:17:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=983 
+00:17:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=985 
+00:17:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=987 
+00:18:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=989 
+00:18:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=991 
+00:18:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=993 
+00:18:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=995 
+00:18:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=997 
+00:18:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=999 
+00:18:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1001 
+00:18:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1003 
+00:18:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1005 
+00:18:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1007 
+00:18:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1009 
+00:18:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1011 
+00:18:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1013 
+00:18:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1015 
+00:18:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1017 
+00:18:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1019 
+00:18:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1021 
+00:18:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1023 
+00:18:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1025 
+00:18:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1027 
+00:18:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1029 
+00:18:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1031 
+00:18:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1033 
+00:18:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1035 
+00:18:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1037 
+00:19:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1039 
+00:19:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1041 
+00:19:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1043 
+00:19:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1045 
+00:19:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1047 
+00:19:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1049 
+00:19:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1051 
+00:19:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1053 
+00:19:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1055 
+00:19:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1057 
+00:19:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1059 
+00:19:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1061 
+00:19:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1063 
+00:19:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1065 
+00:19:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1067 
+00:19:60 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1069 
+00:19:64 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1071 
+00:19:68 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1073 
+00:19:72 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1075 
+00:19:76 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1077 
+00:19:80 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1079 
+00:19:84 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1081 
+00:19:88 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1083 
+00:19:92 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1085 
+00:19:96 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1087 
+00:20:00 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1089 
+00:20:04 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1091 
+00:20:08 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1093 
+00:20:12 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1095 
+00:20:16 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1097 
+00:20:20 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1099 
+00:20:24 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1101 
+00:20:28 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1103 
+00:20:32 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1105 
+00:20:36 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1107 
+00:20:40 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1109 
+00:20:44 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1111 
+00:20:48 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1113 
+00:20:52 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1115 
+00:20:56 产生了新的村民(编号:41313) 
+00:20:56 玩家 生产普通单位，分数+1 
+00:20:56 UsrAI打印：建市场门: bush=5 gaz=0 gazState=0 wood=1117 
+00:20:60 BuildAction:市镇中心 11089 执行行动 ACTION_1 
+00:20:60 HumanAction:村民 41313 设置工作目标为 浆果丛 21194 
+00:20:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1119 
+00:20:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1121 
+00:20:68 HumanMove:祭司 91101 移动至 (143.108,250.44) 
+00:20:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1123 
+00:20:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1125 
+00:20:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1127 
+00:20:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1129 
+00:20:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1131 
+00:20:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1133 
+00:20:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1135 
+00:20:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1137 
+00:21:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1139 
+00:21:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1141 
+00:21:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1143 
+00:21:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1145 
+00:21:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1147 
+00:21:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1149 
+00:21:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1151 
+00:21:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1153 
+00:21:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1155 
+00:21:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1157 
+00:21:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1159 
+00:21:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1161 
+00:21:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1163 
+00:21:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1165 
+00:21:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1167 
+00:21:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1169 
+00:21:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1171 
+00:21:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1173 
+00:21:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1175 
+00:21:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1177 
+00:21:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1179 
+00:21:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1181 
+00:21:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1183 
+00:21:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1185 
+00:21:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1187 
+00:22:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1189 
+00:22:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1191 
+00:22:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1193 
+00:22:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1195 
+00:22:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1197 
+00:22:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1199 
+00:22:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1201 
+00:22:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1203 
+00:22:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1205 
+00:22:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1207 
+00:22:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1209 
+00:22:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1211 
+00:22:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1213 
+00:22:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1215 
+00:22:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1217 
+00:22:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1219 
+00:22:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1221 
+00:22:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1223 
+00:22:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1225 
+00:22:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1227 
+00:22:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1229 
+00:22:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1231 
+00:22:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1233 
+00:22:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1235 
+00:22:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1237 
+00:23:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1239 
+00:23:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1241 
+00:23:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1243 
+00:23:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1245 
+00:23:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1247 
+00:23:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1249 
+00:23:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1251 
+00:23:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1253 
+00:23:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1255 
+00:23:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1257 
+00:23:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1259 
+00:23:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1261 
+00:23:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1263 
+00:23:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1265 
+00:23:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1267 
+00:23:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1269 
+00:23:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1271 
+00:23:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1273 
+00:23:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1275 
+00:23:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1277 
+00:23:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1279 
+00:23:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1281 
+00:23:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1283 
+00:23:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1285 
+00:23:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1287 
+00:24:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1289 
+00:24:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1291 
+00:24:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1293 
+00:24:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1295 
+00:24:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1297 
+00:24:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1299 
+00:24:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1301 
+00:24:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1303 
+00:24:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1305 
+00:24:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1307 
+00:24:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1309 
+00:24:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1311 
+00:24:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1313 
+00:24:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1315 
+00:24:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1317 
+00:24:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1319 
+00:24:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1321 
+00:24:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1323 
+00:24:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1325 
+00:24:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1327 
+00:24:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1329 
+00:24:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1331 
+00:24:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1333 
+00:24:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1335 
+00:24:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1337 
+00:25:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1339 
+00:25:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1341 
+00:25:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1343 
+00:25:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1345 
+00:25:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1347 
+00:25:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1349 
+00:25:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1351 
+00:25:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1353 
+00:25:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1355 
+00:25:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1357 
+00:25:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1359 
+00:25:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1361 
+00:25:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1363 
+00:25:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1365 
+00:25:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1367 
+00:25:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1369 
+00:25:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1371 
+00:25:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1373 
+00:25:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1375 
+00:25:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1377 
+00:25:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1379 
+00:25:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1381 
+00:25:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1383 
+00:25:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1385 
+00:25:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1387 
+00:26:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1389 
+00:26:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1391 
+00:26:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1393 
+00:26:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1395 
+00:26:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1397 
+00:26:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1399 
+00:26:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1401 
+00:26:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1403 
+00:26:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1405 
+00:26:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1407 
+00:26:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1409 
+00:26:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1411 
+00:26:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1413 
+00:26:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1415 
+00:26:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1417 
+00:26:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1419 
+00:26:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1421 
+00:26:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1423 
+00:26:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1425 
+00:26:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1427 
+00:26:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1429 
+00:26:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1431 
+00:26:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1433 
+00:26:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1435 
+00:26:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1437 
+00:27:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1439 
+00:27:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1441 
+00:27:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1443 
+00:27:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1445 
+00:27:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1447 
+00:27:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1449 
+00:27:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1451 
+00:27:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1453 
+00:27:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1455 
+00:27:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1457 
+00:27:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1459 
+00:27:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1461 
+00:27:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1463 
+00:27:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1465 
+00:27:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1467 
+00:27:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1469 
+00:27:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1471 
+00:27:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1473 
+00:27:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1475 
+00:27:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1477 
+00:27:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1479 
+00:27:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1481 
+00:27:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1483 
+00:27:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1485 
+00:27:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1487 
+00:28:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1489 
+00:28:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1491 
+00:28:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1493 
+00:28:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1495 
+00:28:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1497 
+00:28:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1499 
+00:28:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1501 
+00:28:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1503 
+00:28:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1505 
+00:28:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1507 
+00:28:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1509 
+00:28:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1511 
+00:28:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1513 
+00:28:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1515 
+00:28:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1517 
+00:28:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1519 
+00:28:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1521 
+00:28:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1523 
+00:28:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1525 
+00:28:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1527 
+00:28:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1529 
+00:28:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1531 
+00:28:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1533 
+00:28:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1535 
+00:28:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1537 
+00:29:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1539 
+00:29:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1541 
+00:29:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1543 
+00:29:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1545 
+00:29:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1547 
+00:29:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1549 
+00:29:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1551 
+00:29:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1553 
+00:29:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1555 
+00:29:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1557 
+00:29:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1559 
+00:29:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1561 
+00:29:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1563 
+00:29:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1565 
+00:29:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1567 
+00:29:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1569 
+00:29:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1571 
+00:29:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1573 
+00:29:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1575 
+00:29:76 HumanMove:祭司 91101 移动至 (465.102,71.5542) 
+00:29:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1577 
+00:29:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1579 
+00:29:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1581 
+00:29:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1583 
+00:29:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1585 
+00:29:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1587 
+00:30:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1589 
+00:30:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1591 
+00:30:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1593 
+00:30:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1595 
+00:30:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1597 
+00:30:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1599 
+00:30:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1601 
+00:30:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1603 
+00:30:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1605 
+00:30:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1607 
+00:30:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1609 
+00:30:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1611 
+00:30:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1613 
+00:30:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1615 
+00:30:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1617 
+00:30:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1619 
+00:30:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1621 
+00:30:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1623 
+00:30:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1625 
+00:30:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1627 
+00:30:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1629 
+00:30:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1631 
+00:30:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1633 
+00:30:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1635 
+00:30:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1637 
+00:31:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1639 
+00:31:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1641 
+00:31:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1643 
+00:31:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1645 
+00:31:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1647 
+00:31:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1649 
+00:31:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1651 
+00:31:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1653 
+00:31:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1655 
+00:31:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1657 
+00:31:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1659 
+00:31:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1661 
+00:31:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1663 
+00:31:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1665 
+00:31:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1667 
+00:31:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1669 
+00:31:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1671 
+00:31:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1673 
+00:31:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1675 
+00:31:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1677 
+00:31:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1679 
+00:31:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1681 
+00:31:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1683 
+00:31:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1685 
+00:31:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1687 
+00:32:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1689 
+00:32:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1691 
+00:32:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1693 
+00:32:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1695 
+00:32:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1697 
+00:32:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1699 
+00:32:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1701 
+00:32:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1703 
+00:32:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1705 
+00:32:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1707 
+00:32:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1709 
+00:32:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1711 
+00:32:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1713 
+00:32:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1715 
+00:32:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1717 
+00:32:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1719 
+00:32:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1721 
+00:32:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1723 
+00:32:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1725 
+00:32:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1727 
+00:32:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1729 
+00:32:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1731 
+00:32:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1733 
+00:32:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1735 
+00:32:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1737 
+00:33:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1739 
+00:33:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1741 
+00:33:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1743 
+00:33:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1745 
+00:33:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1747 
+00:33:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1749 
+00:33:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1751 
+00:33:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1753 
+00:33:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1755 
+00:33:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1757 
+00:33:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1759 
+00:33:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1761 
+00:33:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1763 
+00:33:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1765 
+00:33:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1767 
+00:33:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1769 
+00:33:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1771 
+00:33:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1773 
+00:33:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1775 
+00:33:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1777 
+00:33:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1779 
+00:33:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1781 
+00:33:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1783 
+00:33:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1785 
+00:33:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1787 
+00:34:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1789 
+00:34:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1791 
+00:34:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1793 
+00:34:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1795 
+00:34:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1797 
+00:34:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1799 
+00:34:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1801 
+00:34:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1803 
+00:34:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1805 
+00:34:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1807 
+00:34:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1809 
+00:34:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1811 
+00:34:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1813 
+00:34:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1815 
+00:34:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1817 
+00:34:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1819 
+00:34:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1821 
+00:34:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1823 
+00:34:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1825 
+00:34:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1827 
+00:34:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1829 
+00:34:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1831 
+00:34:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1833 
+00:34:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1835 
+00:34:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1837 
+00:35:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1839 
+00:35:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1841 
+00:35:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1843 
+00:35:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1845 
+00:35:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1847 
+00:35:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1849 
+00:35:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1851 
+00:35:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1853 
+00:35:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1855 
+00:35:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1857 
+00:35:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1859 
+00:35:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1861 
+00:35:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1863 
+00:35:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1865 
+00:35:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1867 
+00:35:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1869 
+00:35:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1871 
+00:35:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1873 
+00:35:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1875 
+00:35:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1877 
+00:35:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1879 
+00:35:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1881 
+00:35:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1883 
+00:35:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1885 
+00:35:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1887 
+00:36:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1889 
+00:36:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1891 
+00:36:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1893 
+00:36:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1895 
+00:36:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1897 
+00:36:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1899 
+00:36:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1901 
+00:36:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1903 
+00:36:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1905 
+00:36:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1907 
+00:36:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1909 
+00:36:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1911 
+00:36:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1913 
+00:36:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1915 
+00:36:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1917 
+00:36:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1919 
+00:36:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1921 
+00:36:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1923 
+00:36:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1925 
+00:36:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1927 
+00:36:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1929 
+00:36:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1931 
+00:36:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1933 
+00:36:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1935 
+00:36:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1937 
+00:37:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1939 
+00:37:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1941 
+00:37:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1943 
+00:37:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1945 
+00:37:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1947 
+00:37:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1949 
+00:37:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1951 
+00:37:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1953 
+00:37:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1955 
+00:37:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1957 
+00:37:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1959 
+00:37:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1961 
+00:37:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1963 
+00:37:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1965 
+00:37:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1967 
+00:37:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1969 
+00:37:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1971 
+00:37:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1973 
+00:37:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1975 
+00:37:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1977 
+00:37:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1979 
+00:37:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1981 
+00:37:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1983 
+00:37:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1985 
+00:37:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1987 
+00:38:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1989 
+00:38:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1991 
+00:38:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1993 
+00:38:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1995 
+00:38:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1997 
+00:38:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=1999 
+00:38:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2001 
+00:38:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2003 
+00:38:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2005 
+00:38:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2007 
+00:38:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2009 
+00:38:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2011 
+00:38:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2013 
+00:38:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2015 
+00:38:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2017 
+00:38:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2019 
+00:38:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2021 
+00:38:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2023 
+00:38:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2025 
+00:38:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2027 
+00:38:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2029 
+00:38:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2031 
+00:38:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2033 
+00:38:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2035 
+00:38:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2037 
+00:39:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2039 
+00:39:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2041 
+00:39:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2043 
+00:39:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2045 
+00:39:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2047 
+00:39:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2049 
+00:39:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2051 
+00:39:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2053 
+00:39:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2055 
+00:39:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2057 
+00:39:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2059 
+00:39:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2061 
+00:39:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2063 
+00:39:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2065 
+00:39:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2067 
+00:39:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2069 
+00:39:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2071 
+00:39:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2073 
+00:39:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2075 
+00:39:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2077 
+00:39:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2079 
+00:39:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2081 
+00:39:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2083 
+00:39:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2085 
+00:39:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2087 
+00:40:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2089 
+00:40:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2091 
+00:40:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2093 
+00:40:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2095 
+00:40:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2097 
+00:40:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2099 
+00:40:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2101 
+00:40:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2103 
+00:40:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2105 
+00:40:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2107 
+00:40:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2109 
+00:40:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2111 
+00:40:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2113 
+00:40:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2115 
+00:40:56 UsrAI打印：priest: phase0 done 
+00:40:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2117 
+00:40:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2119 
+00:40:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2121 
+00:40:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:68 产生了新的村民(编号:41314) 
+00:40:68 玩家 生产普通单位，分数+1 
+00:40:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2123 
+00:40:72 BuildAction:市镇中心 11089 执行行动 ACTION_1 
+00:40:72 HumanAction:村民 41314 设置工作目标为 树 50845 
+00:40:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2126 
+00:40:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2129 
+00:40:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2132 
+00:40:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2135 
+00:40:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2138 
+00:40:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2141 
+00:40:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:40:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2144 
+00:41:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2147 
+00:41:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2150 
+00:41:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2153 
+00:41:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2156 
+00:41:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2159 
+00:41:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2162 
+00:41:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2165 
+00:41:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2168 
+00:41:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2171 
+00:41:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2174 
+00:41:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2177 
+00:41:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2180 
+00:41:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2183 
+00:41:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2186 
+00:41:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2189 
+00:41:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2192 
+00:41:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2195 
+00:41:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2198 
+00:41:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2201 
+00:41:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2204 
+00:41:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2207 
+00:41:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2210 
+00:41:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2213 
+00:41:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2216 
+00:41:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:41:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2219 
+00:42:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2222 
+00:42:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2225 
+00:42:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2228 
+00:42:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2231 
+00:42:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2234 
+00:42:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2237 
+00:42:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2240 
+00:42:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2243 
+00:42:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2246 
+00:42:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2249 
+00:42:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2252 
+00:42:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2255 
+00:42:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2258 
+00:42:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2261 
+00:42:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2264 
+00:42:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2267 
+00:42:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2270 
+00:42:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2273 
+00:42:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2276 
+00:42:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2279 
+00:42:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2282 
+00:42:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2285 
+00:42:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2288 
+00:42:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2291 
+00:42:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:42:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2294 
+00:43:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2297 
+00:43:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2300 
+00:43:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2303 
+00:43:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2306 
+00:43:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2309 
+00:43:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2312 
+00:43:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2315 
+00:43:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2318 
+00:43:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2321 
+00:43:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2324 
+00:43:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2327 
+00:43:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2330 
+00:43:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2333 
+00:43:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2336 
+00:43:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2339 
+00:43:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2342 
+00:43:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2345 
+00:43:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2348 
+00:43:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2351 
+00:43:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2354 
+00:43:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2357 
+00:43:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2360 
+00:43:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2363 
+00:43:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2366 
+00:43:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:43:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2369 
+00:44:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2372 
+00:44:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2375 
+00:44:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2378 
+00:44:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2381 
+00:44:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2384 
+00:44:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2387 
+00:44:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2390 
+00:44:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2393 
+00:44:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2396 
+00:44:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2399 
+00:44:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2402 
+00:44:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2405 
+00:44:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2408 
+00:44:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2411 
+00:44:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2414 
+00:44:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2417 
+00:44:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2420 
+00:44:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2423 
+00:44:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2426 
+00:44:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2429 
+00:44:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2432 
+00:44:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2435 
+00:44:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2438 
+00:44:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2441 
+00:44:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:44:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2444 
+00:45:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2447 
+00:45:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2450 
+00:45:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2453 
+00:45:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2456 
+00:45:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2459 
+00:45:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2462 
+00:45:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2465 
+00:45:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2468 
+00:45:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2471 
+00:45:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2474 
+00:45:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2477 
+00:45:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2480 
+00:45:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2483 
+00:45:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2486 
+00:45:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2489 
+00:45:60 玩家 建造住房或农田，分数+1 
+00:45:60 房屋(编号:11312)建造完毕 
+00:45:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2492 
+00:45:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2495 
+00:45:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2498 
+00:45:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2501 
+00:45:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2504 
+00:45:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2507 
+00:45:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2510 
+00:45:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2513 
+00:45:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2516 
+00:45:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:45:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2519 
+00:46:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2522 
+00:46:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2525 
+00:46:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2528 
+00:46:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2531 
+00:46:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2534 
+00:46:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2537 
+00:46:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2540 
+00:46:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2543 
+00:46:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2546 
+00:46:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2549 
+00:46:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2552 
+00:46:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2555 
+00:46:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2558 
+00:46:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2561 
+00:46:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2564 
+00:46:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2567 
+00:46:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2570 
+00:46:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2573 
+00:46:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2576 
+00:46:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2579 
+00:46:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2582 
+00:46:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2585 
+00:46:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2588 
+00:46:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2591 
+00:46:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:46:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2594 
+00:47:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2597 
+00:47:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2600 
+00:47:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2603 
+00:47:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2606 
+00:47:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2609 
+00:47:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2612 
+00:47:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2615 
+00:47:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2618 
+00:47:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2621 
+00:47:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2624 
+00:47:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2627 
+00:47:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2630 
+00:47:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2633 
+00:47:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2636 
+00:47:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2639 
+00:47:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2642 
+00:47:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2645 
+00:47:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2648 
+00:47:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2651 
+00:47:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2654 
+00:47:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2657 
+00:47:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2660 
+00:47:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2663 
+00:47:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2666 
+00:47:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:47:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2669 
+00:48:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2672 
+00:48:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2675 
+00:48:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2678 
+00:48:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2681 
+00:48:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2684 
+00:48:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2687 
+00:48:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2690 
+00:48:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2693 
+00:48:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2696 
+00:48:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2699 
+00:48:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2702 
+00:48:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2705 
+00:48:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2708 
+00:48:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2711 
+00:48:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2714 
+00:48:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2717 
+00:48:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2720 
+00:48:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2723 
+00:48:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2726 
+00:48:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2729 
+00:48:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2732 
+00:48:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2735 
+00:48:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2738 
+00:48:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2741 
+00:48:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:48:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2744 
+00:49:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2747 
+00:49:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2750 
+00:49:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2753 
+00:49:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2756 
+00:49:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2759 
+00:49:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2762 
+00:49:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2765 
+00:49:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2768 
+00:49:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2771 
+00:49:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2774 
+00:49:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2777 
+00:49:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2780 
+00:49:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2783 
+00:49:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2786 
+00:49:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2789 
+00:49:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2792 
+00:49:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2795 
+00:49:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2798 
+00:49:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2801 
+00:49:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2804 
+00:49:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2807 
+00:49:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2810 
+00:49:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2813 
+00:49:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2816 
+00:49:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:49:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2819 
+00:50:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2822 
+00:50:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2825 
+00:50:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2828 
+00:50:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2831 
+00:50:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2834 
+00:50:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2837 
+00:50:24 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:24 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2840 
+00:50:28 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:28 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2843 
+00:50:32 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:32 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2846 
+00:50:36 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:36 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2849 
+00:50:40 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:40 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2852 
+00:50:44 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:44 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2855 
+00:50:48 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:48 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2858 
+00:50:52 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:52 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2861 
+00:50:56 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:56 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2864 
+00:50:60 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:60 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2867 
+00:50:64 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:64 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2870 
+00:50:68 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:68 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2873 
+00:50:72 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:72 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2876 
+00:50:76 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:76 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2879 
+00:50:80 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:80 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2882 
+00:50:84 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:84 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2885 
+00:50:88 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:88 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2888 
+00:50:92 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:92 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2891 
+00:50:96 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:50:96 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2894 
+00:51:00 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:00 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2897 
+00:51:04 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:04 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2900 
+00:51:08 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:08 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2903 
+00:51:12 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:12 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2906 
+00:51:16 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:16 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2909 
+00:51:20 HumanMove:祭司 91101 移动至 (1109.09,321.994) 
+00:51:20 UsrAI打印：建市场门: bush=6 gaz=0 gazState=0 wood=2912 
+

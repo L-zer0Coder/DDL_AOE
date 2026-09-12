@@ -20,13 +20,13 @@ public:
     void priestExplore();
     void checkWorkState();
     void manageBuild();
-    int checkEnv(int type,int sn,int &byBuildingSN);
+    int checkEnv(int type,int& byBuildingSN);
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
-    bool hasBuilding(int type,bool onlyFinished);
+    
     bool hasUnfinishedBuilding(int type);
     void huntGazelle();
     int findFarmer(int bd,int bu);
-    int findGazelle(int bd,int bu,int&gazelleDR,int &gazelleUR);
+    int findGazelle(int bd,int bu,int& gazelleDR,int& gazelleUR,int maxR=1e18);
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
