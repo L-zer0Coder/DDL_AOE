@@ -930,14 +930,26 @@ void UsrAI::manageBuild(){
                 if(f.SN==homeBuilderSN)continue;
                 if(f.NowState!=HUMAN_STATE_IDLE)continue;
                 if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
-                //非市场则使用这种布局
-                int dx4[]{-3,0,3,0,-3,3,3,-3};
-                int dy4[]{0,3,0,-3,3,3,-3,-3};
-                //市场则使用农田法在市镇外围
-                if(!hasType(BUILDING_MARKET)){
-                    dx4={-6,0,6,0,-6,6,6,-6};
-                    dy4[]{0,6,0,-6,6,6,-6,-6};
+                
+               
+
+                static const int DX[2][8]={
+                    {-3,0,3,0,-3,3,3,-3},
+                    {-6,0,6,0,-6,6,6,-6}
+                };
+                static const int DY[2][8]={
+                    {0,3,0,-3,3,3,-3,-3},
+                    {0,6,0,-6,6,6,-6,-6}
+                };
+
+                int row=hasType(BUILDING_MARKET)?0:1;
+                int dx4[8]{};
+                int dy4[8]{};
+                for(int i=0;i<8;++i){
+                    dx4[i]=DX[row][i];
+                    dy4[i]=DY[row][i];
                 }
+
                 for(int k=0;k<8;k++){
                     int dr=bd+dx4[k],du=bu+dy4[k];
                     if(dr<0||dr>=100||du<0||du>=100)continue;
