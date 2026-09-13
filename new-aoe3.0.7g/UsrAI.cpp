@@ -147,6 +147,7 @@ void UsrAI::processData()
     priestExplore();
 
     waveBattle();
+    //获取唯一的房屋建造者
     for(auto&f:info.farmers){
         if(homeBuilderSN==-1&&f.NowState==HUMAN_STATE_IDLE){
             homeBuilderSN=f.SN;
@@ -155,20 +156,23 @@ void UsrAI::processData()
     }
 
     
-    
+    //处理建造
     manageBuild();   
+
     storageStarted=false;
     huntGazelle();
+
+    //第二猎人帮建
     if(gazelleState==4&&gazelleHunter2SN!=-1){
         for(auto&b:info.buildings){
             if(b.Type!=BUILDING_STOCK)continue;
-            if(b.Percent>=100)continue;                                        // 只要在建的
+            if(b.Percent>=100)continue;                          // 只要在建的
             if(max(abs(b.BlockDR-gazelleSpotDR),abs(b.BlockUR-gazelleSpotUR))>6)continue;
             for(auto&f:info.farmers){
                 if(f.SN!=gazelleHunter2SN)continue;
                 
-                if(f.WorkObjectSN==b.SN)continue;                              // 已经在建了, 别重发
-                HumanAction(f.SN,b.SN);                                        // 去帮建
+                if(f.WorkObjectSN==b.SN)continue;        // 已经在建了, 别重发
+                HumanAction(f.SN,b.SN);            // 去帮建
                 break;
             }
             break;
@@ -178,15 +182,18 @@ void UsrAI::processData()
 
     
 
-    static int assignedFrame=-1;
+    static int assignedFrame=-1;//按帧执行可能有问题 之后找其他方式或者直接删掉该节流
+    //当前帧的实时记忆
     unordered_map<int,int>resWorkers;
     unordered_map<int,bool>isResourceSN;
     for(auto&r:info.resources){
         isResourceSN[r.SN]=true;
     }
     for(auto&f:info.farmers){
+        //根据有无工人的工作对象是资源来判断 并且用哈希 很快很简洁
         if(isResourceSN.count(f.WorkObjectSN))resWorkers[f.WorkObjectSN]++;
     }
+
     //最多几个人占用
     auto resMax=[](int type)->int{
         if(type==RESOURCE_TREE)return 1;
@@ -199,14 +206,15 @@ void UsrAI::processData()
         if(r.Type==RESOURCE_GAZELLE&&gazelleNum>=6)continue;
 
         //节流
-        if(info.GameFrame-assignedFrame<19)break;
+        if(info.GameFrame-assignedFrame<19)break; //考虑删除
 
         if(r.Type==RESOURCE_BUSH||(r.Type==RESOURCE_GAZELLE&&gazelleState==4)){
-            if(r.Type==RESOURCE_GAZELLE&&r.Blood>0)continue; 
-            if(r.Cnt<=0)continue;
-            if(resWorkers[r.SN]>=resMax(r.Type))continue;
+            if(r.Type==RESOURCE_GAZELLE&&r.Blood>0)continue; //只采集不打猎
+            if(r.Cnt<=0)continue; //没资源了不采集
+            if(resWorkers[r.SN]>=resMax(r.Type))continue; //每个资源固定人数采集
             int need=((r.Type==RESOURCE_BUSH)?BUILDING_GRANARY:BUILDING_STOCK);
             int needWood=((r.Type==RESOURCE_BUSH)?BUILD_GRANARY_WOOD:BUILD_STOCK_WOOD);
+            //其实一般不需要再建了 这里是鲁棒性 但可以考虑删除
             for(auto&f:info.farmers){
                 if(f.SN==homeBuilderSN)continue;
                 if(f.NowState!=HUMAN_STATE_IDLE||farIsgotten.find(f.SN)!=farIsgotten.end())continue;
@@ -214,8 +222,8 @@ void UsrAI::processData()
                 int bySN=-1;
                 int st=checkEnv(r.Type,bySN);
 
-                if(st==2){
-                    HumanAction(f.SN,r.SN);//这里f.SN 后期要改为距离最近的村民 搞个函数替代一下
+                if(st==2){ //已有 直接建
+                    HumanAction(f.SN,r.SN); //这里f.SN 后期要改为距离最近的村民 搞个函数替代一下
                     resIsgotten[r.SN]=true;
                     farIsgotten[f.SN]=true;
                     if(r.Type==RESOURCE_BUSH)bushNum++;
@@ -223,14 +231,15 @@ void UsrAI::processData()
                     
                     
                 }
-                else if(st==1)HumanAction(f.SN,bySN);
-                else{
+                else if(st==1)HumanAction(f.SN,bySN); //有没建好的 帮建
+                else{ //没有
                     int ox=-1,oy=-1;
                     if(info.Wood>=needWood&&!storageStarted&&findBuildSpot(r.BlockDR,r.BlockUR,3,2,5,ox,oy)){
                         HumanBuild(f.SN,need,ox,oy);
                         storageStarted=true;
                     }
                     else{
+                        //这里直接采是有点问题的 但是因为基本上不会被触发 可以忽略
                         HumanAction(f.SN,r.SN);
                         resIsgotten[r.SN]=true;
                         if(r.Type==RESOURCE_BUSH)bushNum++;
@@ -244,6 +253,7 @@ void UsrAI::processData()
             }   
         }
     }
+
     {
         int woodNow=0;//本帧实时木工数
         unordered_map<int,bool>isTree;
@@ -252,65 +262,10 @@ void UsrAI::processData()
         }
         for(auto&f:info.farmers){
             if(f.NowState!=HUMAN_STATE_WORKING&&f.NowState!=HUMAN_STATE_WALKING)continue;
-            if(isTree.count(f.WorkObjectSN)){
-                woodNum++;
-                woodNow++;
-            }
+            if(isTree.count(f.WorkObjectSN))woodNow++;
         }
-        struct TreeCan{
-            int sn,dr,ur,dist;
-        };
-        vector<TreeCan>can;
-        for(auto&r:info.resources){
-            if(r.Type!=RESOURCE_TREE)continue;
-            if(r.Cnt<=0)continue;
-            if(resWorkers[r.SN]>=resMax(RESOURCE_TREE))continue;
-            int bestD=1e18;
-            for(auto&b:info.buildings){
-                if(b.Type!=BUILDING_STOCK&&b.Type!=BUILDING_CENTER)continue;
-                int dx=abs(b.BlockDR-r.BlockDR);
-                int dy=abs(b.BlockUR-r.BlockUR);
-                int d=max(dx,dy);
-                
-                
-                if(d<bestD)bestD=d;
-            }
-            can.push_back(TreeCan{r.SN,r.BlockDR,r.BlockUR,bestD});
-        }
-        sort(can.begin(),can.end(),
-            [](const TreeCan&a,const TreeCan&b){return a.dist<b.dist;});
-        for(auto&t:can){
-            if(woodNow>=3)break;//先预设3人
-            int fSN=findFarmer(t.dr,t.ur);
-            
-            if(fSN==-1)break;
-
-            int bySN=-1;
-            int st=checkEnv(RESOURCE_TREE,bySN);
-
-            if(st==2){
-                HumanAction(fSN,t.sn);
-                resIsgotten[t.sn]=true;
-                
-                woodNum++;
-                woodNow++;
-            }
-            else if(st==1)HumanAction(fSN,bySN);
-            else{
-                int ox=-1,oy=-1;
-                if(info.Wood>=BUILD_STOCK_WOOD&&!storageStarted&&findBuildSpot(t.dr,t.ur,3,2,10,ox,oy)){
-                    HumanBuild(fSN,BUILDING_STOCK,ox,oy);
-                    storageStarted=true;
-                }
-                else{
-                    HumanAction(fSN,t.sn);
-                    resIsgotten[t.sn]=true;
-                    
-                    woodNum++;
-                    woodNow++;
-                }
-            }
-            farIsgotten[fSN]=true;
+        for(int i=woodNow;i<3;i++){                 // 补到 3 个: 人数上限就写在这个 3
+            if(assignWoodcutter()==-1)break;        // 没树/没人就停, 不会空转
         }
     }
     
@@ -784,7 +739,8 @@ bool UsrAI::spotBusy(int dr,int ur,int size){
 
 bool UsrAI::findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy){
     ox=-1;oy=-1;
-    
+    //一个圆周找建筑
+
     for(int dr=bd-maxR;dr<=bd+maxR;dr++){
         for(int ur=bu-maxR;ur<=bu+maxR;ur++){
             if(dr<0||dr>=100||ur<0||ur>=100)continue;
@@ -837,6 +793,7 @@ void UsrAI::manageBuild(){
         }
         
     }
+
     gethomeBuilder();                    
 
     int maxNum=info.Human_MaxNum;
@@ -890,11 +847,12 @@ void UsrAI::manageBuild(){
     
         
     //农田
-    int fsDR[]={-3,-3,-3, 0, 0, 3, 3, 3, -4,-4,-4, 0, 0, 4, 4, 4};
-    int fsDU[]={-3, 0, 3,-3, 3,-3, 0, 3, -4, 0, 4,-4, 4,-4, 0, 4};
+    //周围八个方向 中间留宽2格的通道 -- 实操查看是否会同时建造导致卡住
+    int fsDR[]={-5,0,5,0,-5,5,5,-5};
+    int fsDU[]={0,5,0,-5,5,5,-5,-5};
 
     if(bushNum>=6&&gazelleNum>=6&&woodNum>=3){
-        //有在建的
+        //有无在建的
         int buildingSN=-1;
         for(auto&b:info.buildings){
             if(b.Percent>=100)continue;
@@ -902,24 +860,24 @@ void UsrAI::manageBuild(){
             buildingSN=b.SN;
             break;
         }
+        //有在建的
         if(buildingSN!=-1){
             for(auto&f:info.farmers){
                 if(f.SN==homeBuilderSN)continue;
                 if(f.NowState!=HUMAN_STATE_IDLE)continue;
                 if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
-                if(f.WorkObjectSN==buildingSN)continue;
+                if(f.WorkObjectSN==buildingSN)continue; //已在建 防重复发指令
                 HumanAction(f.SN,buildingSN);
                 farIsgotten[f.SN]=true;
-                
             }
             return;
         }
         //无在建的
         
-        int want=-1,cost=0;
+        int want=-1,cost=0;//要什么 花多少
         int bd=centerBlockDR,bu=centerBlockUR;          // 默认以市镇中心为基准找空地
         
-        //市场
+        //市场 以市镇中心为基准
         if(!hasType(BUILDING_MARKET)){
             want=BUILDING_MARKET;
             cost=BUILD_MARKET_WOOD;
@@ -949,6 +907,10 @@ void UsrAI::manageBuild(){
         else if(!hasType(BUILDING_ARMYCAMP)){
             want=BUILDING_ARMYCAMP;
             cost=BUILD_ARMYCAMP_WOOD;
+            if(marketBlockDR!=-1){                   //兵营挨着市场建
+                bd=marketBlockDR;
+                bu=marketBlockUR;
+            }
         }
         //靶场
         else if(!hasType(BUILDING_RANGE)){
@@ -960,32 +922,23 @@ void UsrAI::manageBuild(){
             }
         }
         
-        //★1 木材不够 -> 空闲的人全部去砍树
-        if(want!=-1&&info.Wood<cost){
-            for(auto&f:info.farmers){
-                if(f.SN==homeBuilderSN)continue;
-                if(f.NowState!=HUMAN_STATE_IDLE)continue;
-                if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
-                int tSN=-1,bestD=1e18;
-                for(auto&r:info.resources){
-                    if(r.Type!=RESOURCE_TREE||r.Cnt<=0)continue;
-                    int d=max(abs(r.BlockDR-f.BlockDR),abs(r.BlockUR-f.BlockUR));
-                    if(d<bestD){bestD=d;tSN=r.SN;}
-                }
-                if(tSN==-1)break;
-                HumanAction(f.SN,tSN);
-                farIsgotten[f.SN]=true;
-            }
-        }
+        //木材不够 -- 空闲的人都去砍树
+        if(want!=-1&&info.Wood<cost)assignWoodcutter();
 
         if(want!=-1&&info.Wood>=cost){
             for(auto&f:info.farmers){
                 if(f.SN==homeBuilderSN)continue;
                 if(f.NowState!=HUMAN_STATE_IDLE)continue;
                 if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
-                int dx4[]{-3,0,3,0};
-                int dy4[]{0,3,0,-3};
-                for(int k=0;k<4;k++){
+                //非市场则使用这种布局
+                int dx4[]{-3,0,3,0,-3,3,3,-3};
+                int dy4[]{0,3,0,-3,3,3,-3,-3};
+                //市场则使用农田法在市镇外围
+                if(!hasType(BUILDING_MARKET)){
+                    dx4={-6,0,6,0,-6,6,6,-6};
+                    dy4[]{0,6,0,-6,6,6,-6,-6};
+                }
+                for(int k=0;k<8;k++){
                     int dr=bd+dx4[k],du=bu+dy4[k];
                     if(dr<0||dr>=100||du<0||du>=100)continue;
                     bool ok=true;
@@ -1012,7 +965,6 @@ void UsrAI::manageBuild(){
                     if(want==BUILDING_MARKET){
                         marketBlockDR=dr;
                         marketBlockUR=du;
-                        
                     }
                     if(want==BUILDING_ARMYCAMP){
                         armyCampBlockDR=dr;
@@ -1029,7 +981,7 @@ void UsrAI::manageBuild(){
     if(hasType(BUILDING_RANGE)&&granaryBlockDR!=-1&&hasType(BUILDING_MARKET)&&info.Wood>=BUILD_FARM_WOOD){
         int farmNum=0;
         for(auto&b:info.buildings){
-            if(b.Type==BUILDING_FARM)farmNum++;
+            if(b.Type==BUILDING_FARM&&b.Cnt>0)farmNum++;
         }
         if(farmNum<8){
             for(auto&f:info.farmers){
@@ -1038,7 +990,7 @@ void UsrAI::manageBuild(){
 
                 for(int q=0;q<16;q++){
                     int dr=granaryBlockDR+fsDR[q], du=granaryBlockUR+fsDU[q];
-                    if(dr<0||du<0||dr+3>100||du+3>100)continue;
+                    if(dr<0||du<0||dr+3>=100||du+3>=100)continue;
                     bool ok=true;
                     for(int i=0;i<3&&ok;i++)
                         for(int j=0;j<3;j++)
@@ -1059,6 +1011,7 @@ void UsrAI::manageBuild(){
     // ---- 建好但没人种的农田 -> 派人去种 ----
     for(auto&b:info.buildings){
         if(b.Type!=BUILDING_FARM||b.Percent<100)continue;
+        if(b.Cnt<=0)continue;
         bool busy=false;
         for(auto&f:info.farmers){
             if(f.WorkObjectSN==b.SN){
@@ -1067,6 +1020,7 @@ void UsrAI::manageBuild(){
             }
         }
         if(busy)continue;
+        //到下面说明这块地没人种
         for(auto&f:info.farmers){
             if(f.SN==homeBuilderSN||f.NowState!=HUMAN_STATE_IDLE)continue;
             if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
@@ -1093,6 +1047,52 @@ int UsrAI::findFarmer(int bd,int bu){
     }
     return bestSN;
 }
+// 派"一个"空闲农民去砍树
+// 规则: 以【仓库】为中心 —— 外层遍历仓库, 对每个仓库找离它最近的、还能砍的树,
+//       在所有 (仓库,树) 组合里挑距离最小的一对; 再派离那棵树最近的空闲农民过去。
+// 调用一次只派一个人(不带人数上限), 想控制人数就在调用方数着调几次;
+// 返回: 派出去的农民SN; 没树可砍 / 没空闲农民可派 -> 返回 -1
+int UsrAI::assignWoodcutter(){
+    // ---------- ① 以仓库为中心找最近的树 ----------
+    int bestSN=-1,bestDR=-1,bestUR=-1,bestD=1e18;
+    for(auto&b:info.buildings){                                  // 外层: 仓库
+        if(b.Type!=BUILDING_STOCK)continue;
+        if(b.Percent<100)continue;                               // 还没建好的不算锚点
+        for(auto&r:info.resources){                              // 内层: 树
+            if(r.Type!=RESOURCE_TREE)continue;
+            if(r.Cnt<=0)continue;                                // 砍光了
+            if(farIsgotten.find(r.SN)!=farIsgotten.end())continue; // 本帧已经给这棵树派过人了
+            bool busy=false;                                     // 这棵树已经被别人占着了吗
+            for(auto&f:info.farmers){
+                if(f.WorkObjectSN==r.SN){
+                    busy=true;
+                    break;
+                }
+            }
+            if(busy)continue;
+            int d=max(abs(b.BlockDR-r.BlockDR),abs(b.BlockUR-r.BlockUR));  // 仓库->树
+            if(d<bestD){
+                bestD=d;
+                bestSN=r.SN;
+                bestDR=r.BlockDR;
+                bestUR=r.BlockUR;
+            }
+        }
+    }
+    if(bestSN==-1)return -1;                                     // 树都在忙 / 树砍光了 / 还没有仓库
+
+    // ---------- ② 挑离这棵树最近的空闲农民 ----------
+    int fSN=findFarmer(bestDR,bestUR);
+    if(fSN==-1)return -1;                                        // 没有空闲的人可派
+
+    // ---------- ③ 派去砍 ----------
+    HumanAction(fSN,bestSN);
+    resIsgotten[bestSN]=true;
+    woodNum++;
+    farIsgotten[fSN]=true;
+    return fSN;
+}
+
 //该函数可以获得离bd bu最近的一个gazelle 并且获得其SN DR UR
 int UsrAI::findGazelle(int bd,int bu,int& gazelleDR,int& gazelleUR,int maxR){
     int bestSN=-1;
@@ -1164,7 +1164,9 @@ void UsrAI::huntGazelle(){
             gazelleSpotDR=nr;
             gazelleSpotUR=nu;
             break;
-        }
+        } //刷新落脚点
+
+        //招募猎人
         if(gazelleHunter1SN==-1)gazelleHunter1SN=findFarmer(gazelleSpotDR,gazelleSpotUR);
         if(gazelleHunter1SN==-1)return;
         farIsgotten[gazelleHunter1SN]=true;
@@ -1176,6 +1178,7 @@ void UsrAI::huntGazelle(){
         HumanMove(gazelleHunter1SN,gazelleSpotDR*BLOCKSIDELENGTH,gazelleSpotUR*BLOCKSIDELENGTH);
         HumanMove(gazelleHunter2SN,(gazelleSpotDR-1)*BLOCKSIDELENGTH,gazelleSpotUR*BLOCKSIDELENGTH);
         gazelleState=1;
+        //0阶段结束 进入1阶段
         return;
 
     }
@@ -1218,12 +1221,12 @@ void UsrAI::huntGazelle(){
             return;
         }
         if(info.Wood<BUILD_STOCK_WOOD){
-            gazelleState=4;
+            // gazelleState=4; //不够就再等等
+            assignWoodcutter();
             return;
         }
-        int ox=-1,oy=-1;
-        if(findBuildSpot(gazelleSpotDR,gazelleSpotUR,3,2,4,ox,oy)){
-            
+        int ox=-1,oy=-1; //output_x/y
+        if(findBuildSpot(gazelleSpotDR,gazelleSpotUR,3,2,4,ox,oy)){ //minR已经没作用了
             HumanBuild(gazelleHunter1SN,BUILDING_STOCK,ox,oy);
             storageStarted=true;
             farIsgotten[gazelleHunter1SN]=true;
@@ -1244,7 +1247,25 @@ void UsrAI::huntGazelle(){
 }
 void UsrAI::waveBattle(){
     if(info.enemy_armies.empty())return;
-
+    //波次探测
+    // static int wavePhase=1;
+    // int edr,edu;
+    // for(auto&ea:info.enemy_armies){
+    //     if(ea.Sort==AT_CHARIOT){
+    //         edr=ea.BlockDR,edu=ea.BlockUR;
+    //         int dx=edr-arrowTowerBlockDR,dy=edu-arrowTowerBlockUR;
+    //         if(dx*dx+dy*dy<=100)wavePhase=2;
+    //         break;
+    //     }
+    //     if(wavePhase==1&&ea.Sort==AT_STONE_THROWER){
+    //         edr=ea.BlockDR,edu=ea.BlockUR;
+    //         int dx=edr-arrowTowerBlockDR,dy=edu-arrowTowerBlockUR;
+    //         if(dx*dx+dy*dy<=100)wavePhase=3;
+    //         break;
+    //     }
+    // }
+    
+    // if(wavePhase!=1)goto NEXT;
     // 挑两个近战: 第一个给祭司转化, 第二个给箭塔打
     int priestTarget=-1,towerPick=-1;
 
@@ -1257,13 +1278,13 @@ void UsrAI::waveBattle(){
         }
     }
 
-    // ---- 祭司: 冷却好了就点他(锁上之后 WorkObjectSN 就是它, 不会重发) ----
+    // ---- 继续转化
     bool priestAtHome=abs(priestBlockDR-arrowTowerBlockDR)<=2&&abs(priestBlockUR-arrowTowerBlockUR)<=2;
 
     if(priestSN!=-1&&priestTarget!=-1&&info.GameFrame>=goHomeFrame&&priestAtHome){
         for(auto&a:info.armies){
-            if(a.SN!=priestSN)continue;
-            if(a.ConvertCooldown<=0&&a.WorkObjectSN!=priestTarget)HumanAction(priestSN,priestTarget);
+            // if(a.SN!=priestSN)continue;
+            if(a.ConvertCooldown<=0&&a.WorkObjectSN!=priestTarget)HumanAction(priestSN,priestTarget); //转化另一个人
             break;
         }
     }
@@ -1303,7 +1324,10 @@ void UsrAI::waveBattle(){
             HumanAction(a.SN,archerSN);
         }
     }
+// NEXT:
+//     if(wavePhase==2){
 
+//     }
 }
 
 int UsrAI::checkEnv(int type,int& byBuildingSN){
@@ -1318,13 +1342,13 @@ int UsrAI::checkEnv(int type,int& byBuildingSN){
         if(type==RESOURCE_GAZELLE){
             if(r.Blood>0)continue;
         }
-        if(r.Cnt<=0);
+        if(r.Cnt<=0)continue;
         for(auto&b:info.buildings){
-            if(b.Type!=need&&b.Type!=BUILDING_CENTER)continue;
+            if(b.Type!=need)continue;
             int d=max(abs(b.BlockDR-r.BlockDR),abs(b.BlockUR-r.BlockUR));
-            if(d>radius)continue;
-            if(b.Percent>=100)return 2;//建好
-            if(byBuildingSN==-1)byBuildingSN=b.SN;
+            if(d>radius)continue; //以这个资源为中心 链接每个对应的存储点 看有没有存储点是符合要求的
+            if(b.Percent>=100)return 2; //建好
+            if(byBuildingSN==-1) byBuildingSN=b.SN;
         }
     }
     return (byBuildingSN!=-1)?1:0; //不等于-1说明周围有

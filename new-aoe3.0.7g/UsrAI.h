@@ -23,6 +23,8 @@ public:
     int checkEnv(int type,int& byBuildingSN);
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
+    int assignWoodcutter();//返回派出去的村民SN
+
     bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
