@@ -29,18 +29,10 @@ int centerBlockDR=-1;
 int centerBlockUR=-1;
 
 
-
-
-
-
-
 int homeSN=-1;
 int homeBlockDR=-1;
 int homeBlockUR=-1;
 int dir_home=-1;// 1-左 2-上 3-右 4-下
-
-
-
 
 
 int arrowTowerSN=-1;
@@ -66,15 +58,6 @@ int granaryBlockUR=-1;
 int stockSN=-1;
 int stockBlockDR=-1;
 int stockBlockUR=-1;
-
-//==================== 打大象(集体风筝) 全局状态 ====================
-// 流程: 探明活象 -> 给市镇中心加3个造人名额 -> 3人集合 -> 抱团集体风筝 -> 就地建仓库 -> 采肉
-int elephantState=0;                     // 状态机: 0-探明等 1-集结 2-风筝 3-建仓库 4-采肉
-int elephantTargetSN=-1;                 // 当前锁定的大象 SN
-int elephantSpotDR=-1,elephantSpotUR=-1; // 大象位置(集合落脚点/建仓库基准点)
-int elephantHunterSN[3]={-1,-1,-1};      // 3个猎人的 SN
-int elephantExtra=0;                     // 发现象后给市镇中心加的额外造人名额(只加一次)
-int elephantKiteCmd=-1;                  // 上帧发的动作: 1-打 2-撤, 防抖(动作没变就不重发指令)
 
 int priestSN=-1;
 int priestBlockDR=-1;
@@ -151,7 +134,7 @@ void UsrAI::processData()
     }
     if(!phaseChange){
         if(info.civilizationStage==CIVILIZATION_BRONZEAGE){
-            phaseNum=51;
+            phaseNum=25;
             phaseChange=true;
         }
     }
@@ -176,7 +159,6 @@ void UsrAI::processData()
     manageBuild();   
     storageStarted=false;
     huntGazelle();
-    huntElephant();            // 打大象(集体风筝): 探明活象后加3个名额, 3人抱团拉扯
     if(gazelleState==4&&gazelleHunter2SN!=-1){
         for(auto&b:info.buildings){
             if(b.Type!=BUILDING_STOCK)continue;
@@ -471,7 +453,7 @@ void UsrAI::priestExplore(){
 
     const int DANGER_R2=64;              // 敌人/猛兽 8 格内视为危险
     const int MOVE_TIMEOUT=300;          // 目标走不到的超时(帧)
-    const int BAD_COOL=1500;             // 走不到的格子拉黑时长(帧)
+    const int BAD_COOL=1000;             // 走不到的格子拉黑时长(帧)
     const int DODGE_COOL=80;             // 躲避冷却(帧)
 
     // 只有"已探明陆地"才允许站上去(海里/未知区/资源格/建筑格一律不去)
@@ -560,7 +542,11 @@ void UsrAI::priestExplore(){
                 if(!usable(nx,ny))continue;                 // 局部避障: 只往能走的格子躲
                 if(dangerNear(nx,ny))continue;              // 不往另一堆危险里躲
                 double score=dirx[k]*vx+diry[k]*vy;         // 越背离危险越好
-                if(score>bestScore){bestScore=score;tdr=nx;tur=ny;}
+                if(score>bestScore){
+                    bestScore=score;
+                    tdr=nx;
+                    tur=ny;
+                }
             }
             if(tdr!=-1){
                 if(curDR!=-1)bad[curDR*100+curUR]=info.GameFrame+BAD_COOL;
@@ -634,7 +620,11 @@ void UsrAI::priestExplore(){
                 int d2=dx*dx+dy*dy;
                 if(d2<=36)continue;                           // 已经贴着它了(6格内), 换下一只
                 if(d2>900)continue;                           // 太远的先别追(免得隔着海去够), 交给常规探索
-                if(d2<gD2){gD2=d2;gdr=r.BlockDR;gur=r.BlockUR;}
+                if(d2<gD2){
+                    gD2=d2;
+                    gdr=r.BlockDR;
+                    gur=r.BlockUR;
+                }
             }
         }
 
@@ -772,8 +762,26 @@ bool UsrAI::hasUnfinishedBuilding(int type){
     return false;
 }
 
+
+
+
+
+
+
 // 在(bd,bu)附近找一个 size×size 的空地(返回左下角块坐标)
 // 条件: 全是已探明陆地(Open, 说明没资源没建筑) + 高度一致且不是斜坡 + 没被拉黑
+bool UsrAI::spotBusy(int dr,int ur,int size){
+    for(auto&f:info.farmers){
+        if(f.BlockDR>=dr&&f.BlockDR<dr+size&&f.BlockUR>=ur&&f.BlockUR<ur+size)return true;
+    }
+    for(auto&a:info.armies){
+        if(a.BlockDR>=dr&&a.BlockUR<dr+size&&a.BlockUR>=ur&&a.BlockUR<ur+size)return true;
+    }
+    return false;
+}
+
+
+
 bool UsrAI::findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy){
     ox=-1;oy=-1;
     
@@ -795,7 +803,7 @@ bool UsrAI::findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &
                 }
                 if(!canbuild)break;
             }
-            if(canbuild){
+            if(canbuild&&!spotBusy(dr,ur,size)){
                 ox=dr,oy=ur;
                 return true;
             }
@@ -808,7 +816,7 @@ bool UsrAI::findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &
 
 void UsrAI::manageBuild(){
     // DebugText(QString("bush=%1 gaz=%2 wood=%3").arg(bushNum).arg(gazelleNum).arg(woodNum));
-
+    
     bool alive=false;
     for(auto&f:info.farmers){
         if(f.SN==homeBuilderSN){
@@ -836,7 +844,7 @@ void UsrAI::manageBuild(){
     int spaceNum=maxNum-haveNum;
     
     //造人开关
-    if(haveNum<phaseNum+elephantExtra)BuildingAction(centerSN,BUILDING_CENTER_CREATEFARMER);   // +elephantExtra: 发现大象后多造3个人
+    if(haveNum<phaseNum)BuildingAction(centerSN,BUILDING_CENTER_CREATEFARMER);
     
     if(spaceNum<=3&&maxNum<50){
         
@@ -916,6 +924,27 @@ void UsrAI::manageBuild(){
             want=BUILDING_MARKET;
             cost=BUILD_MARKET_WOOD;
         }
+        //科技研发
+        static bool tech[3]{};//0 木材 1 动物 2 金矿
+        if(!tech&&hasType(BUILDING_MARKET)){
+            for(auto&b:info.buildings){
+                if(b.Type!=BUILDING_MARKET)continue;
+                if(b.Project!=ACT_NULL)continue;
+                if(!tech[0]&&info.Wood>=BUILDING_MARKET_WOOD_UPGRADE_WOOD&&info.Meat>=BUILDING_MARKET_WOOD_UPGRADE_FOOD){
+                    BuildingAction(b.SN,BUILDING_MARKET_WOOD_UPGRADE);
+                    tech[0]=true;
+                }
+                if(!tech[1]&&info.Meat>=BUILDING_MARKET_GOLD_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_GOLD_UPGRADE_WOOD){
+                    BuildingAction(b.SN,BUILDING_MARKET_GOLD_UPGRADE);
+                    tech[1]=true;
+                }
+                if(!tech[2]&&info.Meat>=BUILDING_MARKET_FARM_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_FARM_UPGRADE_WOOD){
+                    BuildingAction(b.SN,BUILDING_MARKET_FARM_UPGRADE);
+                    tech[2]=true;
+                }
+
+            }
+        }
         //兵营
         else if(!hasType(BUILDING_ARMYCAMP)){
             want=BUILDING_ARMYCAMP;
@@ -969,6 +998,7 @@ void UsrAI::manageBuild(){
                         }
                     }
                     if(!ok)continue;
+                    if(spotBusy(dr,du,3))continue;
                     bool farmSlot=false;
                     for(int q=0;q<16;q++){
                         if(dr==granaryBlockDR+fsDR[q]&&du==granaryBlockUR+fsDU[q]){
@@ -1017,6 +1047,7 @@ void UsrAI::manageBuild(){
                                 break;
                             }
                     if(!ok)continue;
+                    if(spotBusy(dr,du,3))continue;
                     HumanBuild(f.SN,BUILDING_FARM,dr,du);
                     farIsgotten[f.SN]=true;
                     break;
@@ -1100,48 +1131,7 @@ bool isLiveGazelle(int sn){
 }
 /////////////////////////////////////////////////
 void UsrAI::huntGazelle(){
-    //====================================================================================
-    // [AI修改] state 4 之后的"防卡解救"逻辑
-    // 病因: 猎人杀完瞪羚时站在尸体堆里, 之后被派去建仓库(state 3)或帮建(processData 里
-    //       gazelleState==4 那段)时, 目标地基的路容易被尸体/彼此挡住, 内核算不出路径,
-    //       单位就一直停在 HUMAN_STATE_WALKING 却原地不动(内核不会把状态退回 IDLE)。
-    //       而所有调度(通用资源循环/findFarmer/manageBuild/huntElephant)都只认
-    //       HUMAN_STATE_IDLE, WALKING 的一律跳过 -> 没有任何代码能再把他们捞出来, 永久卡死。
-    // 对策: 死盯这两个猎人, 一旦 WALKING 且位置连续 150 帧没动, 就强制改派:
-    //       优先采身边最近的瞪羚尸体(采肉会清掉尸体, 路自然就通了),
-    //       没有尸体可采就 HumanMove 回市中心; 人一重新动起来变 IDLE, 通用调度自动接走。
-    // 150 是"判卡帧数": 嫌救得慢就调小, 怕误伤正常长途赶路的就调大。
-    //====================================================================================
-    if(gazelleState==4){
-        static int lastDR[2]={-1,-1},lastUR[2]={-1,-1};   // 两个猎人上一帧的位置
-        static int still[2]={0,0};                        // 两个猎人"位置没动"的连续帧数
-        int hs[2]={gazelleHunter1SN,gazelleHunter2SN};
-        for(int i=0;i<2;i++){
-            if(hs[i]==-1)continue;
-            for(auto&f:info.farmers){
-                if(f.SN!=hs[i])continue;
-                // 不在走路(闲着/在干活)就不算卡, 清零计数并记录当前位置
-                if(f.NowState!=HUMAN_STATE_WALKING){still[i]=0;lastDR[i]=f.BlockDR;lastUR[i]=f.BlockUR;break;}
-                if(f.BlockDR==lastDR[i]&&f.BlockUR==lastUR[i]){
-                    // WALKING 但位置跟上一帧一样 -> 没挪窝
-                    if(++still[i]>150){                   // 连续 150 帧没动 -> 判定卡死
-                        int bestSN=-1,bestD=1e18;
-                        for(auto&r:info.resources){        // 找最近的死瞪羚去采肉(顺便清出一条路)
-                            if(r.Type!=RESOURCE_GAZELLE||r.Blood>0||r.Cnt<=0)continue;
-                            int d=max(abs(r.BlockDR-f.BlockDR),abs(r.BlockUR-f.BlockUR));
-                            if(d<bestD){bestD=d;bestSN=r.SN;}
-                        }
-                        if(bestSN!=-1)HumanAction(hs[i],bestSN);
-                        else HumanMove(hs[i],centerBlockDR*BLOCKSIDELENGTH,centerBlockUR*BLOCKSIDELENGTH);
-                        still[i]=0;
-                    }
-                }else{still[i]=0;}                        // 位置变了, 在正常赶路, 重新计数
-                lastDR[i]=f.BlockDR;lastUR[i]=f.BlockUR;
-                break;
-            }
-        }
-        return;
-    }
+    if(gazelleState==4)return;
     if(gazelleState==0){
         if(liveGazelleNum()<gazelleWantNum)return;
         // bool have=false;
@@ -1252,260 +1242,51 @@ void UsrAI::huntGazelle(){
         return;
     }
 }
-//==================== 打大象(集体风筝) ====================
-// 跟 huntGazelle 一个骨架, 状态机 0~4; 唯一的新逻辑在 state 2 的集体风筝:
-//   3人抱团, 象贴上来了(<=2格) 一起往背对方向撤5格, 拉开了(>=4格) 一起贴上去打,
-//   中间 2~4 格是滞回区, 保持上一帧动作不发指令, 防止在边界来回抖。
-void UsrAI::huntElephant(){
-    // 人一旦入队就锁死, 别让通用资源调度把他们抢走(跟 huntGazelle 一个思路)
-    if(elephantState>=1){
-        for(int i=0;i<3;i++)
-            if(elephantHunterSN[i]!=-1)farIsgotten[elephantHunterSN[i]]=true;
-    }
-
-    // ---------- 0: 地图上有活象 -> 加3个造人名额, 进集结 ----------
-    if(elephantState==0){
-        int esn=-1,edr=-1,eur=-1,bestD=1e18;
-        for(auto&r:info.resources){                       // 找离市中心最近的活象
-            if(r.Type!=RESOURCE_ELEPHANT||r.Blood<=0)continue;
-            int d=max(abs(r.BlockDR-centerBlockDR),abs(r.BlockUR-centerBlockUR));
-            if(d<bestD){bestD=d;esn=r.SN;edr=r.BlockDR;eur=r.BlockUR;}
-        }
-        if(esn==-1)return;                                // 还没探明活象, 继续等
-        elephantTargetSN=esn;
-        // [AI修复] 集合点不能直接用"象所在的那一格"!
-        //   象在 MAP 里被标成资源格(非 Open, 不可走), 拿它当集合点等于永远走不到:
-        //   farmerAt 永远为 false -> 每帧重发移动指令 -> 单位被钉死 + 日志刷屏。
-        //   照 huntGazelle 的做法, 取象四邻的一个可走格当集合点。
-        int sdr=edr,sur=eur;
-        int dx4[4]={0,1,0,-1};
-        int dy4[4]={1,0,-1,0};
-        for(int k=0;k<4;k++){
-            int nr=edr+dx4[k], nu=eur+dy4[k];
-            if(nr<0||nr>=100||nu<0||nu>=100)continue;
-            if(MAP[nr][nu]!=Open)continue;
-            sdr=nr;sur=nu;
-            break;
-        }
-        elephantSpotDR=sdr;
-        elephantSpotUR=sur;
-        if(elephantExtra==0)elephantExtra=3;              // 名额只加一次, 打完一圈回来不再加
-        elephantState=1;
-        return;
-    }
-
-    // ---------- 1: 凑3个空闲农民, 派去象旁边集合 ----------
-    if(elephantState==1){
-        bool alive=false;                                 // 目标象还在不在(死了就重新找)
-        for(auto&r:info.resources){
-            if(r.SN==elephantTargetSN&&r.Blood>0){alive=true;break;}
-        }
-        if(!alive){elephantState=0;elephantTargetSN=-1;return;}
-        for(int i=0;i<3;i++){                             // 猎人死了就清掉, 下面重新挑
-            if(elephantHunterSN[i]==-1)continue;
-            bool a2=false;
-            for(auto&f:info.farmers)if(f.SN==elephantHunterSN[i]){a2=true;break;}
-            if(!a2)elephantHunterSN[i]=-1;
-        }
-        for(int i=0;i<3;i++){
-            if(elephantHunterSN[i]!=-1)continue;
-            int sn=findFarmer(elephantSpotDR,elephantSpotUR);   // 找最近的空闲农民
-            if(sn==-1)return;                             // 还没凑够3个, 等下一帧(新农民在生产)
-            elephantHunterSN[i]=sn;
-            farIsgotten[sn]=true;                         // 立刻标记, 否则同一帧会挑到同一个人
-        }
-        bool allAt=true;                                  // 3人都到象旁边了吗
-        for(int i=0;i<3;i++)
-            if(!farmerAt(elephantHunterSN[i],elephantSpotDR,elephantSpotUR)){allAt=false;break;}
-        if(allAt){elephantState=2;elephantKiteCmd=-1;return;}
-        // [AI修复] 集合移动绝对不能每帧重发!
-        //   每帧重发 HumanMove, 内核会反复 suspendRelation 把路径清掉, 单位被钉在原地,
-        //   状态却一直停在 WALKING -> 既走不动、也没人敢接手(调度只认 IDLE), 还每帧刷屏。
-        //   规则: 同一个人、同一个集合点, MOVE_TIMEOUT 帧内只发一次; 集合点变了才立刻重发。
-        static int moveFrame[3]={-1,-1,-1};
-        static int moveDR[3]={-1,-1,-1},moveUR[3]={-1,-1,-1};
-        const int MOVE_TIMEOUT=300;
-        for(int i=0;i<3;i++){
-            if(elephantHunterSN[i]==-1){moveFrame[i]=-1;moveDR[i]=-1;moveUR[i]=-1;continue;}
-            if(farmerAt(elephantHunterSN[i],elephantSpotDR,elephantSpotUR)){      // 到位了 -> 清计时
-                moveFrame[i]=-1;moveDR[i]=-1;moveUR[i]=-1;
-                continue;
-            }
-            if(moveDR[i]!=elephantSpotDR||moveUR[i]!=elephantSpotUR){              // 集合点变了 -> 允许立即重发
-                moveDR[i]=elephantSpotDR;moveUR[i]=elephantSpotUR;moveFrame[i]=-1;
-            }
-            if(moveFrame[i]!=-1&&info.GameFrame-moveFrame[i]<MOVE_TIMEOUT)continue; // 刚发过, 别打断他赶路
-            HumanMove(elephantHunterSN[i],elephantSpotDR*BLOCKSIDELENGTH,elephantSpotUR*BLOCKSIDELENGTH);
-            moveFrame[i]=info.GameFrame;
-        }
-        return;
-    }
-
-    // ---------- 2: 3人抱团集体风筝 ----------
-    if(elephantState==2){
-        bool alive=false;
-        for(auto&r:info.resources){
-            if(r.SN==elephantTargetSN&&r.Blood>0){alive=true;break;}
-        }
-        if(!alive){elephantState=3;elephantKiteCmd=-1;return;}  // 象死了 -> 去建仓库
-
-        int edr=-1,eur=-1;                                // 象的实时位置
-        for(auto&r:info.resources){
-            if(r.SN==elephantTargetSN){edr=r.BlockDR;eur=r.BlockUR;break;}
-        }
-        if(edr==-1){elephantState=3;return;}
-
-        int cx=0,cy=0,cnt=0;                              // 3人站位中心
-        for(auto&f:info.farmers){
-            for(int i=0;i<3;i++)
-                if(f.SN==elephantHunterSN[i]){cx+=f.BlockDR;cy+=f.BlockUR;cnt++;}
-        }
-        if(cnt==0){elephantState=0;elephantTargetSN=-1;return;}  // 人全死了, 重来
-        cx/=cnt;cy/=cnt;
-
-        int dx=cx-edr, dy=cy-eur;                         // 象 -> 人中心 的向量
-        int d=max(abs(dx),abs(dy));
-
-        int cmd=0;                                        // 1-打 2-撤 0-保持(滞回区)
-        if(d<=2)cmd=2;                                    // 象贴上来了 -> 撤
-        else if(d>=4)cmd=1;                               // 拉开了 -> 打
-        if(cmd==0||cmd==elephantKiteCmd)return;           // 滞回区 或 动作没变 -> 不重发指令
-
-        if(cmd==2){
-            // 背对方向撤5格; 3人同一个目标点, 队形不散("尽量站在一块")
-            int stepX=(dx>0?5:(dx<0?-5:0));
-            int stepY=(dy>0?5:(dy<0?-5:0));
-            int tx=cx+stepX, ty=cy+stepY;
-            if(tx<1)tx=1; if(tx>98)tx=98;
-            if(ty<1)ty=1; if(ty>98)ty=98;
-            for(int i=0;i<3;i++)
-                HumanMove(elephantHunterSN[i],tx*BLOCKSIDELENGTH,ty*BLOCKSIDELENGTH);
-        }else{
-            // 拉开了, 3人一起贴上去打
-            for(int i=0;i<3;i++)
-                HumanAction(elephantHunterSN[i],elephantTargetSN);
-        }
-        elephantKiteCmd=cmd;
-        return;
-    }
-
-    // ---------- 3: 就地建仓库 ----------
-    if(elephantState==3){
-        int byBuildingSN=-1;
-        if(checkEnv(RESOURCE_ELEPHANT,byBuildingSN)==2){elephantState=4;return;}  // 附近已有仓库, 直接采
-        if(info.Wood>=BUILD_STOCK_WOOD){
-            int ox=-1,oy=-1;
-            if(findBuildSpot(elephantSpotDR,elephantSpotUR,3,2,4,ox,oy))
-                HumanBuild(elephantHunterSN[0],BUILDING_STOCK,ox,oy);   // 1号猎人建
-        }
-        elephantState=4;
-        return;
-    }
-
-    // ---------- 4: 帮建仓库 / 采肉, 采完自动找下一头 ----------
-    if(elephantState==4){
-        for(auto&b:info.buildings){                       // 有在建仓库 -> 3人帮建
-            if(b.Type!=BUILDING_STOCK||b.Percent>=100)continue;
-            if(max(abs(b.BlockDR-elephantSpotDR),abs(b.BlockUR-elephantSpotUR))>6)continue;
-            for(int i=0;i<3;i++)
-                for(auto&f:info.farmers){
-                    if(f.SN==elephantHunterSN[i]&&f.WorkObjectSN!=b.SN)
-                        HumanAction(f.SN,b.SN);
-                }
-            return;
-        }
-        bool found=false;                                 // 采附近的死象
-        for(auto&r:info.resources){
-            if(r.Type!=RESOURCE_ELEPHANT||r.Blood>0||r.Cnt<=0)continue;
-            if(max(abs(r.BlockDR-elephantSpotDR),abs(r.BlockUR-elephantSpotUR))>10)continue;
-            for(int i=0;i<3;i++)
-                for(auto&f:info.farmers){
-                    if(f.SN==elephantHunterSN[i]&&f.WorkObjectSN!=r.SN)
-                        HumanAction(f.SN,r.SN);
-                }
-            found=true;
-            break;
-        }
-        if(!found){                                       // 这片采完了 -> 找下一头活象继续
-            elephantState=0;
-            elephantTargetSN=-1;
-            elephantKiteCmd=-1;                           // 3个猎人保留, 继续用, 不换人
-        }
-    }
-}
-
 void UsrAI::waveBattle(){
     if(info.enemy_armies.empty())return;
 
-    //====================================================================================
-    // [AI修改] 祭司/箭塔"目标锁定"机制
-    // 病因: info.enemy_armies 每帧被引擎打乱顺序, 原来"取列表第1/第2个近战"会让
-    //       priestTarget / towerPick 每帧都变 -> 祭司和箭塔每帧换目标 ->
-    //       箭塔没把任何一个近战"持续"打 -> 两个近战都按 enemyai 的优先级跑去打祭司。
-    // 敌方索敌(enemyai.cpp FindWaveTargetByPriority, 第1137行)写死的优先级:
-    //       谁在打我 > 玩家祭司 > 玩家农民
-    //   所以: 祭司转化近战A, A必然反击祭司(改不了, 那本来就是转化目标);
-    //         箭塔只要"持续"输出近战B, B才会反击箭塔(把仇恨从祭司身上抢走)。
-    //====================================================================================
-    static int priestLock=-1;   // [AI修改] 祭司锁定的近战(转化目标), 死了/没了才换
-    static int towerLock=-1;    // [AI修改] 箭塔锁定的近战(持续输出目标), 死了/跑出射程才换
+    // 挑两个近战: 第一个给祭司转化, 第二个给箭塔打
+    int priestTarget=-1,towerPick=-1;
 
-    // 箭塔位置和它当前的攻击目标
-    int towerDR=-1,towerUR=-1,towerProject=-1;
-    for(auto&b:info.buildings){
-        if(b.SN!=arrowTowerSN)continue;
-        towerDR=b.BlockDR;towerUR=b.BlockUR;towerProject=b.Project;
-        break;
-    }
-    // 这个近战还活着吗
-    auto aliveMelee=[&](int sn)->bool{
-        if(sn==-1)return false;
-        for(auto&e:info.enemy_armies)
-            if(e.SN==sn&&isMeleeSort(e.Sort))return true;
-        return false;
-    };
-    // 离(x,y)最近的近战, 可排除一个 SN(避免祭司和箭塔抢同一个)
-    auto nearestMelee=[&](int x,int y,int exclude)->int{
-        int best=-1,bestD=1e18;
-        for(auto&e:info.enemy_armies){
-            if(!isMeleeSort(e.Sort)||e.SN==exclude)continue;
-            int d=max(abs(e.BlockDR-x),abs(e.BlockUR-y));
-            if(d<bestD){bestD=d;best=e.SN;}
-        }
-        return best;
-    };
-
-    // ---- [AI修改] 祭司: 回家后才转化; 锁住一个近战, 不每帧换 ----
-    bool priestAtHome=(arrowTowerBlockDR!=-1)
-        &&abs(priestBlockDR-arrowTowerBlockDR)<=2
-        &&abs(priestBlockUR-arrowTowerBlockUR)<=2;
-    if(priestSN!=-1&&info.GameFrame>=goHomeFrame&&priestAtHome){
-        if(!aliveMelee(priestLock)||priestLock==towerLock)
-            priestLock=nearestMelee(priestBlockDR,priestBlockUR,towerLock);   // 重新锁, 别跟箭塔抢同一个
-        if(priestLock!=-1){
-            for(auto&a:info.armies){
-                if(a.SN!=priestSN)continue;
-                if(a.ConvertCooldown<=0&&a.WorkObjectSN!=priestLock)HumanAction(priestSN,priestLock);
-                break;
-            }
+    for(auto&e:info.enemy_armies){
+        if(!isMeleeSort(e.Sort))continue;
+        if(priestTarget==-1)priestTarget=e.SN;
+        else{
+            towerPick=e.SN;
+            break;
         }
     }
 
-    // ---- [AI修改] 箭塔: 锁一个近战"持续"打, 把它的仇恨从祭司身上抢走 ----
-    if(arrowTowerSN!=-1&&towerDR!=-1){
+    // ---- 祭司: 冷却好了就点他(锁上之后 WorkObjectSN 就是它, 不会重发) ----
+    bool priestAtHome=abs(priestBlockDR-arrowTowerBlockDR)<=2&&abs(priestBlockUR-arrowTowerBlockUR)<=2;
+
+    if(priestSN!=-1&&priestTarget!=-1&&info.GameFrame>=goHomeFrame&&priestAtHome){
+        for(auto&a:info.armies){
+            if(a.SN!=priestSN)continue;
+            if(a.ConvertCooldown<=0&&a.WorkObjectSN!=priestTarget)HumanAction(priestSN,priestTarget);
+            break;
+        }
+    }
+
+    // ---- 箭塔: 另一个近战进射程就打 ----
+    if(arrowTowerSN!=-1&&towerPick!=-1){
+        int tdr=-1,tdur=-1,project=-1;
+        for(auto&b:info.buildings){
+            if(b.SN!=arrowTowerSN)continue;
+            project=b.Project;                              // 塔当前的攻击目标
+            tdr=b.BlockDR;
+            tdur=b.BlockUR;
+            break;
+        }
         const int r2=DIS_ARROWTOWER*DIS_ARROWTOWER;         // 射程平方(7格)
-        auto inRange=[&](int sn)->bool{                     // 这个近战还在箭塔射程内吗
-            for(auto&e:info.enemy_armies){
-                if(e.SN!=sn)continue;
-                int dx=e.BlockDR-towerDR, dy=e.BlockUR-towerUR;
-                return dx*dx+dy*dy<=r2;
+        for(auto&e:info.enemy_armies){
+            if(e.SN!=towerPick)continue;
+            int dx=e.BlockDR-tdr, dy=e.BlockUR-tdur;
+            if(dx*dx+dy*dy<=r2&&project!=towerPick){        // 进射程 且 当前没在打它
+                HumanAction(arrowTowerSN,towerPick);
             }
-            return false;
-        };
-        if(!aliveMelee(towerLock)||towerLock==priestLock||!inRange(towerLock))
-            towerLock=nearestMelee(towerDR,towerUR,priestLock);               // 重新锁, 别跟祭司抢同一个
-        if(towerLock!=-1&&inRange(towerLock)&&towerProject!=towerLock)
-            HumanAction(arrowTowerSN,towerLock);
+            break;
+        }
     }
 
     // ---- 转化过来的兵去打弓兵(除祭司外我们没别的兵, 非祭司即转化来的) ----

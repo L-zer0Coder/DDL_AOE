@@ -23,6 +23,7 @@ public:
     int checkEnv(int type,int& byBuildingSN);
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
+    bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
     bool findBuildSpot4(int anchorDR,int anchorUR,int &ox,int &oy);
