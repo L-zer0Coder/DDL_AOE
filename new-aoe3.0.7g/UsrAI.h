@@ -23,8 +23,14 @@ public:
     int checkEnv(int type,int& byBuildingSN);
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
+
+    void waveBattle();
+    bool findBuildSpot4(int anchorDR,int anchorUR,int &ox,int &oy);
+    bool findFarmSlot(int &ox,int &oy);
+
     bool hasUnfinishedBuilding(int type);
     void huntGazelle();
+    void huntElephant();   // 打大象: 集体风筝, 3人抱团拉扯
     int findFarmer(int bd,int bu);
     int findGazelle(int bd,int bu,int& gazelleDR,int& gazelleUR,int maxR=1e18);
 private:
