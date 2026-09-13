@@ -63,7 +63,7 @@ int priestSN=-1;
 int priestBlockDR=-1;
 int priestBlockUR=-1;
 int priestState=-1;
-
+bool priestExploring=true;      // 祭司是否还在探索阶段: 回到箭塔底下才置 false, 之后遇到敌人不再躲
 
 bool getOnlyOnce=false;
 
@@ -221,7 +221,7 @@ void UsrAI::processData()
                 
                 int bySN=-1;
                 int st=checkEnv(r.Type,bySN);
-
+                if(r.Type==RESOURCE_GAZELLE)st=2;
                 if(st==2){ //已有 直接建
                     HumanAction(f.SN,r.SN); //这里f.SN 后期要改为距离最近的村民 搞个函数替代一下
                     resIsgotten[r.SN]=true;
@@ -483,7 +483,7 @@ void UsrAI::priestExplore(){
     }
 
     //---------- 2. 有危险就跑: 8个方向里挑最背离危险、且可走的一格, 撤6格 ----------
-    if(ex!=-1&&bestD2<DANGER_R2){
+    if(ex!=-1&&bestD2<DANGER_R2&&priestExploring){
         if(info.GameFrame-lastDodgeFrame>=DODGE_COOL){
             int vx=priestBlockDR-ex, vy=priestBlockUR-ey;
             if(vx==0&&vy==0)vx=1;
@@ -530,7 +530,7 @@ void UsrAI::priestExplore(){
 
     //---------- 3.2 到点回家: goHomeFrame 之后回箭塔底下待命 ----------
     // 只在"闲着"时才动(走路中上面已经 return 了); 到了箭塔旁边就待命, 不再探索/不再追瞪羚。
-    if(info.GameFrame>=goHomeFrame&&arrowTowerBlockDR!=-1){
+    if((marketBlockDR!=-1||info.GameFrame>=goHomeFrame)&&arrowTowerBlockDR!=-1){
         static int homeDR=-1,homeUR=-1,homeFrame=-1;
         if(abs(priestBlockDR-arrowTowerBlockDR)>2||abs(priestBlockUR-arrowTowerBlockUR)>2){
             if(homeDR==-1){                                  // 还没挑落脚点 -> 挑箭塔四邻
@@ -556,6 +556,9 @@ void UsrAI::priestExplore(){
             return;
         }
         homeDR=-1;homeUR=-1;
+        priestExploring=false;                               // 已到箭塔底下 -> 停止探索状态, 之后遇敌不再躲
+        homeDR=-1;homeUR=-1;
+        
         return;                                              // 已在箭塔底下 -> 待命
     }
 
@@ -684,10 +687,27 @@ void UsrAI::priestExplore(){
     }
 
     if(bd==-1)return;                                      // 阶段2: 探完, 不再动作
-    HumanMove(priestSN,bd*BLOCKSIDELENGTH,bu*BLOCKSIDELENGTH);
-    lastMoveFrame=info.GameFrame;
-    curDR=bd;
-    curUR=bu;
+
+    // [AI修复] 同一个落脚点只发一次移动指令!
+    //   原来这里每帧都发 HumanMove()。那个点要是走不到(被海/山隔开),
+    //   内核会反复清路径 -> 祭司钉在原地, 状态还掉回 IDLE ->
+    //   第 3 段"走路中不打断"的保护失效 -> 每帧重发 -> 刷屏卡死。
+    //   现在: 目标没变就不重发; 同一个点耗过 MOVE_TIMEOUT 还没到就拉黑它, 换下一个。
+    static int tgtDR=-1,tgtUR=-1,tgtFrame=-1;
+    if(bd!=tgtDR||bu!=tgtUR){                              // 换了新目标 -> 记时, 发一次
+        tgtDR=bd;tgtUR=bu;tgtFrame=info.GameFrame;
+        HumanMove(priestSN,bd*BLOCKSIDELENGTH,bu*BLOCKSIDELENGTH);
+        lastMoveFrame=info.GameFrame;
+        curDR=bd;
+        curUR=bu;
+        return;
+    }
+    if(info.GameFrame-tgtFrame>MOVE_TIMEOUT){              // 同一个点走不到 -> 拉黑换点
+        bad[bd*100+bu]=info.GameFrame+BAD_COOL;
+        tgtDR=-1;tgtUR=-1;tgtFrame=-1;
+        curDR=-1;curUR=-1;
+        lastMoveFrame=-1;
+    }
 }
 
 void UsrAI::checkWorkState(){
@@ -878,10 +898,7 @@ void UsrAI::manageBuild(){
         int bd=centerBlockDR,bu=centerBlockUR;          // 默认以市镇中心为基准找空地
         
         //市场 以市镇中心为基准
-        if(!hasType(BUILDING_MARKET)){
-            want=BUILDING_MARKET;
-            cost=BUILD_MARKET_WOOD;
-        }
+       
         //科技研发
         static bool tech[3]{};//0 木材 1 动物 2 金矿
         if(!tech&&hasType(BUILDING_MARKET)){
@@ -902,6 +919,10 @@ void UsrAI::manageBuild(){
                 }
 
             }
+        }
+        if(!hasType(BUILDING_MARKET)){
+            want=BUILDING_MARKET;
+            cost=BUILD_MARKET_WOOD;
         }
         //兵营
         else if(!hasType(BUILDING_ARMYCAMP)){
@@ -1293,9 +1314,10 @@ void UsrAI::waveBattle(){
     // ---- 继续转化
     bool priestAtHome=abs(priestBlockDR-arrowTowerBlockDR)<=2&&abs(priestBlockUR-arrowTowerBlockUR)<=2;
 
-    if(priestSN!=-1&&priestTarget!=-1&&info.GameFrame>=goHomeFrame&&priestAtHome){
+    if(priestSN!=-1&&priestTarget!=-1&&(marketBlockDR!=-1||info.GameFrame>=goHomeFrame)&&priestAtHome){
         for(auto&a:info.armies){
-            // if(a.SN!=priestSN)continue;
+            if(a.SN!=priestSN)continue;
+            if(a.NowState!=HUMAN_STATE_IDLE)break;  
             if(a.ConvertCooldown<=0&&a.WorkObjectSN!=priestTarget)HumanAction(priestSN,priestTarget); //转化另一个人
             break;
         }
@@ -1315,7 +1337,7 @@ void UsrAI::waveBattle(){
         for(auto&e:info.enemy_armies){
             if(e.SN!=towerPick)continue;
             int dx=e.BlockDR-tdr, dy=e.BlockUR-tdur;
-            if(dx*dx+dy*dy<=r2&&project!=towerPick){        // 进射程 且 当前没在打它
+            if(dx*dx+dy*dy<=r2&&project==ACT_NULL){        // 进射程 且 当前没在打它
                 HumanAction(arrowTowerSN,towerPick);
             }
             break;
