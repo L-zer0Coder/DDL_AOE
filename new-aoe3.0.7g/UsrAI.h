@@ -24,16 +24,16 @@ public:
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
-
+    int assignGoldMiner();   // 派一个空闲村民去挖金(优先有仓库的金矿), 返回SN
     bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
     bool findBuildSpot4(int anchorDR,int anchorUR,int &ox,int &oy);
     bool findFarmSlot(int &ox,int &oy);
-
+    void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
     bool hasUnfinishedBuilding(int type);
     void huntGazelle();
-    void huntElephant();   // 打大象: 集体风筝, 3人抱团拉扯
+    void trainArmy();      // 铜器后造兵: 靶场出弓箭手, 兵营出阔剑兵, 造完集合到箭塔下
     int findFarmer(int bd,int bu);
     int findGazelle(int bd,int bu,int& gazelleDR,int& gazelleUR,int maxR=1e18);
 private:
