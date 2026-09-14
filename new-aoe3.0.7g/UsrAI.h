@@ -36,6 +36,10 @@ public:
     void trainArmy();      // 铜器后造兵: 靶场出弓箭手, 兵营出阔剑兵, 造完集合到箭塔下
     int findFarmer(int bd,int bu);
     int findGazelle(int bd,int bu,int& gazelleDR,int& gazelleUR,int maxR=1e18);
+
+
+    bool haveBuilding(int type);
+    void centerUpgrade();
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
