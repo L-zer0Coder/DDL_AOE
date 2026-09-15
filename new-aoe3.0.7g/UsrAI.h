@@ -40,6 +40,7 @@ public:
 
     bool haveBuilding(int type);
     void centerUpgrade();
+    void GOGOGO(int dr,int ur);
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
