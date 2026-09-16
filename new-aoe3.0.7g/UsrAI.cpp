@@ -113,16 +113,16 @@ unordered_map<int,bool>goldFarmer;   //被派去挖金的农民 矿采完自动�
 int stableBlockDR=-1;//马厩位置
 int stableBlockUR=-1;
 
+const int PRIEST_HARNESS=5;   // 祭司活动范围: 离箭塔不超过5格(塔射程7格, 保证一直在保护圈内)
 //================= 反攻 =================
-int counterState=0;         // 反攻阶段: 0防守 1侦察 2集结 3推进 4清猎手 5转化
+int counterState=0;         //  0-前期：抵御三波 1-中期：集结与侦察 2-后期：反攻
 int factorySN=-1;           // 敌方攻城武器厂
 int factoryBlockDR=-1;      // 攻城武器厂坐标
 int factoryBlockUR=-1;
 int scoutSN=-1;             // 侦察骑兵
-const int PRIEST_HARNESS=5;   // 祭司活动范围: 离箭塔不超过5格(塔射程7格, 保证一直在保护圈内)
 
-const int CA_SAFE=26;       // 敌方守军拴绳25格 -> 在这格以外绝对安全
-const int CA_DANGER=20;     // 猎手红线: 祭司进厂区20格就被5个猎手锁死
+int victoryDR=-1;
+int victoryUR=-1;
 /////////////////////////////////////////////
 
 void UsrAI::processData(){   
@@ -139,7 +139,7 @@ void UsrAI::processData(){
 
     waveBattle();
     counterAttack();
-
+    CalmAndCrazy();
 
     //获取唯一的房屋建造者
     for(auto&f:info.farmers){
@@ -320,13 +320,13 @@ void UsrAI::processData(){
     
 
 }
-bool haveBuilding(int type){
+bool UsrAI::haveBuilding(int type){
     for(auto&b:info.buildings){
         if(b.Type==type)return true;
     }
     return false;
 }
-void centerUpgrade(){
+void UsrAI::centerUpgrade(){
     //铜器升级事宜
     if(info.civilizationStage!=CIVILIZATION_BRONZEAGE){
         int centerState=-1;
@@ -646,74 +646,76 @@ void UsrAI::priestExplore(){
     // 走近之后祭司 12 格的视野会把周围的瞪羚一起照亮, 凑够 6 只才回去做常规探索。
     // ★ 同一个落脚点只发一次指令; 去了 MOVE_TIMEOUT 帧还没到就拉黑它并放行回常规探索。
     //   否则每帧重发 -> addRelation 反复 suspendRelation(清路径) -> 祭司被钉在原地动不了。
-    if(liveGazelleNum()>=gazelleWantNum)goto NEXT;
-    static int seekDR=-1,seekUR=-1,seekFrame=-1;
-
-    int gdr=-1,gur=-1,gd=1e18;//gazelledr/ur/distance
     if(liveGazelleNum()<gazelleWantNum){
-        for(auto&r:info.resources){
-            if(r.Type!=RESOURCE_GAZELLE)continue;
-            if(r.Blood<=0)continue;                       // 只追活的
-            int dx=r.BlockDR-priestBlockDR, dy=r.BlockUR-priestBlockUR;
-            int d=dx*dx+dy*dy;
-            if(d<=36)continue;                           // 已经贴着它了(6格内), 换下一只
-            if(d>1600)continue;                           // 太远的先别追(免得隔着海去够), 交给常规探索
-            if(d<gd){
-                gd=d;
-                gdr=r.BlockDR;
-                gur=r.BlockUR;
+        static int seekDR=-1,seekUR=-1,seekFrame=-1;
+
+        int gdr=-1,gur=-1,gd=1e18;//gazelledr/ur/distance
+        if(liveGazelleNum()<gazelleWantNum){
+            for(auto&r:info.resources){
+                if(r.Type!=RESOURCE_GAZELLE)continue;
+                if(r.Blood<=0)continue;                       // 只追活的
+                int dx=r.BlockDR-priestBlockDR, dy=r.BlockUR-priestBlockUR;
+                int d=dx*dx+dy*dy;
+                if(d<=36)continue;                           // 已经贴着它了(6格内), 换下一只
+                if(d>1600)continue;                           // 太远的先别追(免得隔着海去够), 交给常规探索
+                if(d<gd){
+                    gd=d;
+                    gdr=r.BlockDR;
+                    gur=r.BlockUR;
+                }
             }
         }
-    }
 
-    int ox=-1,oy=-1;//output
-    if(gdr!=-1){//有下一个瞪羚接续
-        int dx4[4]={0,1,0,-1};
-        int dy4[4]={1,0,-1,0};
-        for(int k=0;k<4;k++){                             // 先找它四邻的落脚点
-            int nr=gdr+dx4[k], nu=gur+dy4[k];
-            if(!usable(nr,nu))continue;
-            if(dangerNear(nr,nu))continue;
-            if(isBad(nr,nu))continue;
-            ox=nr;oy=nu;
-            break;
-        }
-        if(ox==-1){
-            for(int k=0;k<4;k++){                         // 四邻都站不上就退两格
-                int nr=gdr+dx4[k]*2, nu=gur+dy4[k]*2;
+        int ox=-1,oy=-1;//output
+        if(gdr!=-1){//有下一个瞪羚接续
+            int dx4[4]={0,1,0,-1};
+            int dy4[4]={1,0,-1,0};
+            for(int k=0;k<4;k++){                             // 先找它四邻的落脚点
+                int nr=gdr+dx4[k], nu=gur+dy4[k];
                 if(!usable(nr,nu))continue;
                 if(dangerNear(nr,nu))continue;
                 if(isBad(nr,nu))continue;
                 ox=nr;oy=nu;
                 break;
             }
+            if(ox==-1){
+                for(int k=0;k<4;k++){                         // 四邻都站不上就退两格
+                    int nr=gdr+dx4[k]*2, nu=gur+dy4[k]*2;
+                    if(!usable(nr,nu))continue;
+                    if(dangerNear(nr,nu))continue;
+                    if(isBad(nr,nu))continue;
+                    ox=nr;oy=nu;
+                    break;
+                }
+            }
+        }
+
+        if(ox==-1){
+            seekDR=-1;seekUR=-1;seekFrame=-1;                 // 暂时没目标可追
+        }
+        else if(ox!=seekDR||oy!=seekUR){                      // 换了新的落脚点 -> 计时并发一次指令
+            seekDR=ox;seekUR=oy;seekFrame=info.GameFrame;
+            HumanMove(priestSN,ox*BLOCKSIDELENGTH,oy*BLOCKSIDELENGTH);
+            lastMoveFrame=info.GameFrame;
+            curDR=ox;
+            curUR=oy;
+            return;
+        }
+        else if(info.GameFrame-seekFrame>MOVE_TIMEOUT){       // 同一个点耗了 300 帧还没到 -> 拉黑它
+            bad[ox*100+oy]=info.GameFrame+BAD_COOL;
+            seekDR=-1;seekUR=-1;seekFrame=-1;
+            curDR=-1;curUR=-1;
+            lastMoveFrame=-1;                                 // 不 return, 这一帧就回去做常规探索
+        }
+        else{
+            return;                                           // 正在去这只瞪羚的路上, 别打断
         }
     }
+    
 
-    if(ox==-1){
-        seekDR=-1;seekUR=-1;seekFrame=-1;                 // 暂时没目标可追
-    }
-    else if(ox!=seekDR||oy!=seekUR){                      // 换了新的落脚点 -> 计时并发一次指令
-        seekDR=ox;seekUR=oy;seekFrame=info.GameFrame;
-        HumanMove(priestSN,ox*BLOCKSIDELENGTH,oy*BLOCKSIDELENGTH);
-        lastMoveFrame=info.GameFrame;
-        curDR=ox;
-        curUR=oy;
-        return;
-    }
-    else if(info.GameFrame-seekFrame>MOVE_TIMEOUT){       // 同一个点耗了 300 帧还没到 -> 拉黑它
-        bad[ox*100+oy]=info.GameFrame+BAD_COOL;
-        seekDR=-1;seekUR=-1;seekFrame=-1;
-        curDR=-1;curUR=-1;
-        lastMoveFrame=-1;                                 // 不 return, 这一帧就回去做常规探索
-    }
-    else{
-        return;                                           // 正在去这只瞪羚的路上, 别打断
-    }
-NEXT:
 
     //---------- 4. 选目标 ----------
-    int bd=-1,bu=-1,dist=1e18;
+    int bd=-1,bu=-1;              // dist 用上面(危险搜索那段)已经声明的那个, 别重复声明
     static int cx=-1;
     static int cy=-1;
     if(phase==-1){
@@ -730,7 +732,9 @@ NEXT:
             cy=oriStockBlockUR;
         }
         
-        bd=-1;bu=-1;dist=1e18; //每次刷新
+        bd=-1;
+        bu=-1;
+        dist=1e18; //每次刷新
         for(int dr=2;dr<98;dr++){
             for(int ur=2;ur<98;ur++){
                 int d=max(abs(dr-cx),abs(ur-cy));
@@ -739,9 +743,9 @@ NEXT:
                 if(isBad(dr,ur))continue;
                 if(dangerNear(dr,ur))continue;
                 int dx=dr-priestBlockDR, dy=ur-priestBlockUR;
-                int d=dx*dx+dy*dy;
-                if(d<dist){ //找最近的格子
-                    dist=d;
+                int d2=dx*dx+dy*dy;
+                if(d2<dist){ //找最近的格子
+                    dist=d2;
                     bd=dr;
                     bu=ur;
                 }
@@ -779,7 +783,9 @@ NEXT:
     else if(phase==1){
         // 绕中心: 半径从大到小, 在每条环带(|切比雪夫距离 - r| <= 1)里找最近的边界点
         for(int r=radius;r>=4;r--){       // 步长1: 消灭 34-38/26-30/18-22 
-            bd=-1;bu=-1;dist=1e18;
+            bd=-1;
+            bu=-1;
+            dist=1e18;
             for(int dr=2;dr<98;dr++){
                 for(int ur=2;ur<98;ur++){
                     int adx=abs(dr-50),ady=abs(ur-50); //与中心比较
@@ -789,9 +795,9 @@ NEXT:
                     if(isBad(dr,ur))continue;
                     if(dangerNear(dr,ur))continue;
                     int dx=dr-priestBlockDR, dy=ur-priestBlockUR;
-                    int d=dx*dx+dy*dy;
-                    if(d<dist){
-                        dist=d;
+                    int d1=dx*dx+dy*dy;
+                    if(d1<dist){
+                        dist=d1;
                         bd=dr;
                         bu=ur;
                     }
@@ -837,7 +843,7 @@ NEXT:
 void UsrAI::trainArmy(){
     static bool clubUp=false,broadTech=false,compTech=false,logistics=false; //战斧 阔剑 复合弓 后勤 （科技）
 
-    // ===== 防守期(counterState<=1): 斧头兵+弓箭手守家; 铜器后兵营升阔剑、学院出方阵支援第二/三波 =====
+    // 前中期
     if(counterState<=1){
         int club=0,bow=0;
         for(auto&a:info.armies){
@@ -847,6 +853,7 @@ void UsrAI::trainArmy(){
         for(auto&b:info.buildings){
             if(b.Percent<100||b.Project!=ACT_NULL)continue;
             if(b.Type==BUILDING_ARMYCAMP){
+                //先升科技
                 if(!clubUp&&info.Meat>=BUILDING_ARMYCAMP_UPGRADE_CLUBMAN_FOOD){
                     BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_CLUBMAN);
                     clubUp=true;
@@ -869,17 +876,17 @@ void UsrAI::trainArmy(){
                 BuildingAction(b.SN,BUILDING_COLLAGE_CREATE_HOPLITE);
             }
             else if(b.Type==BUILDING_RANGE){
+                if(!compTech&&bow<2){
+                    BuildingAction(b.SN,BUILDING_RANGE_CREATE_BOWMAN);
+                    bow++;
+                }
                 if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!compTech){
-                    // 能升复合弓了 -> 攒钱升科技, 期间不造弓兵(省的把资源花掉)
+                    // 
                     if(info.Meat>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_FOOD&&info.Wood>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_WOOD){
                         BuildingAction(b.SN,BUILDING_RANGE_UPGRADE_COMPOSITE_BOW);
                         compTech=true;
-                        bow=1e18; //复合弓之后 大工手一直造
+                        
                     }
-                }
-                else if(bow<2){
-                    BuildingAction(b.SN,BUILDING_RANGE_CREATE_BOWMAN);
-                    bow++;
                 }
             }
         }
@@ -1669,145 +1676,90 @@ void UsrAI::GOGOGO(int dr,int ur){
 // 0防守 -> 1侦察(骑兵去敌营对角找攻城厂) -> 2集结(一直造到人口满) -> 3推进(到厂区26格外)
 //      -> 4清猎手(祭司点火把5个猎手引出来围杀) -> 5转化(兵挡守军, 祭司贴厂转化=胜利)
 void UsrAI::counterAttack(){
-    // 永远先干的事: 记住厂子位置(一旦探到就锁死, enemy_buildings 只报已探明/可见的)
-    if(factorySN==-1){
-        for(auto&b:info.enemy_buildings){
-            if(b.Type==BUILDING_SIEGE){
-                factorySN=b.SN;
-                factoryBlockDR=b.BlockDR;
-                factoryBlockUR=b.BlockUR;
-                break;
-            }
-        }
-    }
-
-   
     
+    
+   
     switch(counterState){
 
-    case 0:{   // ---- 防守: 见过敌投石车(只在第三波出现) 且 现在没可见敌兵 = 三波都清了 -> 转侦察 ----
-        static bool seenWave3=false;                       // 纯状态驱动, 不用帧
-        for(auto&e:info.enemy_armies){ 
-            if(e.Sort==AT_STONE_THROWER)seenWave3=true; 
-        }
-        if(seenWave3&&info.enemy_armies.empty())counterState=1;
-        return;
-    }
-
-    case 1:{   // ---- 侦察: 骑兵出去找攻城厂(敌大营在我们出生点的对角) ----
-        if(factorySN!=-1){
-            counterState=2;
+        case 0:{   // ---- 防守: 见过敌投石车(只在第三波出现) 且 现在没可见敌兵 = 三波都清了 -> 转侦察 ----
+            static bool seenWave3=false;                       // 纯状态驱动, 不用帧
+            for(auto&e:info.enemy_armies){ 
+                if(e.Sort==AT_STONE_THROWER)seenWave3=true; 
+            }
+            if(seenWave3&&info.enemy_armies.empty())counterState=1; //三波已过 到达中期
             return;
         }
-        if(scoutSN==-1){                                   // 有现成骑兵就用
-            for(auto&a:info.armies){ 
-                if(a.Sort==AT_SCOUT){
-                    scoutSN=a.SN;
-                    break;
-                } 
-            }
-        }
-        if(scoutSN==-1){                                   // 没有就造(马厩)
-            for(auto&b:info.buildings){
-                if(b.Type==BUILDING_STABLE&&b.Percent>=100&&b.Project==ACT_NULL&&
-                   info.Meat>=BUILDING_STABLE_CREATE_SCOUT_FOOD&&info.Human_Num+1<info.Human_MaxNum){
-                    BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
-                    break;
-                }
-            }
-            return;
-        }
-        
-        int tdr=100-centerBlockDR,tur=100-centerBlockUR;   // 敌营方向 = 我们市中心的对角
-        
-        for(auto&a:info.armies){
-            if(a.SN!=scoutSN)continue;
-            if(a.NowState!=HUMAN_STATE_IDLE)break;
-            if(max(abs(a.BlockDR-tdr),abs(a.BlockUR-tur))<=5)break;   // 探到就停
-            HumanMove(a.SN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
-            break;
-        }
-        return;
-    }
 
-    case 2:{   // ---- 集结: 兵回箭塔集合, 一直造到人口满, 祭司在家 -> 推进 ----
-        
-        if(info.Human_Num>=50)counterState=3;
-        return;
-    }
-
-    case 3:{   // ---- 推进: 全体(不含祭司)到厂区外 CA_SAFE 格集结点; 祭司跟到 20 格外 ----
-        int victoryDR,victoryUR;
-        static LetsGO=false;
-        if(!LetsGO){
-            for(auto&ea:info.enemy_armies){
-                if(ea.SN!=-1){
-                    victoryDR=ea.BlockDR;
-                    victoryUR=ea.BlockUR;
-                    LetsGO=true;
-                    break;
+        case 1:{   // ---- 侦察: 骑兵出去找攻城厂(敌大营在我们出生点的对角) ----
+            if(info.Human_Num>=50){
+                counterState=2;
+                return;
+            }
+                
+            static bool SeeThem=false;
+            if(SeeThem)return;
+            if(scoutSN==-1){                                  
+                for(auto&a:info.armies){     // 有现成骑兵就用
+                    if(a.Sort==AT_SCOUT){   
+                        scoutSN=a.SN;
+                        break;
+                    } 
                 }
             }
-            GOGOGO(victoryDR,victoryUR);
-        }
-        
-        
-    }
-
-    case 4:{   // ---- 清猎手: 祭司反复"进19格点火->撤回27格"把5个猎手引出来, 兵在25格外围杀 ----
-        int hunters=0;                                     // 数厂区30格内还剩几个猎手(骑兵/战车弓兵)
-        for(auto&e:info.enemy_armies){
-            if(e.Sort!=AT_CAVALRY&&e.Sort!=AT_CHARIOT_ARCHER)continue;
-            if(max(abs(e.BlockDR-factoryBlockDR),abs(e.BlockUR-factoryBlockUR))>30)continue;
-            hunters++;
-        }
-        if(hunters==0){
-            counterState=5;
-            return;
-        }             // 猎手死光了 -> 可以上
-
-        int fireDR,fireUR;pointTowardHome(CA_DANGER-1,fireDR,fireUR);  // 点火点(19格)
-        int backDR,backUR;pointTowardHome(CA_SAFE+2,backDR,backUR);    // 撤回点(28格)
-        static int baitPhase=0;                            // 0 去点火 1 撤回(位置驱动, 不用帧)
-        for(auto&a:info.armies){
-            if(a.SN!=priestSN)continue;
-            if(baitPhase==0){
-                int key=fireDR*1000+fireUR;
-                if(unitLastTarget.count(a.SN)==0||unitLastTarget[a.SN]!=key){
-                    HumanMove(a.SN,fireDR*BLOCKSIDELENGTH,fireUR*BLOCKSIDELENGTH);
-                    unitLastTarget[a.SN]=key;
+            if(scoutSN==-1){                                   // 没有就造(马厩)
+                for(auto&b:info.buildings){
+                    if(b.Type==BUILDING_STABLE&&b.Percent>=100&&b.Project==ACT_NULL&&
+                    info.Meat>=BUILDING_STABLE_CREATE_SCOUT_FOOD){
+                        BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
+                        break;
+                    }
                 }
-                if(max(abs(a.BlockDR-factoryBlockDR),abs(a.BlockUR-factoryBlockUR))<=CA_DANGER)
-                    baitPhase=1;                             // 已进红线, 猎手已锁 -> 撤
-            }else{
-                int key=backDR*1000+backUR;
-                if(unitLastTarget.count(a.SN)==0||unitLastTarget[a.SN]!=key){
-                    HumanMove(a.SN,backDR*BLOCKSIDELENGTH,backUR*BLOCKSIDELENGTH);
-                    unitLastTarget[a.SN]=key;
+                return;
+            }
+            
+            int tdr=100-centerBlockDR,tur=100-centerBlockUR;   // 敌营方向 = 我们市中心的对角
+            
+            for(auto&a:info.armies){
+                if(a.SN!=scoutSN)continue;
+                if(a.NowState!=HUMAN_STATE_IDLE)break;
+                HumanMove(a.SN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
+                
+                
+                for(auto&ea:info.enemy_armies){
+                    if(ea.WorkObjectSN==scoutSN){
+                        SeeThem=true;
+                        victoryDR=ea.BlockDR;
+                        victoryUR=ea.BlockUR;
+                    }
                 }
-                if(max(abs(a.BlockDR-factoryBlockDR),abs(a.BlockUR-factoryBlockUR))>=CA_SAFE+1)
-                    baitPhase=0;                             // 撤出来了, 再去点(循环引, 直到猎手清空)
+                break;
+
             }
             break;
+            
         }
-        moveUnitsTo(backDR,backUR,false);                  // 兵守在撤回点, 猎手追出来就交给 1v1
-        return;
-    }
 
-    case 5:{   // ---- 转化: 兵压上去挡守军(不打厂), 祭司冷却好就贴厂转化 ----
-        moveUnitsTo(factoryBlockDR,factoryBlockUR,false);  // 兵只挡守军, 没给任何打建筑指令
-        for(auto&a:info.armies){
-            if(a.SN!=priestSN)continue;
-            if(a.ConvertCooldown>0)break;                  // 冷却没好 -> 等
-            if(a.WorkObjectSN==factorySN)break;            // 已经在转了
-            if(a.NowState!=HUMAN_STATE_IDLE)break;         // 走路/转化中
-            HumanAction(priestSN,factorySN);               // 引擎会自己走到贴邻并转化(不用再管走位)
-            break;
+        
+        case 2:{   
+            
+            static bool LetsGO=false;
+            if(!LetsGO){
+                for(auto&ea:info.enemy_armies){
+                    if(ea.SN!=-1){
+                        victoryDR=ea.BlockDR;
+                        victoryUR=ea.BlockUR;
+                        LetsGO=true;
+                        break;
+                    }
+                }
+                GOGOGO(victoryDR,victoryUR);
+            }
+            
         }
-        return;
-    }
     }
 }
+
+
 void UsrAI::waveBattle(){
     //此函数主要实现反攻前的战斗逻辑
     if(info.enemy_armies.empty())return; //没有检测到兵 自然不用准备战斗
@@ -1850,7 +1802,7 @@ void UsrAI::waveBattle(){
 
     // ---- 祭司: 主动转化。只要不出箭塔保护圈(离塔≤PRIEST_HARNESS)、冷却好了就去转 ----
     //      反攻推进(counterState>=3)后不转化, 20秒冷却要留给攻城厂
-    if(counterState<=2&&priestSN!=-1&&priestTarget!=-1){
+    if(counterState<=1&&priestSN!=-1&&priestTarget!=-1){
         for(auto&a:info.armies){
             if(a.SN!=priestSN)continue;
             if(a.NowState==HUMAN_STATE_ATTACKING)break;          //转化中
@@ -1865,7 +1817,7 @@ void UsrAI::waveBattle(){
 
     // ---- 箭塔: 打射程内最近的敌人(不限兵种); 只在当前目标跑出射程/死了才重发 ----
     if(arrowTowerSN!=-1){
-        int tdr=-1,tdur=-1,project=-1;
+        int tdr=-1,tur=-1,project=-1;
         for(auto&b:info.buildings){
             if(b.SN!=arrowTowerSN)continue;
             project=b.Project;                              // 塔当前锁的目标SN(-1=没目标)
@@ -1893,12 +1845,12 @@ void UsrAI::waveBattle(){
         if(a.WorkObjectSN==-1)spare.insert(a.SN);               // 手上没任务的才算闲置
     }
     for(auto&ea:info.enemy_armies){
-        // 方案A(推荐, 符合你"一个开关"的思路): 反攻期不设半径, 见谁打谁
-        if(counterState<=2){                                   // 只限防守/集结期
+        
+        if(counterState<=1){                                   // 只限防守/集结期
             int ex=ea.BlockDR-arrowTowerBlockDR,ey=ea.BlockUR-arrowTowerBlockUR;
             if(ex*ex+ey*ey>400)continue;
         }
-        // 反攻期(counterState>=3)不 continue, 直接往下走
+        
         bool engaged=false;                                   // 已经有人盯着它了?
         for(auto&a:info.armies){
             if(a.SN==priestSN||a.WorkObjectSN!=ea.SN)continue;
@@ -1910,9 +1862,9 @@ void UsrAI::waveBattle(){
         int pick=-1;double dist=1e18;                           // 没有 -> 派最近的闲置兵过去
         for(auto&a:info.armies){
             if(!spare.count(a.SN))continue;      //非闲置兵
-            double d=calDistance(a.DR,a.UR,e.DR,e.UR);
+            double d=calDistance(a.DR,a.UR,ea.DR,ea.UR);
             if(d<dist){
-                best=d;
+                dist=d;
                 pick=a.SN;
             }
         }
@@ -2030,4 +1982,25 @@ int UsrAI::checkEnv(int type,int& byBuildingSN){
     }
     return (byBuildingSN!=-1)?1:0; //不等于-1说明周围有
     
+}
+
+void UsrAI::CalmAndCrazy(){
+    if(factorySN==-1){
+        for(auto&b:info.enemy_buildings){
+            if(b.Type==BUILDING_SIEGE){
+                factorySN=b.SN;
+                factoryBlockDR=b.BlockDR;
+                factoryBlockUR=b.BlockUR;
+                break;
+            }
+        }
+    }
+    if(factorySN!=-1&&counterState==2){
+        for(auto&a:info.armies){
+            if(a.SN==priestSN&&a.NowState==HUMAN_STATE_IDLE&&a.ConvertCooldown<=0){
+                HumanAction(priestSN,factorySN);
+                return;
+            }
+        }
+    }
 }

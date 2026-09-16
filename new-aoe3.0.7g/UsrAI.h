@@ -18,7 +18,7 @@ public:
     void getPriest();
     void gethomeBuilder();
     void priestExplore();
-    void checkWorkState();
+    
     void manageBuild();
     int checkEnv(int type,int& byBuildingSN);
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
@@ -28,8 +28,6 @@ public:
     bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
-    bool findBuildSpot4(int anchorDR,int anchorUR,int &ox,int &oy);
-    bool findFarmSlot(int &ox,int &oy);
     void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
     bool hasUnfinishedBuilding(int type);
     void huntGazelle();
@@ -41,6 +39,8 @@ public:
     bool haveBuilding(int type);
     void centerUpgrade();
     void GOGOGO(int dr,int ur);
+
+    void CalmAndCrazy();
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
