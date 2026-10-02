@@ -38,7 +38,10 @@ public:
 
     bool haveBuilding(int type);
     void centerUpgrade();
-    void GOGOGO(int dr,int ur);
+    void pickRallyPoint();   // 定集结点(从敌人位置朝自家退几格)
+    bool rallyArmy();        // 铺开集结: 每帧最多派一个兵, 已分格的不重发
+    void rallyPriest();      // 祭司去集结区里"离敌最远"的那一格
+    bool rallyEnough();      // 集结完毕判据(到位兵数 >= RALLY_NEED)
 
     void CalmAndCrazy();
 private:
