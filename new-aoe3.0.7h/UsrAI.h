@@ -24,7 +24,9 @@ public:
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
+    int reassignWoodcutter(int fSN); // [AI] 给指定的闲下来的伐木工换一棵树(只挑树不挑人), 返回树SN, -1=没树
     int assignGoldMiner();   // 派一个空闲村民去挖金(优先有仓库的金矿), 返回SN
+    bool buildGoldStock();   // [AI] 采金前先在旁边建仓库(仿 huntGazelle), 派出去过指令返回true
     bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();

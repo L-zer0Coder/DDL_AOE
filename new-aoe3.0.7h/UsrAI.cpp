@@ -54,6 +54,10 @@ int gazelleHunter1SN=-1;//猎人1
 int gazelleHunter2SN=-1;//猎人2
 int gazelleTargetSN=-1;//当前被猎对象
 
+//挖金信息 -- 不再用状态机: 挖金照抄"猎瞪羚/浆果"那套, 每次派人都 checkEnv
+int goldSpotDR=-1;       // 金矿落脚点(仓库建在这附近)
+int goldSpotUR=-1;
+
 //祭司信息
 int priestSN=-1;
 int priestBlockDR=-1;
@@ -92,9 +96,11 @@ const int goHomeFrame=5250;//考虑优化或删除（帧判断有误差）
 int bushNum=0;//6 记录被采的浆果数
 int gazelleNum=0;//6 记录被采的瞪羚数
 int killGazelle=0;//6 记录猎杀的瞪羚数
-int woodNum=0; //记录被砍的树数
 bool storageStarted=false;//防止猎人重复建仓库
 int farmNum=0;
+// [AI] 农田上限: 铜器前 4 块, 铜器后放开到 16 块(只有谷仓/市中心两圈共 16 个方位)
+const int FARM_MAX_TOOL=4;
+const int FARM_MAX_BRONZE=16;
 
 
 
@@ -110,7 +116,7 @@ int armyCampBlockUR=-1;
 //靶场挨者兵营 可以考虑记录
 unordered_map<int,bool>bushFarmer;//采浆果的农民 空闲后优先种田 不参与砍树
 unordered_map<int,bool>goldFarmer;   //被派去挖金的农民 矿采完自动接下一口, 不闲着
-
+unordered_map<int,bool>woodFarmer;
 int stableBlockDR=-1;//马厩位置
 int stableBlockUR=-1;
 
@@ -163,12 +169,12 @@ void UsrAI::processData(){
     }
 
     
-    //处理建造
+    //处理建造及原材料的获取策略
     manageBuild();   
-
+    //前期士兵训练及部分科技研发
     trainArmy();
 
-
+    //猎瞪羚状态机
     storageStarted=false;
     huntGazelle();
 
@@ -278,6 +284,10 @@ void UsrAI::processData(){
     }
     
     // ---- 升铜器后挖金: 补到 3 个人(一口井空了自动补下一口) ----
+    
+    if(info.civilizationStage>=CIVILIZATION_BRONZEAGE){
+        buildGoldStock();                              // [AI] 先确认金矿旁边有仓库, 没有就先建一个
+    }
     if(info.civilizationStage>=CIVILIZATION_BRONZEAGE){
         int goldNow=0;                                     // 本帧实时金工数
         unordered_map<int,bool>isGold;
@@ -298,7 +308,9 @@ void UsrAI::processData(){
         for(auto&r:info.resources){ 
             if(r.Type==RESOURCE_GOLD&&r.Cnt>0)liveGold[r.SN]=true; 
         }
+        int sentGold=0;                                      // [AI] 每帧最多给 2 个金工接续(原来一帧给所有金工都派一遍 -> 超上限被丢弃)
         for(auto&f:info.farmers){
+            if(sentGold>=2)break;
             if(!goldFarmer.count(f.SN))continue;             // 只管被派去挖金的人
             if(liveGold.count(f.WorkObjectSN))continue;       // 还在挖 -> 不动
             if(f.ResourceSort!=-1)continue;                   // 手上还有金子(去交) -> 先交
@@ -324,6 +336,7 @@ void UsrAI::processData(){
             if(tSN!=-1){
                 HumanAction(f.SN,tSN);
                 farIsgotten[f.SN]=true;
+                sentGold++;
             }
         }
     }
@@ -832,6 +845,22 @@ void UsrAI::priestExplore(){
 // 造兵: 兵营先升级战斧, 升完出 2 个斧兵; 靶场出 2 个弓箭手; 造完集合到箭塔下
 void UsrAI::trainArmy(){
     static bool clubUp=false,broadTech=false,compTech=false,logistics=false; //战斧 阔剑 复合弓 后勤 （科技）
+    // [AI] 科技标记改为"确认成功才置位": 原来发指令就置位, 那一次若被顶或校验不过就永久放弃。
+    //      这里用 ins_ret 回看上一条的结果, 只有 ACTION_SUCCESS 才认成功。
+    static int armyTechId=-1,armyTechType=0;   // 兵营科技: 待确认的指令id / 1=战斧 2=阔剑 3=后勤
+    static int rangeTechId=-1;                 // 靶场科技: 待确认的指令id(复合弓)
+    if(armyTechId>=0){
+        if(info.ins_ret.count(armyTechId)&&info.ins_ret[armyTechId]==ACTION_SUCCESS){
+            if(armyTechType==1)clubUp=true;
+            else if(armyTechType==2)broadTech=true;
+            else if(armyTechType==3)logistics=true;
+        }
+        armyTechId=-1;armyTechType=0;      // 无回执(被每帧条数上限丢弃)也清空 -> 下帧重试本科技
+    }
+    if(rangeTechId>=0){
+        if(info.ins_ret.count(rangeTechId)&&info.ins_ret[rangeTechId]==ACTION_SUCCESS)compTech=true;
+        rangeTechId=-1;
+    }
 
     // 前中期
     if(counterState<=1){
@@ -844,40 +873,42 @@ void UsrAI::trainArmy(){
             if(b.Percent<100||b.Project!=ACT_NULL)continue;
             if(b.Type==BUILDING_ARMYCAMP){
                 //先升科技
-                if(!clubUp&&info.Meat>=BUILDING_ARMYCAMP_UPGRADE_CLUBMAN_FOOD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_CLUBMAN);
-                    clubUp=true;
+                if(!clubUp&&armyTechId<0&&info.Meat>=BUILDING_ARMYCAMP_UPGRADE_CLUBMAN_FOOD){
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_CLUBMAN);
+                    armyTechType=1;
                 }
-                else if(clubUp&&!broadTech&&info.civilizationStage>=CIVILIZATION_BRONZEAGE&&
+                else if(clubUp&&!broadTech&&armyTechId<0&&info.civilizationStage>=CIVILIZATION_BRONZEAGE&&
                         info.Meat>=BUILDING_ARMYCAMP_UPGRADE_BROADSWORD_FOOD&&info.Gold>=BUILDING_ARMYCAMP_UPGRADE_BROADSWORD_GOLD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_BROADSWORD);
-                    broadTech=true;   // 前期就升阔剑科技
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_BROADSWORD);
+                    armyTechType=2;   // 前期就升阔剑科技
                 }
-                else if(club<2){
+                
+                else if(broadTech&&!logistics&&armyTechId<0&&info.Meat>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_FOOD&&info.Gold>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_GOLD){
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_RESEARCH_LOGISTICS);
+                    armyTechType=3;       // 第三波后立刻研后勤(兵营0.5人口)
+                }
+                else if(club<2&&info.Meat>=BUILDING_ARMYCAMP_CREATE_CLUBMAN_FOOD){
                     BuildingAction(b.SN,BUILDING_ARMYCAMP_CREATE_CLUBMAN);
                     club++;
                 }
-                else if(broadTech&&!logistics&&info.Meat>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_FOOD&&info.Gold>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_GOLD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_RESEARCH_LOGISTICS);
-                    logistics=true;       // 第三波后立刻研后勤(兵营0.5人口)
-                }
             }
-            else if(b.Type==BUILDING_COLLAGE){        // 学院好了就出方阵兵, 支援第二波
+            if(b.Type==BUILDING_COLLAGE){        // 学院好了就出方阵兵, 支援第二波
                 BuildingAction(b.SN,BUILDING_COLLAGE_CREATE_HOPLITE);
             }
-            else if(b.Type==BUILDING_RANGE){
-                if(!compTech&&bow<2){
+            if(b.Type==BUILDING_RANGE){
+                if(!compTech&&bow<2&&info.Meat>=BUILDING_RANGE_CREATE_BOWMAN_FOOD&&info.Wood>=BUILDING_RANGE_CREATE_BOWMAN_WOOD){
                     BuildingAction(b.SN,BUILDING_RANGE_CREATE_BOWMAN);
                     bow++;
                 }
-                if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!compTech){
+                if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!compTech&&rangeTechId<0){
                     // 
                     if(info.Meat>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_FOOD&&info.Wood>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_WOOD){
-                        BuildingAction(b.SN,BUILDING_RANGE_UPGRADE_COMPOSITE_BOW);
-                        compTech=true;
+                        rangeTechId=BuildingAction(b.SN,BUILDING_RANGE_UPGRADE_COMPOSITE_BOW);
                         
                     }
                 }
+                if(compTech&&info.Meat>=BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN_FOOD&&info.Gold>=BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN_GOLD)
+                    BuildingAction(b.SN,BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN);
             }
         }
         return;
@@ -969,6 +1000,8 @@ void UsrAI::manageBuild(){
     double haveNum=info.Human_Num;
     //距离人满还有多少人
     int spaceNum=maxNum-haveNum;
+    // [AI] 当前时代的农田上限(铜器前 FARM_MAX_TOOL=4 / 铜器后 FARM_MAX_BRONZE=16)
+    const int farmLimit=(info.civilizationStage>=CIVILIZATION_BRONZEAGE)?FARM_MAX_BRONZE:FARM_MAX_TOOL;
     
     //造人开关
     //进行一个优化 减少无效指令
@@ -982,7 +1015,7 @@ void UsrAI::manageBuild(){
         if(centerProject==ACT_NULL)
             BuildingAction(centerSN,BUILDING_CENTER_CREATEFARMER);
     }
-    // 农民修箭塔
+    // 农民修箭塔(保证前三波箭塔可以有效吸引仇恨)
     for(auto&b:info.buildings){
         if(b.Type!=BUILDING_ARROWTOWER)continue;
         if(b.Blood>=b.MaxBlood)continue;                    // 满血不用修
@@ -1035,13 +1068,43 @@ void UsrAI::manageBuild(){
     
         
     //农田
-    //周围八个方向 中间留宽2格的通道 -- 实操查看是否会同时建造导致卡住
+    //周围八个方向 中间留宽2格的通道 
     int fsDR[]={-5,0,5,0,-5,5,5,-5};
     int fsDU[]={0,5,0,-5,5,5,-5,-5};
 
-    if(bushNum>=6&&(gazelleNum>=6||info.GameFrame>=12000)&&woodNum>=3){
+    //建造的前提：有六个采浆果的 有六个采瞪羚的（或者超过一定帧数） 有三个伐木的
+    if(bushNum>=6&&(gazelleNum>=6||info.GameFrame>=12000)&&woodFarmer.size()>=3){ // [AI] 这里原本用已废弃的"累计伐木次数"变量, 已改为在岗伐木人数
+        // ================= 市场科技: 按顺序排队, 每帧最多发一条 =================
+        // [AI] 原来三个科技写成并列 if -> 同帧同时成立时会给同一个市场下三条指令,
+        //      引擎按 SN 去重只留最后一条(农田升级), 被顶掉的那条 tech[i] 却已经置位
+        //      -> 金矿采集这类科技永久不再研发。这里改成状态机 + ins_ret 回看结果。
+        static int marketTech=0;        // 0=木材加工 1=金矿采集 2=农田升级 3=全部走完
+        static int marketTechId=-1;     // 上一条科技指令 id(-1=没有待确认的)
+        if(marketTechId>=0){
+            // 有回执: 成功 -> 留在本档(这几个是二级链, 允许再发一次研第二级);
+            //          失败(含"已达上限/时机不合法") -> 本档走完, 进下一档。
+            // 无回执(指令被引擎"每帧条数上限"丢弃, 不会写回执) -> 不推进, 下帧重发本档。
+            if(info.ins_ret.count(marketTechId)&&info.ins_ret[marketTechId]!=ACTION_SUCCESS)marketTech++;
+            marketTechId=-1;
+        }
+        if(marketTech<3&&marketTechId<0&&haveBuilding(BUILDING_MARKET)){
+            for(auto&b:info.buildings){
+                if(b.Type!=BUILDING_MARKET)continue;
+                if(b.Percent<100)continue;                   // 市场还没盖好 -> 不能研
+                if(b.Project!=ACT_NULL)continue;             // 市场正忙 -> 这帧不发
+                if(marketTech==0&&info.Wood>=BUILDING_MARKET_WOOD_UPGRADE_WOOD&&info.Meat>=BUILDING_MARKET_WOOD_UPGRADE_FOOD)
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_WOOD_UPGRADE);
+                else if(marketTech==1&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
+                        info.Meat>=BUILDING_MARKET_GOLD_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_GOLD_UPGRADE_WOOD)
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_GOLD_UPGRADE);
+                else if(marketTech==2&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
+                        info.Meat>=BUILDING_MARKET_FARM_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_FARM_UPGRADE_WOOD)
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_FARM_UPGRADE);
+                break;
+            }
+        }
         //有无在建的
-        int buildingSN=-1;
+        int buildingSN=-1; //农田SN 
         for(auto&b:info.buildings){
             if(b.Percent>=100)continue;
             if(b.Type!=BUILDING_MARKET&&b.Type!=BUILDING_ARMYCAMP&&b.Type!=BUILDING_RANGE&&b.Type!=BUILDING_STABLE&&b.Type!=BUILDING_COLLAGE)continue;
@@ -1050,14 +1113,17 @@ void UsrAI::manageBuild(){
         }
         //有在建的
         if(buildingSN!=-1){
+            int sent=0;                                  // [AI] 每帧最多派 2 个去帮建(原来一帧把全体闲人都下令 -> 超上限被整批丢弃)
             for(auto&f:info.farmers){
+                if(sent>=2)break;
                 if(f.SN==homeBuilderSN)continue;
-                if(f.NowState!=HUMAN_STATE_IDLE)continue;
+                if(f.NowState!=HUMAN_STATE_IDLE)continue; //非空闲不建
                 if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
                 if(bushFarmer.count(f.SN))continue;      // 采浆果的人不帮建
-                if(f.WorkObjectSN==buildingSN)continue; //已在建 防重复发指令
+                // if(f.WorkObjectSN==buildingSN)continue; //已在建 防重复发指令
                 HumanAction(f.SN,buildingSN);
                 farIsgotten[f.SN]=true;
+                sent++;
             }
             return;
         }
@@ -1068,27 +1134,7 @@ void UsrAI::manageBuild(){
         
         //市场 以市镇中心为基准
        
-        //科技研发
-        static bool tech[3]{}; //0 木材 1 动物 2 金矿
-        if(haveBuilding(BUILDING_MARKET)){
-            for(auto&b:info.buildings){
-                if(b.Type!=BUILDING_MARKET)continue;
-                if(b.Project!=ACT_NULL)continue;
-                if(!tech[0]&&info.Wood>=BUILDING_MARKET_WOOD_UPGRADE_WOOD&&info.Meat>=BUILDING_MARKET_WOOD_UPGRADE_FOOD){
-                    BuildingAction(b.SN,BUILDING_MARKET_WOOD_UPGRADE);
-                    tech[0]=true;
-                }
-                else if(info.civilizationStage==CIVILIZATION_BRONZEAGE&&!tech[1]&&info.Meat>=BUILDING_MARKET_GOLD_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_GOLD_UPGRADE_WOOD){
-                    BuildingAction(b.SN,BUILDING_MARKET_GOLD_UPGRADE);
-                    tech[1]=true;
-                }
-                else if(info.civilizationStage==CIVILIZATION_BRONZEAGE&&!tech[2]&&info.Meat>=BUILDING_MARKET_FARM_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_FARM_UPGRADE_WOOD){
-                    BuildingAction(b.SN,BUILDING_MARKET_FARM_UPGRADE);
-                    tech[2]=true;
-                }
-
-            }
-        }
+        //科技研发 -> 已挪到本 if 的开头(见上面的"市场科技: 按顺序排队")
         
         if(!haveBuilding(BUILDING_MARKET)){
             want=BUILDING_MARKET;
@@ -1131,7 +1177,25 @@ void UsrAI::manageBuild(){
             }
         }
         //木材不够 -- 空闲的人都去砍树
-        if(want!=-1&&info.Wood<cost)assignWoodcutter();
+        // [AI] 原写法把"闲下来的伐木工"直接从 woodFarmer 里 erase 掉, 有两个问题:
+        //   1) 下面那行补人 if 要求 want!=-1 && info.Wood<cost, 所以木材够用时
+        //      被 erase 掉的人永远不会被重新派活 -> 一直闲着, 名册也永远不恢复;
+        //   2) woodFarmer 语义应是"谁是伐木工"的持续身份, 不是"本帧谁在砍树"的快照。
+        // 改成: 发现某人闲下来, 就立刻给他换一棵别的树; 只有没树可砍了才注销身份。
+        // 收集要处理的人, 遍历结束后再统一 erase, 避免迭代器失效(UB)。
+        vector<int> woodOut;                              // 闲下来 -> 换树; 换不到 -> 注销
+        for(auto &wf:woodFarmer){
+            for(auto&f:info.farmers){
+                if(f.SN!=wf.first)continue;
+                if(f.NowState==HUMAN_STATE_IDLE){                // 闲下来了
+                    if(reassignWoodcutter(f.SN)==-1)woodOut.push_back(f.SN); // 没树可砍才注销
+                }
+                break;
+            }
+        }
+        for(int sn:woodOut)woodFarmer.erase(sn);
+        
+        if(want!=-1&&info.Wood<cost&&woodFarmer.size()<5)assignWoodcutter();
 
         if(want!=-1&&info.Wood>=cost){
             for(auto&f:info.farmers){
@@ -1197,7 +1261,7 @@ void UsrAI::manageBuild(){
         for(auto&b:info.buildings){
             if(b.Type==BUILDING_FARM&&b.Cnt>0)farmNum++;
         }
-        if(farmNum<8){
+        if(farmNum<farmLimit){                            // [AI] 铜器前 4 块, 铜器后 16 块
             for(auto&f:info.farmers){
                 if(f.SN==homeBuilderSN||f.NowState!=HUMAN_STATE_IDLE)continue;
                 if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
@@ -1237,11 +1301,15 @@ void UsrAI::manageBuild(){
     for(auto&r:info.resources){
         if(r.Type==RESOURCE_BUSH&&r.Cnt>0)liveBush[r.SN]=true;
     }
+    int sentBush=0;                                      // [AI] 每帧最多处理 2 个浆果工: 原来一帧逐个派活会超引擎每帧指令上限
     for(auto&f:info.farmers){
+        if(sentBush>=2)break;
         if(!bushFarmer.count(f.SN))continue;
         if(liveBush.count(f.WorkObjectSN)){
-            if(f.NowState==HUMAN_STATE_IDLE&&f.ResourceSort==-1)
+            if(f.NowState==HUMAN_STATE_IDLE&&f.ResourceSort==-1){
                 HumanAction(f.SN,f.WorkObjectSN);
+                sentBush++;
+            }
             continue;
         }
         if(f.ResourceSort!=-1)continue;                  // 手上有货(还没交) -> 先去交
@@ -1267,6 +1335,7 @@ void UsrAI::manageBuild(){
         if(freeFarm!=-1){
             HumanAction(f.SN,freeFarm);
             farIsgotten[f.SN]=true;
+            sentBush++;
             continue;
         }
 
@@ -1275,7 +1344,7 @@ void UsrAI::manageBuild(){
         for(auto&b:info.buildings){ 
             if(b.Type==BUILDING_FARM&&b.Cnt>0)farmNum++;
         }
-        if(farmNum>=8||info.Wood<BUILD_FARM_WOOD)continue;
+        if(farmNum>=farmLimit||info.Wood<BUILD_FARM_WOOD)continue;   // [AI] 上限同上
         for(int q=0;q<8;q++){
             int dr=granaryBlockDR+fsDR[q], du=granaryBlockUR+fsDU[q];
             if(dr<0||du<0||dr+3>=100||du+3>=100)continue;
@@ -1287,12 +1356,15 @@ void UsrAI::manageBuild(){
             if(spotBusy(dr,du,3))continue;
             HumanBuild(f.SN,BUILDING_FARM,dr,du);
             farIsgotten[f.SN]=true;
+            sentBush++;
             break;
         }
     }
     
     // ---- 建好但没人种的农田 -> 派人去种 ----
+    int sentFarm=0;                                      // [AI] 每帧最多派 2 块田的人(原来一帧把每块空田都派一遍 -> 超上限被丢弃)
     for(auto&b:info.buildings){
+        if(sentFarm>=2)break;
         if(b.Type!=BUILDING_FARM||b.Percent<100)continue;
         if(b.Cnt<=0)continue;
         bool busy=false;
@@ -1314,6 +1386,7 @@ void UsrAI::manageBuild(){
         if(pick!=-1){
             HumanAction(pick,b.SN);
             farIsgotten[pick]=true;
+            sentFarm++;
             continue;                                   // 这块田有人了, 换下一块
         }
         //到这里说明pick还是-1
@@ -1322,11 +1395,14 @@ void UsrAI::manageBuild(){
             if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
             HumanAction(f.SN,b.SN);                         // 农民对农田 = 去种/收
             farIsgotten[f.SN]=true;
+            sentFarm++;
             break;
         }
     }
     // ---- 兜底: 还闲着的农民, 按 空田 -> 金矿 -> 树 的顺序派活, 不许站着不动 ----
+    int sent=0;                                          // [AI] 本段每帧最多派 2 个: 原来一帧把所有闲人都派出去, 会超引擎每帧指令上限被丢弃
     for(auto&f:info.farmers){
+        if(sent>=2)break;
         if(f.SN==homeBuilderSN)continue;
         if(f.NowState!=HUMAN_STATE_IDLE)continue;
         if(farIsgotten.find(f.SN)!=farIsgotten.end())continue;
@@ -1345,11 +1421,23 @@ void UsrAI::manageBuild(){
             HumanAction(f.SN,b.SN);
             bushFarmer[f.SN]=true; //收录进浆果队（即后期的种田队）
             farIsgotten[f.SN]=true;
+            sent++;
             done=true;
             break;
         }
         if(done)continue;
-        if(info.civilizationStage>=CIVILIZATION_BRONZEAGE){          // ② 没田就去挖金
+        // [AI] 金工上限 3 人: 原来这里会把所有闲人都吸去挖金
+        if(info.civilizationStage>=CIVILIZATION_BRONZEAGE){                  // ② 没田就去挖金
+            int goldNow=0;                                        // 本帧在挖/去挖的金工数
+            unordered_map<int,bool>isGold;
+            for(auto&r:info.resources){
+                if(r.Type==RESOURCE_GOLD)isGold[r.SN]=true;
+            }
+            for(auto&f2:info.farmers){
+                if(f2.NowState!=HUMAN_STATE_WORKING&&f2.NowState!=HUMAN_STATE_WALKING)continue;
+                if(isGold.count(f2.WorkObjectSN))goldNow++;
+            }
+            if(goldNow>=3)continue;                               // 已够 3 人 -> 这个闲人留给种田/砍树
             int tSN=-1,dist=1e18;
             for(auto&r:info.resources){
                 if(r.Type!=RESOURCE_GOLD||r.Cnt<=0)continue;
@@ -1371,6 +1459,7 @@ void UsrAI::manageBuild(){
                 HumanAction(f.SN,tSN);
                 goldFarmer[f.SN]=true;
                 farIsgotten[f.SN]=true;
+                sent++;
                 continue;
             }
         }
@@ -1420,7 +1509,7 @@ int UsrAI::assignWoodcutter(){
                     break;
                 }
             }
-            if(!reach)continue;
+            if(!reach)continue; //这棵树周围不可达 换另一棵树
             
             if(farIsgotten.find(r.SN)!=farIsgotten.end())continue; // 本帧已经给这棵树派过人了 用这个是因为这个每帧都会清空
             bool busy=false;                                     // 这棵树已经被别人占着了吗
@@ -1461,9 +1550,118 @@ int UsrAI::assignWoodcutter(){
     // ---------- ③ 派去砍 ----------
     HumanAction(fSN,bestSN);
     farIsgotten[bestSN]=true;
-    woodNum++;
+    woodFarmer[fSN]=true;
     farIsgotten[fSN]=true;
     return fSN;
+}
+// [AI] 新增: 给"指定的伐木工"重新找一棵树并派活(不挑人, 只挑树)。
+// 用途: manageBuild 的清理循环发现某个 woodFarmer 闲下来时, 立刻给他换一棵别的树,
+//       而不是把他从名册里 erase 掉 —— 否则木材够用时那行补人 if 不执行, 他就永远闲着。
+// 与 assignWoodcutter 共用同一套选树规则(仓库锚点 + 四邻可达 + 本帧未派 + 无人占用)。
+// 返回: 派出去的树SN; 没树可砍 -> -1
+int UsrAI::reassignWoodcutter(int fSN){
+    if(fSN==-1)return -1;
+    int bestSN=-1,bestDR=-1,bestUR=-1,bestD=1e18;
+    for(auto&b:info.buildings){                                  // 外层: 仓库
+        if(b.Type!=BUILDING_STOCK)continue;
+        if(b.Percent<100)continue;                               // 还没建好的不算锚点
+        for(auto&r:info.resources){                              // 内层: 树
+            if(r.Type!=RESOURCE_TREE)continue;
+            if(r.Cnt<=0)continue;                                // 砍光了
+            bool reach=false;                                     // 树必须有一面是空地(能站人)
+            int dx4[4]={0,1,0,-1},dy4[4]={1,0,-1,0};
+            for(int k=0;k<4;k++){
+                int nr=r.BlockDR+dx4[k],nu=r.BlockUR+dy4[k];
+                if(nr<0||nr>=100||nu<0||nu>=100)continue;
+                if(MAP[nr][nu]==Open){reach=true;break;}
+            }
+            if(!reach)continue;
+            if(farIsgotten.find(r.SN)!=farIsgotten.end())continue; // 本帧已经派过这棵树
+            
+            bool busy=false;                                     // 这棵树被别人占着了吗
+            for(auto&f:info.farmers){
+                if(f.SN==fSN)continue;                          // 排除他自己
+                if(f.WorkObjectSN==r.SN){
+                    busy=true;
+                    break;
+                }
+            }
+            if(busy)continue;
+            int d=max(abs(b.BlockDR-r.BlockDR),abs(b.BlockUR-r.BlockUR));  // 仓库->树
+            if(d<bestD){
+                bestD=d;
+                bestSN=r.SN;
+                bestDR=r.BlockDR;
+                bestUR=r.BlockUR;
+            }
+        }
+    }
+    if(bestSN==-1)return -1;                                     // 没树可砍了
+    HumanAction(fSN,bestSN);
+    farIsgotten[bestSN]=true;
+    farIsgotten[fSN]=true;
+    return bestSN;
+}
+// 采金前先造仓库 -- 完全仿 huntGazelle 的 gazelleState==3 段写法。
+// 原来直接派 farmer 去挖金, 可金矿附近没有仓库时, 挖到的金子没地方卸货:
+//   农民会一直扛着(ResourceSort!=-1), 既不交货也不去挖下一口, 采金就卡死了。
+// 规则: 先找一口没人占的金矿当落脚点, 再用 checkEnv(RESOURCE_GOLD) 判周围有没有仓库,
+//       返回2(已建好)就放行去挖; 没有就先在旁边把仓库建起来。
+// 返回: 这一帧下过指令返回 true; 没矿/木不够/没人 -> false
+// [AI] 严格照抄"猎瞪羚/浆果"那段(processData 221-271)的写法: 每次派人都先 checkEnv, 分三种走法
+//     st==2 周围有【建好】的仓库 -> 这一环不用管(由 assignGoldMiner 派人去采)
+//     st==1 周围有仓库【在建】   -> 派个空闲农民去帮建
+//     st==0 周围【没有】仓库     -> 木够且有位置就派人去建; 建不了也照样去采(采集不再被状态闸卡住)
+//   即: 这个函数只管"仓库这一环", 采集由 assignGoldMiner 负责, 两边都不再依赖 goldState。
+// 返回: 这一帧下过指令返回 true; 没矿/没人 -> false
+bool UsrAI::buildGoldStock(){
+    int bySN=-1;
+    int st=checkEnv(RESOURCE_GOLD,bySN);
+
+    if(goldSpotDR==-1){                                // 还没定落脚点 -> 找一口没人占的金矿
+        int best=1e18;
+        for(auto&r:info.resources){
+            if(r.Type!=RESOURCE_GOLD||r.Cnt<=0)continue;
+            bool busy=false;
+            for(auto&f:info.farmers){
+                if(f.WorkObjectSN==r.SN){busy=true;break;}
+            }
+            if(busy)continue;
+            int d=max(abs(r.BlockDR-centerBlockDR),abs(r.BlockUR-centerBlockUR));
+            if(d<best){
+                best=d;
+                goldSpotDR=r.BlockDR;
+                goldSpotUR=r.BlockUR;
+            }
+        }
+        if(goldSpotDR==-1)return false;                // 一口金矿都没有
+    }
+
+    if(st==1){                                         // ① 仓库在建 -> 派个空闲农民去帮建
+        for(auto&b:info.buildings){
+            if(b.SN!=bySN)continue;
+            int fSN=findFarmer(b.BlockDR,b.BlockUR);
+            if(fSN!=-1){
+                HumanAction(fSN,bySN);
+                farIsgotten[fSN]=true;
+            }
+            break;
+        }
+        return false;
+    }
+
+    if(st==0){                                         // ② 周围没有仓库 -> 建(木够 + 本帧还没建过 + 找得到位置)
+        int ox=-1,oy=-1;                               // output_x/y
+        if(info.Wood>=BUILD_STOCK_WOOD&&!storageStarted&&findBuildSpot(goldSpotDR,goldSpotUR,3,2,5,ox,oy)){
+            int fSN=findFarmer(goldSpotDR,goldSpotUR);
+            if(fSN==-1)return false;
+            HumanBuild(fSN,BUILDING_STOCK,ox,oy);
+            storageStarted=true;                       // 本帧只建一次, 和猎瞪羚一致
+            farIsgotten[fSN]=true;
+            return true;
+        }
+    }
+    return false;                                      // st==2(仓库已好) 或 找不到位置 -> 交给 assignGoldMiner 去采
 }
 // 派"一个"空闲农民去挖金 —— 和 assignWoodcutter 同套路:
 //   外层遍历【仓库】, 内层遍历【金矿】, 在所有组合里取距离最小的一对;
@@ -1558,7 +1756,7 @@ bool farmerAt(int sn,int dr,int ur){
 bool isLiveGazelle(int sn){
     for(auto&r:info.resources){
         if(r.SN!=sn)continue;
-        return r.Type==RESOURCE_GAZELLE&&r.Blood>0;
+        return r.Type==RESOURCE_GAZELLE&&r.Blood>0; 
     }
     return false;
 }
@@ -1772,6 +1970,7 @@ void UsrAI::pickRallyPoint(){
 // ② 铺开: 每帧最多派一个兵; 已分过格的一律不重发
 bool UsrAI::rallyArmy(){
     unordered_map<int,bool> taken;
+    vector<int> deadSlot;                           // [AI] 已阵亡单位的槽位, 收集后统一 erase
     for(auto r:rallySlot){          // 清掉死人的槽位
         bool alive=false;
         for(auto&a:info.armies){ 
@@ -1781,12 +1980,13 @@ bool UsrAI::rallyArmy(){
             } 
         }
         if(!alive){ 
-            rallySlot.erase(r.first); 
+            deadSlot.push_back(r.first);            // [AI] 原来在这里直接 erase -> range-for 迭代器失效(UB)
             continue; 
         }
         //走到这边意味着是活着的 
         taken[r.second]=true;
     }
+    for(int sn:deadSlot)rallySlot.erase(sn);        // [AI] 遍历结束后统一删, 同 woodFarmer 那段的写法
     for(auto&a:info.armies){
         if(a.SN==priestSN)continue;                 // 祭司单独处理
         if(rallySlot.count(a.SN))continue;          // ★已分过→不重发(状态驱动, 不含帧数)
@@ -1849,7 +2049,8 @@ bool UsrAI::rallyEnough(){
         if(kv.first==priestSN)continue;
         for(auto&a:info.armies){
             if(a.SN!=kv.first)continue;
-            if(a.BlockDR==kv.second/100&&a.BlockUR==kv.second%100)n++;
+            // [AI] 改 ≤1 格容错(与 farmerAt 同口径): 精确相等时单位很难正好停在格心, 会永远凑不满
+            if(abs(a.BlockDR-kv.second/100)<=1&&abs(a.BlockUR-kv.second%100)<=1)n++;
             break;
         }
     }
@@ -1874,6 +2075,7 @@ void UsrAI::waveBattle(){
     const int pRange=(VISION_PRIEST+PRIEST_HARNESS)*(VISION_PRIEST+PRIEST_HARNESS); //反攻前祭司可以响应的范围
     int dist=1e18; //作为最大值参照
     for(auto&ea:info.enemy_armies){                          // 有投石车先转投石车
+        if(counterState==1)break;
         if(ea.Sort!=AT_STONE_THROWER)continue;
         int ex=ea.BlockDR-priestBlockDR, ey=ea.BlockUR-priestBlockUR;
         int d=ex*ex+ey*ey;
@@ -1882,7 +2084,8 @@ void UsrAI::waveBattle(){
             priestTarget=ea.SN;
         }
     }
-    if(priestTarget==-1){                                   // 没投石车 -> 取最近的敌人
+    if(priestTarget==-1&&counterState!=1){ //加锁 集结状态不可以主动进攻                                 // 没投石车 -> 取最近的敌人
+        
         for(auto&ea:info.enemy_armies){
             int ex=ea.BlockDR-priestBlockDR, ey=ea.BlockUR-priestBlockUR;
             int d=ex*ex+ey*ey;
@@ -1893,7 +2096,7 @@ void UsrAI::waveBattle(){
         }
     }
    //处理-祭司-的目标
-    if(counterState<=1&&priestSN!=-1&&priestTarget!=-1){
+    if(counterState<=1&&priestSN!=-1&&priestTarget!=-1&&!priestExploring){
         for(auto&a:info.armies){
             if(a.SN!=priestSN)continue;
             if(a.NowState==HUMAN_STATE_ATTACKING)break;          //转化中
@@ -1945,7 +2148,9 @@ void UsrAI::waveBattle(){
         if(a.SN==priestSN)continue;     //祭司不要 专职转化
         if(a.WorkObjectSN==-1)spare.insert(a.SN);     // 手上没任务的才算闲置
     }
+    int sentDuel=0;                                      // [AI] 1v1 牵制每帧最多派 3 个(原来一帧给每个敌人都派一个兵 -> 超上限被丢弃)
     for(auto&ea:info.enemy_armies){
+        if(sentDuel>=3)break;
         if(counterState<=1){                                   // 只限防守/集结期
             //先以箭塔为参照 离得太远的敌人先不管
             int ex=ea.BlockDR-arrowTowerBlockDR,ey=ea.BlockUR-arrowTowerBlockUR;
@@ -1972,6 +2177,7 @@ void UsrAI::waveBattle(){
         if(pick!=-1){ //挑到了
             HumanAction(pick,ea.SN);
             spare.erase(pick);
+            sentDuel++;
         }
     }
     //有空闲兵    
@@ -1995,7 +2201,9 @@ void UsrAI::waveBattle(){
         
         //派出剩下的空闲兵
         if(allAttacked){
+            int sentPush=0;                              // [AI] 每帧最多派 3 个闲置兵出去(原来一次全派完 -> 超上限被丢弃)
             for(auto&a:info.armies){
+                if(sentPush>=3)break;
                 if(!spare.count(a.SN))continue;//非空闲兵不看
                 int tSN=-1;
                 double dist=1e18;
@@ -2008,6 +2216,7 @@ void UsrAI::waveBattle(){
                 }
                 HumanAction(a.SN,tSN);
                 spare.erase(a.SN);
+                sentPush++;
             }
         }
     }
@@ -2067,7 +2276,7 @@ int UsrAI::checkEnv(int type,int& byBuildingSN){
     
     int radius=5;
     int need=((type==RESOURCE_BUSH)?BUILDING_GRANARY:BUILDING_STOCK); //根据资源种类判断 应该需求哪种建筑
-
+    
 
     for(auto&r:info.resources){
         if(r.Type!=type)continue;
