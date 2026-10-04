@@ -21,6 +21,11 @@ public:
     
     void manageBuild();
     int checkEnv(int type,int& byBuildingSN);
+    int checkEnvAt(int type,int bd,int bu,int& byBuildingSN);  // [AI] checkEnv 的单点版
+    bool bushDone(int fSN);          // [AI] 花名册成员是否"浆果已采完且空闲"
+    int  farmTeamOnDuty();           // [AI] 已经在农田上干活的花名册成员数
+    bool canFarm(int fSN);           // [AI] 这个农民现在能不能被派去农田(三阶段规则)
+    int  goldStockCount();           // [AI] 贴着金矿的"已建成"仓库数
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
@@ -46,6 +51,12 @@ public:
     bool rallyEnough();      // 集结完毕判据(到位兵数 >= RALLY_NEED)
 
     void CalmAndCrazy();
+
+    // ===== [AI] 反攻阶段新增 =====
+    void manageScout(int mode);   // 斥候统一动作: 0=探路 1=拉扯 2=找厂 3=打箭塔
+    void armyAttack();            // 部队攻击: 优先打远程兵(护祭司), 否则打最近的
+    void priestConvert();         // 祭司转化: 优先转"当前生命值最高"的敌人
+    void priestFollow();          // 祭司跟随: 离最近的我方部队超过 PRIEST_HARNESS 就靠拢
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
