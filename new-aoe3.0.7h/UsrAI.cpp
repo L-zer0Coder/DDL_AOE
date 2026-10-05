@@ -36,9 +36,9 @@ int granaryBlockUR=-1;
 int oriStockBlockDR=-1;
 int oriStockBlockUR=-1;
 
-int goldStockSN=-1;
-int goldStockDR=-1;
-int goldStockUR=-1;
+int goldStockSN=-1
+int goldStockDR=-1
+int goldStockUR=-1
 
 
 //箭塔信息
@@ -805,30 +805,31 @@ void UsrAI::priestExplore(){
 // 造兵: 兵营先升级战斧, 升完出 2 个斧兵; 靶场出 2 个弓箭手; 造完集合到箭塔下
 void UsrAI::trainArmy(){
     static bool clubUp=false,broadTech=false,compTech=false,logistics=false; //战斧 阔剑 复合弓 后勤 （科技）
-    // [AI] 科技标记改为"看到 Project 在做这件事才置位"(原来是发指令就置位):
-    //   发出去的那一帧 Project 还是 ACT_NULL, 下一帧才变成该科技编号 —— 看到后才算真成功。
-    //   如果指令被去重/被丢弃, Project 仍是 ACT_NULL -> 不置位 -> 下帧继续重发, 天然自愈。
-    //   好处: 不需要 armyTechId/rangeTechId 记账, 也不会出现"失败却永久跳过一档"。
-    //   (引擎依据: Core.cpp infoShare 里 building.Project = build->getActNum())
+    
+    static int armyTechId=-1,armyTechType=0;   // 兵营科技: 待确认的指令id / 1=战斧 2=阔剑 3=后勤
+    static int rangeTechId=-1;                 // 靶场科技: 待确认的指令id(复合弓)
+    if(armyTechId>=0){
+        if(info.ins_ret.count(armyTechId)&&info.ins_ret[armyTechId]==ACTION_SUCCESS){
+            if(armyTechType==1)clubUp=true;
+            else if(armyTechType==2)broadTech=true;
+            else if(armyTechType==3)logistics=true;
+        }
+        armyTechId=-1;armyTechType=0;      // 无回执(被每帧条数上限丢弃)也清空 -> 下帧重试本科技
+    }
+    if(rangeTechId>=0){
+        if(info.ins_ret.count(rangeTechId)&&info.ins_ret[rangeTechId]==ACTION_SUCCESS)compTech=true;
+        rangeTechId=-1;
+    }
+
     // [AI] 造兵/科技不中断: 原来整段被 if(counterState<=1) 包着, 进入集结/拉扯/反攻后就不再造兵。
     //      用户明确要求"市镇中心仍然有机会就造兵进行补充", 所以这里放开这道门, 改为一直生效
     //      (建筑空闲、资源够、人口没满时才真正发得出去, 下面的判断本来就已经保证了)。
     {
-        int club=0,bow=0;
+        int club=0,bow=0,scoutNum=0;
         for(auto&a:info.armies){
             if(a.Sort==AT_CLUBMAN)club++;
             else if(a.Sort==AT_BOWMAN)bow++;
            
-        }
-        // [AI] 确认科技是否真的在研: 直接看建筑 Project(引擎把它放在 building.Project)。
-        //   必须放在下面那个 `b.Project!=ACT_NULL -> continue` 之前, 否则永远看不到。
-        for(auto&b:info.buildings){
-            if(b.Type==BUILDING_ARMYCAMP){
-                if(b.Project==BUILDING_ARMYCAMP_UPGRADE_CLUBMAN)clubUp=true;
-                else if(b.Project==BUILDING_ARMYCAMP_UPGRADE_BROADSWORD)broadTech=true;
-                else if(b.Project==BUILDING_ARMYCAMP_RESEARCH_LOGISTICS)logistics=true;
-            }
-            if(b.Type==BUILDING_RANGE&&b.Project==BUILDING_RANGE_UPGRADE_COMPOSITE_BOW)compTech=true;
         }
         // [AI] 科技保证金: 先把"下一步要研究的科技"所需资源扣出来, 再决定造不造兵。
         //      否则靶场一有 40肉20金就出复合弓 -> 科技要的 180肉100木永远攒不齐
@@ -850,18 +851,19 @@ void UsrAI::trainArmy(){
             if(b.Percent<100||b.Project!=ACT_NULL)continue;
             if(b.Type==BUILDING_ARMYCAMP){
                 //先升科技
-                // [AI] 原来发完立刻 clubUp/broadTech/logistics=true, 现在改成"看到 Project 才置位"(见上面)。
-                //      所以这里不需要 armyTechId 记账, 也不怕同帧被去重顶掉。
-                if(!clubUp&&info.Meat>=BUILDING_ARMYCAMP_UPGRADE_CLUBMAN_FOOD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_CLUBMAN);
+                if(!clubUp&&armyTechId<0&&info.Meat>=BUILDING_ARMYCAMP_UPGRADE_CLUBMAN_FOOD){
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_CLUBMAN);
+                    armyTechType=1;
                 }
-                else if(clubUp&&!broadTech&&info.civilizationStage>=CIVILIZATION_BRONZEAGE&&
+                else if(clubUp&&!broadTech&&armyTechId<0&&info.civilizationStage>=CIVILIZATION_BRONZEAGE&&
                         info.Meat>=BUILDING_ARMYCAMP_UPGRADE_BROADSWORD_FOOD&&info.Gold>=BUILDING_ARMYCAMP_UPGRADE_BROADSWORD_GOLD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_BROADSWORD);   // 前期就升阔剑科技
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_UPGRADE_BROADSWORD);
+                    armyTechType=2;   // 前期就升阔剑科技
                 }
-
-                else if(broadTech&&!logistics&&info.Meat>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_FOOD&&info.Gold>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_GOLD){
-                    BuildingAction(b.SN,BUILDING_ARMYCAMP_RESEARCH_LOGISTICS);   // 第三波后立刻研后勤(兵营0.5人口)
+                
+                else if(broadTech&&!logistics&&armyTechId<0&&info.Meat>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_FOOD&&info.Gold>=BUILDING_ARMYCAMP_RESEARCH_LOGISTICS_GOLD){
+                    armyTechId=BuildingAction(b.SN,BUILDING_ARMYCAMP_RESEARCH_LOGISTICS);
+                    armyTechType=3;       // 第三波后立刻研后勤(兵营0.5人口)
                 }
                 else if(club<2&&info.Meat>=BUILDING_ARMYCAMP_CREATE_CLUBMAN_FOOD+rsMeat){
                     BuildingAction(b.SN,BUILDING_ARMYCAMP_CREATE_CLUBMAN);
@@ -871,28 +873,37 @@ void UsrAI::trainArmy(){
             if(b.Type==BUILDING_COLLAGE){        // 学院好了就出方阵兵, 支援第二波
                 // [AI] 原来这里不查资源也不查科技保证金, 每帧都发 -> 把肉/金吃光。补上保证金。
                 // [AI] 再补人口预留: 方阵兵/复合弓原来都没有人口上限, 一直造到 Human_MaxNum,
-                //      结果连 1 个给斥候的名额都留不出来(斥候由拉扯阶段的 manageScout 训, 见下面复合弓分支)。
+                //      结果连 1 个给斥候的名额都留不出来(见下面 BUILDING_STABLE 分支的说明)。
                 if(info.Meat>=BUILDING_COLLAGE_CREATE_HOPLITE_FOOD+rsMeat&&
                    info.Gold>=BUILDING_COLLAGE_CREATE_HOPLITE_GOLD+rsGold&&
                    info.Human_Num<info.Human_MaxNum-1)
                     BuildingAction(b.SN,BUILDING_COLLAGE_CREATE_HOPLITE);
             }
             if(b.Type==BUILDING_RANGE){
-                // [AI] 两个 if 改成互斥 else-if: 靶场同一个 SN 一帧只接受一条指令,
-                //      并列写会被引擎按 SN 去重顶掉一条(弓兵那条白发)。
-                if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!compTech&&
-                        info.Meat>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_FOOD&&info.Wood>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_WOOD){
-                    BuildingAction(b.SN,BUILDING_RANGE_UPGRADE_COMPOSITE_BOW);
-                }
-                else if(!compTech&&bow<2&&info.Meat>=BUILDING_RANGE_CREATE_BOWMAN_FOOD+rsMeat&&info.Wood>=BUILDING_RANGE_CREATE_BOWMAN_WOOD+rsWood){
+                if(!compTech&&bow<2&&info.Meat>=BUILDING_RANGE_CREATE_BOWMAN_FOOD+rsMeat&&info.Wood>=BUILDING_RANGE_CREATE_BOWMAN_WOOD+rsWood){
                     BuildingAction(b.SN,BUILDING_RANGE_CREATE_BOWMAN);
                     bow++;
                 }
-                // [AI] 留 1 个名额给斥候: 斥候只由拉扯阶段的 manageScout() 训(用户: "斥候不能提前造"),
-                //      所以这里必须留出 1 格人口, 否则 manageScout 会撞 ACTION_INVALID_BUILDACT_MAXHUMAN。
+                if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!compTech&&rangeTechId<0){
+                    // 
+                    if(info.Meat>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_FOOD&&info.Wood>=BUILDING_RANGE_UPGRADE_COMPOSITE_BOW_WOOD){
+                        rangeTechId=BuildingAction(b.SN,BUILDING_RANGE_UPGRADE_COMPOSITE_BOW);
+                        
+                    }
+                }
+                // [AI] 留 1 个名额给斥候(理由同上面的方阵兵分支)
                 if(compTech&&info.Meat>=BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN_FOOD+rsMeat&&info.Gold>=BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN_GOLD+rsGold
                    &&info.Human_Num<info.Human_MaxNum-1)
                     BuildingAction(b.SN,BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN);
+            }
+            // [AI] ===== 造斥候: 从马厩直接训, 不再依赖 counterState =====
+            //  原来造斥候只有 manageScout() 里那几行, 而 manageScout() 只有 counterState>=2 才会被调用;
+            //  counterState 1->2 的门却是 Human_Num>45 —— 等跨过去时人口早被复合弓/方阵兵顶满,
+            //  BuildingAction 返回 ACTION_INVALID_BUILDACT_MAXHUMAN, 斥候永远造不出来,
+            //  scoutSN 恒为 -1, 于是 case 2 一直卡在"派斥候探路"那一段, 永远进不了 case 3。
+            //  现在马厩一建好就试训, 不再看 counterState。
+            if(b.Type==BUILDING_STABLE&&scoutNum<1&&info.Meat>=BUILDING_STABLE_CREATE_SCOUT_FOOD){
+                BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
             }
         }
         return;
@@ -1064,33 +1075,33 @@ void UsrAI::manageBuild(){
         // ================= 市场科技: 按顺序排队, 每帧最多发一条 =================
         // [AI] 原来三个科技写成并列 if -> 同帧同时成立时会给同一个市场下三条指令,
         //      引擎按 SN 去重只留最后一条(农田升级), 被顶掉的那条 tech[i] 却已经置位
-        //      -> 金矿采集这类科技永久不再研发。
-        // [AI] 原来是"发指令即置位 + ins_ret 回看 + 失败就 marketTech++ 跳档",
-        //      现在改成"看到市场 Project 在做这件事才置位":
-        //   发出去那一帧 Project 还是 ACT_NULL, 下一帧才变成该科技编号 -> 看到才算真成功。
-        //   指令被去重/被丢弃时 Project 仍是 ACT_NULL -> 不置位 -> 下帧继续重发, 天然自愈。
-        //   也修掉了原版"失败就跳过一档"的坑: 临时失败(资源不够)不会再把科技永久跳过。
-        static bool woodTech=false,goldTech=false,farmTech=false;
-        for(auto&b:info.buildings){                       // 必须在下面"市场正忙就 continue"之前观察
-            if(b.Type!=BUILDING_MARKET)continue;
-            if(b.Project==BUILDING_MARKET_WOOD_UPGRADE)woodTech=true;
-            else if(b.Project==BUILDING_MARKET_GOLD_UPGRADE)goldTech=true;
-            else if(b.Project==BUILDING_MARKET_FARM_UPGRADE)farmTech=true;
+        //      -> 金矿采集这类科技永久不再研发。这里改成状态机 + ins_ret 回看结果。
+        static int marketTech=0;        // 0=木材加工 1=金矿采集 2=农田升级 3=全部走完
+        static int marketTechId=-1;     // 上一条科技指令 id(-1=没有待确认的)
+        if(marketTechId>=0){
+            // 有回执: 成功 -> 留在本档(这几个是二级链, 允许再发一次研第二级);
+            //          失败(含"已达上限/时机不合法") -> 本档走完, 进下一档。
+            // 无回执(指令被引擎"每帧条数上限"丢弃, 不会写回执) -> 不推进, 下帧重发本档。
+            // [AI] 只在"明确不可用"(解锁/已达上限/重复)时才推进到下一档;
+            //      资源不足(ACTION_INVALID_RESOURCE)这类临时失败 -> 不推进, 下帧重试本档
+            if(info.ins_ret.count(marketTechId)&&
+               info.ins_ret[marketTechId]!=ACTION_SUCCESS&&
+               info.ins_ret[marketTechId]!=ACTION_INVALID_RESOURCE)marketTech++;
+            marketTechId=-1;
         }
-        if(haveBuilding(BUILDING_MARKET)){
+        if(marketTech<3&&marketTechId<0&&haveBuilding(BUILDING_MARKET)){
             for(auto&b:info.buildings){
                 if(b.Type!=BUILDING_MARKET)continue;
                 if(b.Percent<100)continue;                   // 市场还没盖好 -> 不能研
                 if(b.Project!=ACT_NULL)continue;             // 市场正忙 -> 这帧不发
-                // [AI] 这三个是 else-if 链, 保证同一个市场一帧只收到一条指令(否则会被 SN 去重顶掉)
-                if(!woodTech&&info.Wood>=BUILDING_MARKET_WOOD_UPGRADE_WOOD&&info.Meat>=BUILDING_MARKET_WOOD_UPGRADE_FOOD)
-                    BuildingAction(b.SN,BUILDING_MARKET_WOOD_UPGRADE);
-                else if(woodTech&&!goldTech&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
+                if(marketTech==0&&info.Wood>=BUILDING_MARKET_WOOD_UPGRADE_WOOD&&info.Meat>=BUILDING_MARKET_WOOD_UPGRADE_FOOD)
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_WOOD_UPGRADE);
+                else if(marketTech==1&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
                         info.Meat>=BUILDING_MARKET_GOLD_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_GOLD_UPGRADE_WOOD)
-                    BuildingAction(b.SN,BUILDING_MARKET_GOLD_UPGRADE);
-                else if(goldTech&&!farmTech&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_GOLD_UPGRADE);
+                else if(marketTech==2&&info.civilizationStage==CIVILIZATION_BRONZEAGE&&
                         info.Meat>=BUILDING_MARKET_FARM_UPGRADE_FOOD&&info.Wood>=BUILDING_MARKET_FARM_UPGRADE_WOOD)
-                    BuildingAction(b.SN,BUILDING_MARKET_FARM_UPGRADE);
+                    marketTechId=BuildingAction(b.SN,BUILDING_MARKET_FARM_UPGRADE);
                 break;
             }
         }
