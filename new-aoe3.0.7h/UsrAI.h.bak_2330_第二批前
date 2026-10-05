@@ -21,9 +21,11 @@ public:
     
     void manageBuild();
     int checkEnv(int type,int& byBuildingSN);
+    int checkEnvAt(int type,int bd,int bu,int& byBuildingSN);  // [AI] checkEnv 的单点版
     bool bushDone(int fSN);          // [AI] 花名册成员是否"浆果已采完且空闲"
     int  farmTeamOnDuty();           // [AI] 已经在农田上干活的花名册成员数
     bool canFarm(int fSN);           // [AI] 这个农民现在能不能被派去农田(三阶段规则)
+    int  goldStockCount();           // [AI] 贴着金矿的"已建成"仓库数
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
@@ -34,6 +36,7 @@ public:
 
     void waveBattle();
     void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
+    bool hasUnfinishedBuilding(int type);
     void huntGazelle();
     void trainArmy();      // 铜器后造兵: 靶场出弓箭手, 兵营出阔剑兵, 造完集合到箭塔下
     int findFarmer(int bd,int bu);

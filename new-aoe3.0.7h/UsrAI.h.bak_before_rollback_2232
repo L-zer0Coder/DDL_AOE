@@ -34,6 +34,7 @@ public:
 
     void waveBattle();
     void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
+    bool hasUnfinishedBuilding(int type);
     void huntGazelle();
     void trainArmy();      // 铜器后造兵: 靶场出弓箭手, 兵营出阔剑兵, 造完集合到箭塔下
     int findFarmer(int bd,int bu);
