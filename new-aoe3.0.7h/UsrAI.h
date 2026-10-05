@@ -21,19 +21,15 @@ public:
     
     void manageBuild();
     int checkEnv(int type,int& byBuildingSN);
-    bool bushDone(int fSN);          // [AI] 花名册成员是否"浆果已采完且空闲"
-    int  farmTeamOnDuty();           // [AI] 已经在农田上干活的花名册成员数
-    bool canFarm(int fSN);           // [AI] 这个农民现在能不能被派去农田(三阶段规则)
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
-    int reassignWoodcutter(int fSN); // [AI] 给指定的闲下来的伐木工换一棵树(只挑树不挑人), 返回树SN, -1=没树
     int assignGoldMiner();   // 派一个空闲村民去挖金(优先有仓库的金矿), 返回SN
-    bool buildGoldStock();   // [AI] 采金前先在旁边建仓库(仿 huntGazelle), 派出去过指令返回true
     bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
     void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
+    bool hasUnfinishedBuilding(int type);
     void huntGazelle();
     void trainArmy();      // 铜器后造兵: 靶场出弓箭手, 兵营出阔剑兵, 造完集合到箭塔下
     int findFarmer(int bd,int bu);
@@ -42,18 +38,9 @@ public:
 
     bool haveBuilding(int type);
     void centerUpgrade();
-    void pickRallyPoint();   // 定集结点(从敌人位置朝自家退几格)
-    bool rallyArmy();        // 铺开集结: 每帧最多派一个兵, 已分格的不重发
-    void rallyPriest();      // 祭司去集结区里"离敌最远"的那一格
-    bool rallyEnough();      // 集结完毕判据(到位兵数 >= RALLY_NEED)
+    void GOGOGO(int dr,int ur);
 
     void CalmAndCrazy();
-
-    // ===== [AI] 反攻阶段新增 =====
-    void manageScout(int mode);   // 斥候统一动作: 0=探路 1=拉扯 2=找厂 3=打箭塔
-    void armyAttack();            // 部队攻击: 优先打远程兵(护祭司), 否则打最近的
-    void priestConvert();         // 祭司转化: 优先转"当前生命值最高"的敌人
-    void priestFollow();          // 祭司跟随: 离最近的我方部队超过 PRIEST_HARNESS 就靠拢
 private:
     void processData() override;
     tagInfo getInfo(){return tagUsrGame.getInfo();}
