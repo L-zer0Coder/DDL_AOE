@@ -115,10 +115,12 @@ int counterState=0;         //  0-前期：抵御三波 1-中期：集结与侦�
 // ================= [AI] 拉扯 / 反攻 =================
 const int RUSH_ROUNDS=5;        // [AI] 拉扯多少轮之后转全面反攻(用户定: 完成5轮, 第6轮反攻)
 int  rushRound=0;               // [AI] 已完成的拉扯轮数(视野内敌人"从有到无"记一轮)
+bool rallyDone=false;           // [AI] 集结是否已完成(大军已铺开到位)
 bool rushHadEnemy=false;        // [AI] 边沿检测用: 上一帧视野内是否有敌人
 int  noEnemyTicks=0;            // [AI] 兜底: 集结点附近连续多少帧没有敌人(用于自动推进拉扯轮次)
 const int RALLY_IDLE_TICKS=60;  // [AI] 60帧≈2.4秒(25帧/秒): 这么久没敌人就当这轮拉扯结束
 int  seekTgtDR=-1,seekTgtUR=-1; // [AI] 斥候推进的锁定目标格(绝对坐标, 避免每帧重发)
+int  towerTgtSN=-1;             // [AI] 斥候当前攻击的敌方箭塔SN(避免重复下令)
 unordered_map<int,bool> rallyArrived;  // [AI] 兵SN -> 是否曾经到过自己的集结格(用于"循环填入"的释放判据)
 
 int factorySN=-1;           // 敌方攻城武器厂
@@ -323,6 +325,7 @@ void UsrAI::processData(){
     }
     
     int woodWant=5;
+    if(haveBuilding(BUILDING_COLLAGE))woodWant=4;
     for(int i=woodNow;i<woodWant;i++){
         int id=assignWoodcutter();          // 补到 woodWant 个
         if(id==-1)break;        // 没树/没人就停, 不会空转
@@ -343,6 +346,7 @@ void UsrAI::processData(){
         }
         
         int goldWant=2;
+        if(haveBuilding(BUILDING_COLLAGE))goldWant=3;
         for(int i=goldNow;i<goldWant;i++){                 // 人数上限=goldWant
             if(assignGoldMiner()==-1)break;
         }
@@ -880,6 +884,9 @@ void UsrAI::trainArmy(){
                 &&info.Human_Num<43)
                 BuildingAction(b.SN,BUILDING_RANGE_CREATE_COMPOSITE_BOWMAN);
         }
+        else if(b.Type==BUILDING_COLLAGE&&info.Human_Num<40&&compTech){        // 学院好了就出方阵兵, 支援第二波
+            BuildingAction(b.SN,BUILDING_COLLAGE_CREATE_HOPLITE);
+        }
     }
     return;
     
@@ -1115,6 +1122,11 @@ void UsrAI::manageBuild(){
             bu=armyCampBlockUR;
         }
     }
+    // //学院(铜器时代, 前置马厩)
+    // else if(info.civilizationStage>=CIVILIZATION_BRONZEAGE&&!haveBuilding(BUILDING_COLLAGE)&&haveBuilding(BUILDING_STABLE)&&compTech){
+    //     want=BUILDING_COLLAGE;
+    //     cost=BUILD_COLLAGE_WOOD;
+    // }
     
     
 
@@ -1830,67 +1842,95 @@ void UsrAI::huntGazelle(){
 //         1 拉扯  : 视野内出现敌人就退回锚点(集结点), 否则继续前出引诱
 //         2 找厂  : 同探路, 一直走到 info.enemy_buildings 里出现攻城厂
 //         3 打箭塔: 攻击"离攻城厂最近"的那座敌方箭塔
-// ================= [AI] 斥候: 拉扯期唯一的"引敌"执行者 =================
-// 三态(状态驱动, 目标没变不重发):
-//   ① 视野内没敌人     -> 朝对角估算点推进(去找敌)
-//   ② 看见敌人但 >3 格 -> 主动贴上去(逼敌人看见我、锁定我)
-//   ③ 已贴到 <=3 格    -> 掉头往集结中心跑(敌人追着进集结区)
-void UsrAI::manageScout(){
-    if(scoutSN==-1)return;
-    int dr=-1,ur=-1;
+void UsrAI::manageScout(int mode){
+
+    int scoutDr=-1,scoutUr=-1;
     for(auto&a:info.armies){
         if(a.SN!=scoutSN)continue;
-        dr=a.BlockDR; ur=a.BlockUR;
+        scoutDr=a.BlockDR; 
+        scoutUr=a.BlockUR;
         break;
     }
-    if(dr==-1){ scoutSN=-1; return; }              // 斥候没了, 上层会补造
-
-    int eDR=-1,eUR=-1,best=1e18;                   // 视野内最近的敌人
+    if(scoutUr==-1){ 
+        scoutSN=-1; 
+        return; 
+    }
+    for(auto&a:info.armies){
+        if(a.SN!=scoutSN)continue;
+        if(a.NowState!=HUMAN_STATE_IDLE)continue;
+        int gd=100-centerBlockDR, gu=100-centerBlockUR;   // 敌方大营方向(对角估算)
+        gd=max(2,min(97,gd)); gu=max(2,min(97,gu));
+        HumanMove(scoutSN,seekTgtDR*BLOCKSIDELENGTH,seekTgtUR*BLOCKSIDELENGTH);
+    }
+    int bestD=1e18;
+    int tgDR=-1,tgUR=-1;
     for(auto&ea:info.enemy_armies){
-        int d=max(abs(ea.BlockDR-dr),abs(ea.BlockUR-ur));
-        if(d<best){ best=d; eDR=ea.BlockDR; eUR=ea.BlockUR; }
+        int dx=ea.BlockDR-
+        
+    }
+    
+
+
+
+    
+   
+
+    
+
+    // ---- ③ 模式 3: 打"离攻城厂最近"的那座敌方箭塔 ----
+    if(mode==3){
+        int bestSN=-1,best=1e18;
+        for(auto&eb:info.enemy_buildings){
+            if(eb.Type!=BUILDING_ARROWTOWER)continue;
+            int d=max(abs(eb.BlockDR-factoryBlockDR),abs(eb.BlockUR-factoryBlockUR));
+            if(d<best){ 
+                best=d; 
+                bestSN=eb.SN; 
+            }
+        }
+        if(bestSN==-1)return;
+        if(towerTgtSN==bestSN)return;            // 已经在打同一座 -> 不重发
+        HumanAction(scoutSN,bestSN);
+        towerTgtSN=bestSN;
+        return;
     }
 
-    int tdr,tur;
-    if(eDR==-1){                                   // ① 没发现敌情 -> 去对面找
-        tdr=max(2,min(97,100-centerBlockDR));
-        tur=max(2,min(97,100-centerBlockUR));
-    }
-    else if(best>SCOUT_LURE_RANGE){                // ② 看见了但还远 -> 贴上去勾引
-        tdr=eDR; tur=eUR;
-    }
-    else{                                          // ③ 贴身了 -> 把敌人带回集结区
-        if(rallyDR==-1)return;                     // 集结区还没定 -> 这一帧交给上层定
-        tdr=rallyDR; tur=rallyUR;
-    }
-    if(tdr!=seekTgtDR||tur!=seekTgtUR){
-        seekTgtDR=tdr; seekTgtUR=tur;
-        HumanMove(scoutSN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
-    }
 }
 
 // ================= [AI] 部队攻击 =================
-// inZone=true (拉扯): 只打"集结区外 2 格以内"的敌人 —— 远程够得着, 兵不用出区
-// inZone=false(冲锋): 不限区域, 打兵周围 15 格内的敌人
-// 优先级: 远程兵(护祭司) > 近战; 同类里取最近。已经在打同一个目标才跳过(允许换目标)。
-void UsrAI::armyAttack(bool inZone){
+//  优先级: ① 远程兵(复合弓/战车弓/弓箭手) —— 目的是保护祭司; ② 最近的敌人。
+//  已在攻击中的兵不重发(重发会清掉攻击进度); 每帧最多派 4 个, 免得超引擎每帧指令上限。
+void UsrAI::armyAttack(){
     if(info.enemy_armies.empty())return;
 
     const int ARMY_MAX_RANGE=15;
-    const int FIGHT_R=RALLY_R+2;                   // 兵的活动半径(集结区外扩 2 格)
     for(auto&a:info.armies){
-        if(a.SN==priestSN)continue;                // 祭司专职转化
-        if(a.SN==scoutSN)continue;                 // 斥候专职引敌
-        int tSN=-1,best=1e18;
-        for(auto&ea:info.enemy_armies){
-            if(inZone&&max(abs(ea.BlockDR-rallyDR),abs(ea.BlockUR-rallyUR))>FIGHT_R+2)continue;
-            int d=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
-            if(d>ARMY_MAX_RANGE)continue;
-            int score=d+(isArcherSort(ea.Sort)?0:100000);   // 远程优先
-            if(score<best){ best=score; tSN=ea.SN; }
+        if(a.SN==priestSN)continue;              // 祭司专职转化
+        if(a.SN==scoutSN)continue;               // 斥候专职拉扯
+        if(a.WorkObjectSN!=-1)continue;          // 手上已有任务
+        int tSN=-1;
+        for(auto&ea:info.enemy_armies){          // ① 优先打远程兵
+            if(max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR))>ARMY_MAX_RANGE)continue;
+            if(isArcherSort(ea.Sort)){
+                tSN=ea.SN;
+                break;
+            }
         }
-        if(tSN==-1||a.WorkObjectSN==tSN)continue;
-        HumanAction(a.SN,tSN);
+        if(tSN==-1){                             // ② 没有远程兵 -> 打最近的(同样限距)
+            int best=1e18;
+            for(auto&ea:info.enemy_armies){
+                if(max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR))>ARMY_MAX_RANGE)continue;
+                int d=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
+                if(d<best){
+                    best=d;
+                    tSN=ea.SN;
+                }
+            }
+        }
+        if(tSN!=-1){
+            HumanAction(a.SN,tSN);
+
+        }
     }
 }
 
@@ -1975,14 +2015,21 @@ void UsrAI::counterAttack(){
             break;
         }
 
-        case 2:{   // ---- 拉扯: 造斥候 -> 出门找敌 -> 定集结区 -> 引敌 -> 区内迎敌 -> 5 轮后冲锋 ----
-            // ① 场上没斥候 -> 记下新造的那只; 还是没有就让马厩补一个
-            if(scoutSN==-1){
-                for(auto&a:info.armies){
-                    if(a.Sort==AT_SCOUT){ scoutSN=a.SN; break; }
+        case 2:{
+            //完成 RUSH_ROUNDS 轮拉扯之后, 转 case 3 全面反攻。
+            if(rushRound>=RUSH_ROUNDS){  //拉扯五轮之后 进入全面反攻
+                counterState=3;
+                return;
+            }
+
+            bool hasScout=false;
+            for(auto&a:info.armies){
+                if(a.Sort==AT_SCOUT){ 
+                    hasScout=true; 
+                    break; 
                 }
             }
-            if(scoutSN==-1){
+            if(!hasScout){
                 for(auto&b:info.buildings){
                     if(b.Type==BUILDING_STABLE&&b.Percent>=100&&b.Project==ACT_NULL&&
                        info.Meat>=BUILDING_STABLE_CREATE_SCOUT_FOOD){
@@ -1990,82 +2037,117 @@ void UsrAI::counterAttack(){
                         break;
                     }
                 }
-                return;
             }
 
-            // ② 集结区还没定 -> 斥候出门推进; 他 8 格内看到敌人就把那块地当锚点(只定这一次)
-            if(rallyDR==-1){
-                manageScout();
-                int sdr=-1,sur=-1;
+            //拉扯
+            
+            if(anchorDR==-1){
+                manageScout(0);
+                int scoutDR=-1,scoutUR=-1;
                 for(auto&a:info.armies){
-                    if(a.SN!=scoutSN)continue;
-                    sdr=a.BlockDR; sur=a.BlockUR;
-                    break;
+                    if(a.SN==scoutSN){ 
+                        scoutDR=a.BlockDR; 
+                        scoutUR=a.BlockUR; 
+                        break; 
+                    }
                 }
-                if(sdr!=-1){
+                bool gotAnchor=false;
+                if(scoutDR!=-1){
+                    int best=1e18;
+                    for(auto&eb:info.enemy_buildings){                 // ① 先找斥候旁边的敌营建筑
+                        int d=max(abs(eb.BlockDR-scoutDR),abs(eb.BlockUR-scoutUR));
+                        if(d<=SCOUT_LURE_RANGE&&d<best){ best=d; anchorDR=eb.BlockDR; anchorUR=eb.BlockUR; gotAnchor=true; }
+                    }
+                }
+                if(!gotAnchor&&scoutDR!=-1){                            // ② 军队次之(斥候旁边的)
                     int best=1e18;
                     for(auto&ea:info.enemy_armies){
-                        int d=max(abs(ea.BlockDR-sdr),abs(ea.BlockUR-sur));
-                        if(d<=VISION_SCOUT&&d<best){ best=d; anchorDR=ea.BlockDR; anchorUR=ea.BlockUR; }
+                        int d=max(abs(ea.BlockDR-scoutDR),abs(ea.BlockUR-scoutUR));
+                        if(d<=SCOUT_LURE_RANGE&&d<best){ best=d; anchorDR=ea.BlockDR; anchorUR=ea.BlockUR; gotAnchor=true; }
                     }
-                    if(anchorDR!=-1)pickRallyPoint();          // 朝自家退 RALLY_BACK 格
+                }
+                if(gotAnchor&&anchorDR>=0){
+                    // 锚点一到就立刻定集结点, 下一帧 manageScout(0) 就会带坐标撤回
+                    pickRallyPoint();
                 }
                 return;
             }
 
-            // ③ 集结区已定 -> 引敌 + 区内迎敌 + 补兵 + 祭司走位/转化
-            manageScout();
-            armyAttack(true);      // 区内迎敌(兵不出区)
-            rallyArmy();           // 每帧最多把一个兵填进集结格(新造的兵自动赶来)
-            rallyPriest();         // 祭司躲到队伍最后
-            priestConvert();       // 冷却好了转血最厚的敌人
+            // ② 锚点有了 -> 定集结点 + 集结(只做一次; 铺开之后大军不再整体移动)
+            pickRallyPoint();
+            manageScout(1);
+            priestFollow();          // [AI] 祭司始终跟在大军身边(不脱离部队 5 格)
+            // [AI] 集结期也要打仗(用户: "每次到集结时 攻击做得比较好 但打得很吃力"):
+            //   原来 rallyArmy()+return 的集结期不做任何战斗, 兵在那儿站着等,
+            //   祭司也不转化 -> 集结期纯属白等, 敌人越攒越多。
+            //   现在集结期也开打(限距已在 armyAttack 内), 祭司也顺手转化敌人。
+            armyAttack();
+            priestConvert();          // 祭司在响应范围内转血最厚的敌人
+            rallyArmy();              // 补新到的兵到集结格(每帧最多派一个)
+            rallyPriest();
+            if(rallyEnough())rallyDone=true;
 
-            // ④ 计轮: 集结区附近(RALLY_EDGE_RANGE)敌人"从有到无"算一轮; 连续 RALLY_IDLE_TICKS 帧没敌人也兜底算一轮
-            bool enemyNear=false;
+            // ③ 大军在集结区迎敌(斥候在上面把敌兵引过来)
+            // [AI] 每轮都出击, 但只在集结点附近打 -> armyAttack 里加了 ARMY_MAX_RANGE=12 的限距,
+            //   兵不会追出集结点, 所以不会越打越前、越拉越多的敌兵。
+            armyAttack();
+
+            // ④ 计轮: 只看【集结点附近】的敌人"从有到无" -> 本轮拉扯结束
+            //   [AI] 原来判据是 `info.enemy_armies.empty()`(全视野), 错在哪:
+            //   斥候在 mode1 一直往敌营方向推进, 会自己钻进敌群 ->
+            //   敌人永远在"全视野"里 -> rushHadEnemy 一直 true -> rushRound 永远不涨
+            //   -> 第一轮拉扯结束不了, 也就没有第二轮(用户: "第一波拉扯结束之后
+            //   斥候不会主动开始第二轮拉扯")。
+            //   现在: 只统计集结点附近的敌人(大���真正在打的那批), 打完就进下一轮。
+            bool enemyNearRally=false;
             for(auto&ea:info.enemy_armies){
+                if(rallyDR<0)break;                       // 集结点还没定 -> 不计
                 if(max(abs(ea.BlockDR-rallyDR),abs(ea.BlockUR-rallyUR))<=RALLY_EDGE_RANGE){
-                    enemyNear=true; break;
+                    enemyNearRally=true; break;
                 }
             }
-            if(enemyNear){
-                rushHadEnemy=true; noEnemyTicks=0;
-            }
-            else if(rushHadEnemy){
-                rushHadEnemy=false; rushRound++; noEnemyTicks=0;
-                DebugText(QString("[拉扯] 第%1 轮结束(敌人在集结区被打跑)").arg(rushRound));
-            }
-            else if(++noEnemyTicks>=RALLY_IDLE_TICKS){
-                noEnemyTicks=0; rushRound++;
-                DebugText(QString("[拉扯] 第%1 轮结束(连续%2帧无敌人, 兜底推进)").arg(rushRound).arg(RALLY_IDLE_TICKS));
-            }
-
-            // ⑤ 5 轮满了 + 每个活兵(除斥候)都在集结区 ±1 内 -> 冲锋; 等超 500 帧也强行冲
-            if(rushRound>=RUSH_ROUNDS){
-                static int waitTick=0;
-                bool allIn=true;
-                for(auto&a:info.armies){
-                    if(a.SN==scoutSN)continue;
-                    if(max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))>RALLY_R+1){ allIn=false; break; }
+            if(!enemyNearRally){
+                if(rushHadEnemy){
+                    rushHadEnemy=false;
+                    rushRound++;
+                    noEnemyTicks=0;
+                    DebugText(QString("[拉扯] 第%1 轮结束(敌人在集结点附近被打跑)").arg(rushRound));
                 }
-                if(allIn||++waitTick>=500){
-                    waitTick=0;
-                    counterState=3;
+                // [AI] 兜底(用户加): 原本只在"看见过敌人又没了"时才 +1。
+                //   但如果敌人从来没被引到集结点附近(斥候没引到/半路死/绕路),
+                //   rushHadEnemy 永远是 false -> rushRound 永远 0 -> 永远停在第一轮
+                //   (日志实证: 集结点(42,31) 附近敌兵一直是 0, 拉扯轮数不涨)。
+                //   现在: 集结点附近连续 RALLY_IDLE_TICKS 帧(2.5秒)没有敌人, 也算这一轮拉完了,
+                //   自动进入下一轮, 至少不会卡死。
+                else{
+                    noEnemyTicks++;
+                    if(noEnemyTicks>=RALLY_IDLE_TICKS){
+                        noEnemyTicks=0;
+                        rushRound++;
+                        DebugText(QString("[拉扯] 第%1 轮结束(集结点附近连续%2帧无敌人, 兜底推进)")
+                            .arg(rushRound).arg(RALLY_IDLE_TICKS));
+                    }
                 }
+            }
+            else{
+                rushHadEnemy=true;
+                noEnemyTicks=0;
             }
             break;
         }
 
-        case 3:{   // ---- 冲锋: 全军(含斥候)朝对角压过去; 路上照打; 看到攻城厂由 CalmAndCrazy 贴上去转化 ----
-            int gd=max(2,min(97,100-centerBlockDR));
-            int gu=max(2,min(97,100-centerBlockUR));
-            if(rallyDR!=gd||rallyUR!=gu){      // 第一次进 -> 把对角点当成新集结区
-                rallyDR=gd; rallyUR=gu;
-                rallySlot.clear();
-                rallyArrived.clear();
+        case 3:{   // ---- 反攻: 斥候找厂/打箭塔 + 大军推进 + 祭司转化 ----
+            // ① 攻城厂还没进视野 -> 斥候继续找(路上会避障; 死了下一帧会自动让马厩重造)
+            if(factorySN==-1){
+                manageScout(2);
+                return;
             }
-            rallyArmy();          // 每帧把一个兵填进格 -> 新造出来的兵也会跟上
-            armyAttack(false);    // 不限制在区内, 沿途 15 格内的敌人照打
-            priestFollow();
+            // ② 厂找到了 -> 斥候去打"离厂最近"的那座箭塔, 吸引箭塔火力给祭司让路
+            manageScout(3);
+            // ③ 大军推进: 攻击视野内的敌人(优先远程兵 = 护祭司)
+            armyAttack();
+            // ④ 祭司转化(优先生命值最高的敌人); 贴厂转化由 CalmAndCrazy 负责
+            priestFollow();          // [AI] 先保证祭司不脱离大军
             priestConvert();
             break;
         }
@@ -2109,17 +2191,17 @@ bool UsrAI::rallyArmy(){
     // [AI] 循环填入: 已经在格上待过的兵, 如果后来离开了那一格(被敌人引走/追击),
     //      就把格子释放出来让别人能填 —— 对应策略"军队移动后集结点空出, 可以循环填入"。
     //      注意: 还没到过自己格的兵不释放(他还在路上), 否则刚派出去就被回收。
-    // 跑出战斗区(集结中心 ±(RALLY_R+2))就收回他的格, 下一帧重新派回来 = "兵不得越界"
-    // 还没到过区里的兵不释放(他还在路上), 否则刚派出去就被回收
     vector<int> leftSlot;
     for(auto& r:rallySlot){
         if(r.first==priestSN)continue;              // 祭司单独处理
         for(auto&a:info.armies){
             if(a.SN!=r.first)continue;
-            if(max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))<=RALLY_R+2)
-                rallyArrived[r.first]=true;         // 他确实到过区里
-            else if(rallyArrived[r.first])
-                leftSlot.push_back(r.first);        // 到过又跑出去了 -> 释放该格
+            if(abs(a.BlockDR-r.second/100)<=1&&abs(a.BlockUR-r.second%100)<=1){
+                rallyArrived[r.first]=true;         // 他确实到过自己的格
+            }
+            else if(rallyArrived[r.first]){
+                leftSlot.push_back(r.first);        // 到过、现在又离开了 -> 释放该格
+            }
             break;
         }
     }
@@ -2196,6 +2278,19 @@ void UsrAI::rallyPriest(){
 }
 
 // ④ 到齐判据
+bool UsrAI::rallyEnough(){
+    int n=0;
+    for(auto&kv:rallySlot){
+        if(kv.first==priestSN)continue;
+        for(auto&a:info.armies){
+            if(a.SN!=kv.first)continue;
+            
+            if(abs(a.BlockDR-kv.second/100)<=1&&abs(a.BlockUR-kv.second%100)<=1)n++;
+            break;
+        }
+    }
+    return n>=RALLY_NEED;
+}
 
 
 
