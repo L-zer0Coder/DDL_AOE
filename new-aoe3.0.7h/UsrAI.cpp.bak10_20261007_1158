@@ -122,12 +122,10 @@ int scoutSN=-1;             // 侦察骑兵
 // [AI] 原值 6 -> 改 3。理由: 斥候是"直走推进"去找敌营, 用切比雪夫 6 格当诱敌距离太远,
       //   等它走到 6 格内才发现敌人, 而此时往往已经走进了敌营防御圈(祭司猎手 20 格内会被锁定)。
       //   3 格足够让敌人看见斥候(VISION 7-9)并追出来, 又不会提前撤回。
-const int SCOUT_LURE_RANGE=3;  // 斥候被逼到多近就后撤(越小=贴得越近再跑, 更容易把敌人勾出来)
+const int SCOUT_LURE_RANGE=5;  // 斥候被逼到多近就后撤
 int rallyDR=-1,rallyUR=-1;   // [AI] 集结点(斥候第一次看到敌人时定; 打完一波可重定)
 const int RALLY_BACK=15;     // 集结点 = 敌人位置朝自家方向退这么多格
 int priestGoDR=-1,priestGoUR=-1;    // [AI] 祭司上次被派去的格(避免每帧重发)
-unordered_map<int,int> towerAssign;  // [AI] 兵SN -> 认领的敌方箭塔SN
-bool towerReady=false;               // [AI] 每个兵都认领到塔(= 祭司可以上了)
 
 /////////////////////////////////////////////
 static bool compTech=false,logistics=false; //复合弓 后勤 （科技）
@@ -1838,24 +1836,11 @@ void UsrAI::counterAttack(){
             break;
         }
 
-        case 3:{   // ---- 厂区决胜: 分头拆塔; 塔清完就贴上去给祭司挡枪 ----
+        case 3:{   // ---- 贴厂: 主力继续压上吸引火力, 祭司找机会贴厂转化 ----
             if(factorySN==-1){ counterState=2; break; }   // 厂没进视野 -> 回去继续推进
-            if(scoutSN==-1){                              // 斥候继续当先锋(死了补)
-                for(auto&a:info.armies){
-                    if(a.Sort==AT_SCOUT){ scoutSN=a.SN; break; }
-                }
-            }
-            if(scoutSN==-1){
-                for(auto&b:info.buildings){
-                    if(b.Type==BUILDING_STABLE&&b.Percent>=100&&b.Project==ACT_NULL&&
-                       info.Meat>=BUILDING_STABLE_CREATE_SCOUT_FOOD){
-                        BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
-                        break;
-                    }
-                }
-            }
             manageScout();
-            attackTowers();        // 有守军先打人; 没守军分头拆塔; 塔没了就贴厂当肉盾
+            armyAttack();
+            rallyPriest();
             priestConvert();
             break;
         }
@@ -1864,81 +1849,6 @@ void UsrAI::counterAttack(){
 
 
 
-// ================= [AI] 厂区: 分头拆塔 =================
-//   有守军 -> 交给 armyAttack(野战: 退/打)
-//   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
-//   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
-void UsrAI::attackTowers(){
-    bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
-    for(auto&ea:info.enemy_armies){
-        if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
-    }
-    if(!factoryClear){ armyAttack(); return; }                   // 厂区还有守军 -> 先打人(兜底)
-
-    for(auto&f:info.farmers){                                    // 农民也去打塔(人海: 塔一次只打一个)
-        if(f.NowState!=HUMAN_STATE_IDLE)continue;
-        int tSN=-1,best=1e9;
-        for(auto&eb:info.enemy_buildings){
-            if(eb.Type!=BUILDING_ARROWTOWER)continue;
-            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
-            if(d<best){ best=d; tSN=eb.SN; }
-        }
-        if(tSN==-1)continue;
-        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
-    }
-
-    for(auto&a:info.armies){
-        if(a.SN==priestSN||a.SN==scoutSN)continue;
-        int tSN=-1;
-        auto it=towerAssign.find(a.SN);
-        if(it!=towerAssign.end()){                               // 认领过的: 塔还在就继续打
-            for(auto&eb:info.enemy_buildings){
-                if(eb.SN==it->second&&eb.Type==BUILDING_ARROWTOWER){ tSN=it->second; break; }
-            }
-        }
-        if(tSN==-1){                                             // 没认领 / 塔没了 -> 找最近的活塔
-            int best=1e9;
-            for(auto&eb:info.enemy_buildings){
-                if(eb.Type!=BUILDING_ARROWTOWER)continue;
-                int d=max(abs(eb.BlockDR-a.BlockDR),abs(eb.BlockUR-a.BlockUR));
-                if(d<best){ best=d; tSN=eb.SN; }
-            }
-            if(tSN!=-1)towerAssign[a.SN]=tSN;
-        }
-        if(tSN==-1)continue;                                     // 一座塔都没有了
-        int tDR=-1,tUR=-1;                                       // 这座塔在哪
-        for(auto&eb:info.enemy_buildings){
-            if(eb.SN==tSN){ tDR=eb.BlockDR; tUR=eb.BlockUR; break; }
-        }
-        if(tDR==-1)continue;
-        if(max(abs(tDR-a.BlockDR),abs(tUR-a.BlockUR))>4){         // 还没贴上去 -> 先走到塔边当肉盾
-            if(a.NowState==HUMAN_STATE_IDLE){
-                int sx=(a.BlockDR>tDR?1:(a.BlockDR<tDR?-1:0));
-                int sy=(a.BlockUR>tUR?1:(a.BlockUR<tUR?-1:0));
-                HumanMove(a.SN,max(2,min(97,tDR+sx*4))*BLOCKSIDELENGTH,
-                                max(2,min(97,tUR+sy*4))*BLOCKSIDELENGTH);
-            }
-            continue;
-        }
-        if(a.NowState!=HUMAN_STATE_IDLE)continue;
-        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);             // 贴住了再打
-    }
-
-    int nTower=0;                                                // 还活着的敌方箭塔数
-    for(auto&eb:info.enemy_buildings){ if(eb.Type==BUILDING_ARROWTOWER)nTower++; }
-    bool farmerIn=false;                                         // 有没有农民已经冲到厂区附近
-    for(auto&f:info.farmers){
-        if(max(abs(f.BlockDR-factoryBlockDR),abs(f.BlockUR-factoryBlockUR))<=10){ farmerIn=true; break; }
-    }
-    towerReady=(nTower==0||farmerIn);                            // 塔清光 或 农民已到 -> 祭司可以上
-    if(nTower>0&&!farmerIn)return;                              // 还有塔没拆完(农民也没到) -> 继续拆
-    for(auto&a:info.armies){                                     // 往厂靠, 挡在祭司前面
-        if(a.SN==priestSN||a.SN==scoutSN)continue;
-        if(a.NowState!=HUMAN_STATE_IDLE)continue;
-        if(max(abs(a.BlockDR-factoryBlockDR),abs(a.BlockUR-factoryBlockUR))>4)
-            HumanMove(a.SN,factoryBlockDR*BLOCKSIDELENGTH,factoryBlockUR*BLOCKSIDELENGTH);
-    }
-}
 // ================= [AI] 祭司 =================
 //   冷却好了 -> 交给 priestConvert 上前转化(他那边会挑目标)
 //   冷却中   -> 躲到"离最近敌人最远的那个我方兵"旁边
@@ -2273,8 +2183,12 @@ void UsrAI::CalmAndCrazy(){
         if(a.NowState!=HUMAN_STATE_IDLE)break;      // 忙(转化中/走路中) -> 不打扰
         if(a.ConvertCooldown>0)break;                // 冷却没好
         
-        if(!towerReady)break;                        // 兵还没贴住塔 -> 祭司先等着
-        HumanAction(priestSN,factorySN);             // 交给引擎: 它会带祭司走到厂边(贴脸)再转
+        int d=max(abs(priestBlockDR-factoryBlockDR),abs(priestBlockUR-factoryBlockUR));
+        if(d>DIS_PRIEST){ 
+            priestFollow(); 
+            break; 
+        }                             // ② 还太远
+        HumanAction(priestSN,factorySN);             // 血够 + 够近 -> 上
         break;
     }
 }

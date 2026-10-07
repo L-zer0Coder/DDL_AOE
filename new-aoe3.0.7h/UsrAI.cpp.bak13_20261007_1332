@@ -1869,26 +1869,12 @@ void UsrAI::counterAttack(){
 //   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
 //   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
 void UsrAI::attackTowers(){
-    bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
-    for(auto&ea:info.enemy_armies){
-        if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
-    }
-    if(!factoryClear){ armyAttack(); return; }                   // 厂区还有守军 -> 先打人(兜底)
+    if(!info.enemy_armies.empty()){ armyAttack(); return; }      // 有守军 -> 先打人
 
-    for(auto&f:info.farmers){                                    // 农民也去打塔(人海: 塔一次只打一个)
-        if(f.NowState!=HUMAN_STATE_IDLE)continue;
-        int tSN=-1,best=1e9;
-        for(auto&eb:info.enemy_buildings){
-            if(eb.Type!=BUILDING_ARROWTOWER)continue;
-            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
-            if(d<best){ best=d; tSN=eb.SN; }
-        }
-        if(tSN==-1)continue;
-        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
-    }
-
+    int nArmy=0,nAssigned=0;
     for(auto&a:info.armies){
         if(a.SN==priestSN||a.SN==scoutSN)continue;
+        nArmy++;                                                 // 走路的兵也算(他正在去贴塔)
         int tSN=-1;
         auto it=towerAssign.find(a.SN);
         if(it!=towerAssign.end()){                               // 认领过的: 塔还在就继续打
@@ -1920,18 +1906,16 @@ void UsrAI::attackTowers(){
             }
             continue;
         }
+        nAssigned++;                                             // 已贴到塔边(肉盾就位)
         if(a.NowState!=HUMAN_STATE_IDLE)continue;
         if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);             // 贴住了再打
     }
 
-    int nTower=0;                                                // 还活着的敌方箭塔数
-    for(auto&eb:info.enemy_buildings){ if(eb.Type==BUILDING_ARROWTOWER)nTower++; }
-    bool farmerIn=false;                                         // 有没有农民已经冲到厂区附近
-    for(auto&f:info.farmers){
-        if(max(abs(f.BlockDR-factoryBlockDR),abs(f.BlockUR-factoryBlockUR))<=10){ farmerIn=true; break; }
+    if(nAssigned>0){
+        towerReady=(nArmy>0&&nAssigned>=nArmy);                   // 每个兵都贴到位 -> 祭司上
+        return;
     }
-    towerReady=(nTower==0||farmerIn);                            // 塔清光 或 农民已到 -> 祭司可以上
-    if(nTower>0&&!farmerIn)return;                              // 还有塔没拆完(农民也没到) -> 继续拆
+    towerReady=true;                                             // 塔清光了
     for(auto&a:info.armies){                                     // 往厂靠, 挡在祭司前面
         if(a.SN==priestSN||a.SN==scoutSN)continue;
         if(a.NowState!=HUMAN_STATE_IDLE)continue;

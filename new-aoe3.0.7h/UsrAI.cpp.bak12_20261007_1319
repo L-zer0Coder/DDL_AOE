@@ -1869,26 +1869,13 @@ void UsrAI::counterAttack(){
 //   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
 //   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
 void UsrAI::attackTowers(){
-    bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
-    for(auto&ea:info.enemy_armies){
-        if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
-    }
-    if(!factoryClear){ armyAttack(); return; }                   // 厂区还有守军 -> 先打人(兜底)
+    if(!info.enemy_armies.empty()){ armyAttack(); return; }      // 有守军 -> 先打人
 
-    for(auto&f:info.farmers){                                    // 农民也去打塔(人海: 塔一次只打一个)
-        if(f.NowState!=HUMAN_STATE_IDLE)continue;
-        int tSN=-1,best=1e9;
-        for(auto&eb:info.enemy_buildings){
-            if(eb.Type!=BUILDING_ARROWTOWER)continue;
-            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
-            if(d<best){ best=d; tSN=eb.SN; }
-        }
-        if(tSN==-1)continue;
-        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
-    }
-
+    int nArmy=0,nAssigned=0;
     for(auto&a:info.armies){
         if(a.SN==priestSN||a.SN==scoutSN)continue;
+        if(a.NowState!=HUMAN_STATE_IDLE)continue;
+        nArmy++;
         int tSN=-1;
         auto it=towerAssign.find(a.SN);
         if(it!=towerAssign.end()){                               // 认领过的: 塔还在就继续打
@@ -1906,32 +1893,15 @@ void UsrAI::attackTowers(){
             if(tSN!=-1)towerAssign[a.SN]=tSN;
         }
         if(tSN==-1)continue;                                     // 一座塔都没有了
-        int tDR=-1,tUR=-1;                                       // 这座塔在哪
-        for(auto&eb:info.enemy_buildings){
-            if(eb.SN==tSN){ tDR=eb.BlockDR; tUR=eb.BlockUR; break; }
-        }
-        if(tDR==-1)continue;
-        if(max(abs(tDR-a.BlockDR),abs(tUR-a.BlockUR))>4){         // 还没贴上去 -> 先走到塔边当肉盾
-            if(a.NowState==HUMAN_STATE_IDLE){
-                int sx=(a.BlockDR>tDR?1:(a.BlockDR<tDR?-1:0));
-                int sy=(a.BlockUR>tUR?1:(a.BlockUR<tUR?-1:0));
-                HumanMove(a.SN,max(2,min(97,tDR+sx*4))*BLOCKSIDELENGTH,
-                                max(2,min(97,tUR+sy*4))*BLOCKSIDELENGTH);
-            }
-            continue;
-        }
-        if(a.NowState!=HUMAN_STATE_IDLE)continue;
-        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);             // 贴住了再打
+        nAssigned++;
+        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
     }
 
-    int nTower=0;                                                // 还活着的敌方箭塔数
-    for(auto&eb:info.enemy_buildings){ if(eb.Type==BUILDING_ARROWTOWER)nTower++; }
-    bool farmerIn=false;                                         // 有没有农民已经冲到厂区附近
-    for(auto&f:info.farmers){
-        if(max(abs(f.BlockDR-factoryBlockDR),abs(f.BlockUR-factoryBlockUR))<=10){ farmerIn=true; break; }
+    if(nAssigned>0){                                             // 还有塔要拆
+        towerReady=(nArmy>0&&nAssigned>=nArmy);                  // 每个兵都有塔 -> 祭司可以上
+        return;
     }
-    towerReady=(nTower==0||farmerIn);                            // 塔清光 或 农民已到 -> 祭司可以上
-    if(nTower>0&&!farmerIn)return;                              // 还有塔没拆完(农民也没到) -> 继续拆
+    towerReady=true;                                             // 塔清光了
     for(auto&a:info.armies){                                     // 往厂靠, 挡在祭司前面
         if(a.SN==priestSN||a.SN==scoutSN)continue;
         if(a.NowState!=HUMAN_STATE_IDLE)continue;
@@ -2273,8 +2243,13 @@ void UsrAI::CalmAndCrazy(){
         if(a.NowState!=HUMAN_STATE_IDLE)break;      // 忙(转化中/走路中) -> 不打扰
         if(a.ConvertCooldown>0)break;                // 冷却没好
         
-        if(!towerReady)break;                        // 兵还没贴住塔 -> 祭司先等着
-        HumanAction(priestSN,factorySN);             // 交给引擎: 它会带祭司走到厂边(贴脸)再转
+        int d=max(abs(priestBlockDR-factoryBlockDR),abs(priestBlockUR-factoryBlockUR));
+        if(d>DIS_PRIEST){                            // 还太远 -> 直接朝厂走(路上挨打不管)
+            HumanMove(priestSN,factoryBlockDR*BLOCKSIDELENGTH,factoryBlockUR*BLOCKSIDELENGTH);
+            break;
+        }
+        if(!towerReady)break;                        // 兵还没围住塔 -> 到了也先别动
+        HumanAction(priestSN,factorySN);             // 上
         break;
     }
 }
