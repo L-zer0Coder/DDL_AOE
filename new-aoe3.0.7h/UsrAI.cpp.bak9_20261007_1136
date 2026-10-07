@@ -123,8 +123,7 @@ int scoutSN=-1;             // 侦察骑兵
       //   等它走到 6 格内才发现敌人, 而此时往往已经走进了敌营防御圈(祭司猎手 20 格内会被锁定)。
       //   3 格足够让敌人看见斥候(VISION 7-9)并追出来, 又不会提前撤回。
 const int SCOUT_LURE_RANGE=5;  // 斥候被逼到多近就后撤
-int rallyDR=-1,rallyUR=-1;   // [AI] 集结点(斥候第一次看到敌人时定; 打完一波可重定)
-const int RALLY_BACK=15;     // 集结点 = 敌人位置朝自家方向退这么多格
+int marchDR=-1,marchUR=-1;   // [AI] 行军点(斥候身后 10 格), 全军朝它走
 int priestGoDR=-1,priestGoUR=-1;    // [AI] 祭司上次被派去的格(避免每帧重发)
 
 /////////////////////////////////////////////
@@ -346,7 +345,7 @@ void UsrAI::processData(){
         }
         DBG(QString("[P] 位=(%1,%2) st=%3 冷却=%4 探索=%5 目标=(%6,%7) 行军点=(%8,%9)")
             .arg(px).arg(py).arg(pst).arg(pcd).arg(priestExploring?1:0)
-            .arg(priestGoDR).arg(priestGoUR).arg(rallyDR).arg(rallyUR));
+            .arg(priestGoDR).arg(priestGoUR).arg(marchDR).arg(marchUR));
 
         int sx=-1,sy=-1,sst=-9;
         for(auto&a:info.armies){
@@ -355,7 +354,7 @@ void UsrAI::processData(){
         }
         DBG(QString("[S] 斥候=(%1,%2) st=%3 目标=(%4,%5) 敌数=%6 行军点=(%7,%8)")
             .arg(sx).arg(sy).arg(sst).arg(seekTgtDR).arg(seekTgtUR)
-.arg((int)info.enemy_armies.size()).arg(rallyDR).arg(rallyUR));
+.arg((int)info.enemy_armies.size()).arg(marchDR).arg(marchUR));
 
         int mkP=ACT_NULL,stP=ACT_NULL;
         for(auto&b:info.buildings){
@@ -371,7 +370,7 @@ void UsrAI::processData(){
         for(auto&a:info.armies){
             if(a.SN==priestSN||a.SN==scoutSN)continue;
             int dd=-1,de=999;
-            if(rallyDR>=0)dd=max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR));
+            if(marchDR>=0)dd=max(abs(a.BlockDR-marchDR),abs(a.BlockUR-marchUR));
             for(auto&ea:info.enemy_armies){
                 int d=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
                 if(d<de)de=d;
@@ -1666,13 +1665,12 @@ void UsrAI::manageScout(){
     HumanMove(scoutSN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
 }
 
-// ================= [AI] 部队: 退 / 打 / 回集结点 =================
-// 只在兵"站着(IDLE)"时决策 —— 避免每帧重发把寻路反复重置
-//   敌人 <=3 格  -> 背离退 6 格(退出它的攻击范围)
-//   敌人 <=13 格 -> 打("往前走几格"交给引擎: HumanAction 自己会带他到射程内)
-//   其余         -> 回集结点集合; 集结点还没定就原地不动
+// ================= [AI] 部队: 退 / 打 / 进 =================
+// 只在兵"站着(IDLE)"时决策一套动作 —— 避免每帧重发把寻路反复重置
+//   敌人 <=3 格 -> 背离退 2 格(退出近战范围, 这一帧不打, 下帧自然打回去)
+//   敌人 <=7 格 -> 打(复合弓射程 7; 优先远程兵)
+//   其余        -> 朝 march 行军点走(跟着斥候压上去)
 void UsrAI::armyAttack(){
-    const int ARMY_SIGHT=13;                         // 值得打的范围(射程 7 + 机动余量)
     for(auto&a:info.armies){
         if(a.SN==priestSN||a.SN==scoutSN)continue;
         if(a.NowState!=HUMAN_STATE_IDLE)continue;        // 走路/攻击中 -> 不打扰
@@ -1681,26 +1679,26 @@ void UsrAI::armyAttack(){
             int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
             if(dd<d){ d=dd; ex=ea.BlockDR; ey=ea.BlockUR; }
         }
-        if(d<=3){                                        // 贴脸 -> 退 6 格
+        if(d<=3){                                        // 贴脸 -> 退 2 格
             int sx=(ex>a.BlockDR?-1:(ex<a.BlockDR?1:0));
             int sy=(ey>a.BlockUR?-1:(ey<a.BlockUR?1:0));
-            HumanMove(a.SN,max(2,min(97,a.BlockDR+sx*6))*BLOCKSIDELENGTH,
-                            max(2,min(97,a.BlockUR+sy*6))*BLOCKSIDELENGTH);
+            HumanMove(a.SN,max(2,min(97,a.BlockDR+sx*2))*BLOCKSIDELENGTH,
+                            max(2,min(97,a.BlockUR+sy*2))*BLOCKSIDELENGTH);
             continue;
         }
-        if(d<=ARMY_SIGHT){                               // 打得着 -> 打(优先远程兵)
+        if(d<=7){                                        // 射程内 -> 打
             int tSN=-1,best=1e18;
             for(auto&ea:info.enemy_armies){
                 int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
-                if(dd>ARMY_SIGHT)continue;
-                int score=dd+(isArcherSort(ea.Sort)?0:10000);
+                if(dd>7)continue;
+                int score=dd+(isArcherSort(ea.Sort)?0:10000);   // 远程优先
                 if(score<best){ best=score; tSN=ea.SN; }
             }
             if(tSN!=-1&&a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
             continue;
         }
-        if(rallyDR>=0&&max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))>3)   // 回集结点
-            HumanMove(a.SN,rallyDR*BLOCKSIDELENGTH,rallyUR*BLOCKSIDELENGTH);
+        if(marchDR>=0)                                   // 前进
+            HumanMove(a.SN,marchDR*BLOCKSIDELENGTH,marchUR*BLOCKSIDELENGTH);
     }
 }
 
@@ -1785,7 +1783,7 @@ void UsrAI::counterAttack(){
             break;
         }
 
-        case 2:{   // ---- 推进: 斥候探路勾引, 主力在集结点附近打"风筝"
+        case 2:{   // ---- 推进: 斥候探路勾引, 主力跟在它后面 10 格压上去 ----
             // ① 没斥候 -> 记下新造的; 还是没有就让马厩补一个
             if(scoutSN==-1){
                 for(auto&a:info.armies){
@@ -1803,31 +1801,20 @@ void UsrAI::counterAttack(){
                 return;
             }
 
-            // ② 斥候探路 / 勾引 / 被咬就撤
-            manageScout();
-
-            // ③ 定 / 重定集结点: 视野里没敌人(这一波打完了)时, 斥候看到谁就用谁的位置往自家退 15 格
-            if(rallyDR==-1||info.enemy_armies.empty()){
-                int sdr=-1,sur=-1;
-                for(auto&a:info.armies){
-                    if(a.SN!=scoutSN)continue;
-                    sdr=a.BlockDR; sur=a.BlockUR;
-                    break;
-                }
-                if(sdr!=-1){
-                    int best=1e18,eDR=-1,eUR=-1;
-                    for(auto&ea:info.enemy_armies){
-                        int d=max(abs(ea.BlockDR-sdr),abs(ea.BlockUR-sur));
-                        if(d<=VISION_SCOUT&&d<best){ best=d; eDR=ea.BlockDR; eUR=ea.BlockUR; }
-                    }
-                    if(eDR!=-1){
-                        rallyDR=max(2,min(97,eDR+(centerBlockDR>eDR?RALLY_BACK:-RALLY_BACK)));
-                        rallyUR=max(2,min(97,eUR+(centerBlockUR>eUR?RALLY_BACK:-RALLY_BACK)));
-                    }
-                }
+            // ② 行军点 = 斥候身后 10 格(朝自家那侧): 先锋和主力保持一段距离
+            int sdr=-1,sur=-1;
+            for(auto&a:info.armies){
+                if(a.SN!=scoutSN)continue;
+                sdr=a.BlockDR; sur=a.BlockUR;
+                break;
+            }
+            if(sdr!=-1){
+                marchDR=max(2,min(97,sdr+(centerBlockDR>sdr?10:-10)));
+                marchUR=max(2,min(97,sur+(centerBlockUR>sur?10:-10)));
             }
 
-            // ④ 全军 退/打/回集结点 + 祭司
+            // ③ 斥候勾引 + 全军退/打/进 + 祭司走位
+            manageScout();
             armyAttack();
             rallyPriest();
             priestConvert();

@@ -15,7 +15,6 @@ public:
     ~UsrAI(){}
     void getBaseInfo();
     void betterMap();
-    void Resort();
     void getPriest();
     void gethomeBuilder();
     void priestExplore();
@@ -23,11 +22,15 @@ public:
     void manageBuild();
     int checkEnv(int type,int& byBuildingSN);
     bool bushDone(int fSN);          // [AI] 花名册成员是否"浆果已采完且空闲"
+    int  farmTeamOnDuty();           // [AI] 已经在农田上干活的花名册成员数
     bool canFarm(int fSN);           // [AI] 这个农民现在能不能被派去农田(三阶段规则)
     bool findBuildSpot(int bd,int bu,int size,int minR,int maxR,int &ox,int &oy);
     
     int assignWoodcutter();//返回派出去的村民SN
+    int reassignWoodcutter(int fSN); // [AI] 给指定的闲下来的伐木工换一棵树(只挑树不挑人), 返回树SN, -1=没树
     int assignGoldMiner();   // 派一个空闲村民去挖金(优先有仓库的金矿), 返回SN
+    bool buildGoldStock();   // [AI] 采金前先在旁边建仓库(仿 huntGazelle), 派出去过指令返回true
+    bool spotBusy(int dr,int ur,int size);
 
     void waveBattle();
     void counterAttack();  // 反攻: 护送祭司转化敌方攻城武器厂
@@ -39,13 +42,15 @@ public:
 
     bool haveBuilding(int type);
     void centerUpgrade();
+    void pickRallyPoint();   // 定集结点(从敌人位置朝自家退几格)
+    bool rallyArmy();        // 铺开集结: 每帧最多派一个兵, 已分格的不重发
     void rallyPriest();      // 祭司去集结区里"离敌最远"的那一格
 
     void CalmAndCrazy();
 
     // ===== [AI] 反攻阶段新增 =====
     void manageScout();            // 斥候: 找敌 / 贴身勾引 / 带回集结区
-    void armyAttack();             // 部队: 退/打/进 (贴脸退, 射程内打, 其余朝行军点走)
+    void armyAttack(bool inZone);  // 部队攻击: true=只在集结区内迎敌, false=冲锋(不限区域)
     void priestConvert();         // 祭司转化: 优先转"当前生命值最高"的敌人
     void priestFollow();          // 祭司跟随: 离最近的我方部队超过 PRIEST_HARNESS 就靠拢
 private:

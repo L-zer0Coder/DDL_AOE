@@ -39,13 +39,15 @@ public:
 
     bool haveBuilding(int type);
     void centerUpgrade();
+    void pickRallyPoint();   // 定集结点(从敌人位置朝自家退几格)
+    bool rallyArmy();        // 铺开集结: 每帧最多派一个兵, 已分格的不重发
     void rallyPriest();      // 祭司去集结区里"离敌最远"的那一格
 
     void CalmAndCrazy();
 
     // ===== [AI] 反攻阶段新增 =====
     void manageScout();            // 斥候: 找敌 / 贴身勾引 / 带回集结区
-    void armyAttack();             // 部队: 退/打/进 (贴脸退, 射程内打, 其余朝行军点走)
+    void armyAttack(bool inZone);  // 部队攻击: true=只在集结区内迎敌, false=冲锋(不限区域)
     void priestConvert();         // 祭司转化: 优先转"当前生命值最高"的敌人
     void priestFollow();          // 祭司跟随: 离最近的我方部队超过 PRIEST_HARNESS 就靠拢
 private:
