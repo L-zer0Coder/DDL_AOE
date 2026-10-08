@@ -88,7 +88,7 @@ const int goHomeFrame=4500;//强制回家帧
 int killGazelle=0;//6 记录猎杀的瞪羚数
 bool storageStarted=false;//防止猎人重复建仓库
 int farmNum=0;
-// [AI] 农田上限: 铜器前 4 块, 铜器后放开到 16 块(只有谷仓/市中心两圈共 16 个方位)
+
 const int FARM_MAX_TOOL=3;
 const int FARM_MAX_BRONZE=10;
 int farmLimit=FARM_MAX_TOOL;
@@ -111,23 +111,21 @@ unordered_map<int,bool>woodFarmer;
 const int PRIEST_HARNESS=10;   // 祭司活动范围: 离箭塔不超过5格(塔射程7格, 保证一直在保护圈内)
 //================= 反攻 =================
 int counterState=0;         //  0-前期：抵御三波 1-中期：集结与侦察 2-拉扯 3-大反攻
-int  seekTgtDR=-1,seekTgtUR=-1; // [AI] 斥候推进的锁定目标格(绝对坐标, 避免每帧重发)
+int  seekTgtDR=-1,seekTgtUR=-1; // 
 
 int factorySN=-1;           // 敌方攻城武器厂
 int factoryBlockDR=-1;      // 攻城武器厂坐标
 int factoryBlockUR=-1;
 int scoutSN=-1;             // 侦察骑兵
-int focusSN=-1;             // [AI] 弓兵集火目标: 全队共用一个, 打死了才换下一个
+int focusSN=-1;             // 
 
 
-// [AI] 原值 6 -> 改 3。理由: 斥候是"直走推进"去找敌营, 用切比雪夫 6 格当诱敌距离太远,
-      //   等它走到 6 格内才发现敌人, 而此时往往已经走进了敌营防御圈(祭司猎手 20 格内会被锁定)。
-      //   3 格足够让敌人看见斥候(VISION 7-9)并追出来, 又不会提前撤回。
+
 const int SCOUT_LURE_RANGE=3;  // 斥候被逼到多近就后撤(越小=贴得越近再跑, 更容易把敌人勾出来)
-int rallyDR=-1,rallyUR=-1;   // [AI] 集结点(斥候第一次看到敌人时定; 打完一波可重定)
+int rallyDR=-1,rallyUR=-1;   
 const int RALLY_BACK=15;     // 集结点 = 敌人位置朝自家方向退这么多格
-int priestGoDR=-1,priestGoUR=-1;    // [AI] 祭司上次被派去的格(避免每帧重发)
-bool towerReady=false;               // [AI] 每个兵都认领到塔(= 祭司可以上了)
+int priestGoDR=-1,priestGoUR=-1;    
+bool towerReady=false;              
 
 /////////////////////////////////////////////
 static bool compTech=false,logistics=false; //复合弓 后勤 （科技）
@@ -136,7 +134,7 @@ unordered_map<int,bool> scoutVisited;   // 斥候已经巡过的敌塔SN
 
 static bool seenWave3=false;                       // 纯状态驱动, 不用帧
 
-// ================= [AI] 调试输出开关: 排查时 1, 平时改 0 即全静音 =================
+// ================= 调试输出开关: 排查时 1, 平时改 0 即全静音 =================
 #define DBG_ON 1
 #define DBG(x) do{ if(DBG_ON) DebugText(x); }while(0)
 static bool tech[5]={};          // 科技是否研发过: 0木材 1金矿 2农耕 3工艺 4弓兵护甲
@@ -253,7 +251,7 @@ void UsrAI::processData(){
             if(d>20)continue;
         }
         if(r.Type==RESOURCE_BUSH&&(bushNow>=6||(int)bushFarmer.size()>=6))continue;
-        if(r.Type==RESOURCE_GAZELLE&&gazelleNow>=6)continue;  // [AI] 同上
+        if(r.Type==RESOURCE_GAZELLE&&gazelleNow>=6)continue;  // 
 
         if(r.Type==RESOURCE_BUSH||(r.Type==RESOURCE_GAZELLE&&gazelleState==4)){
             if(r.Type==RESOURCE_GAZELLE&&r.Blood>0)continue; //只采集不打猎
@@ -335,7 +333,7 @@ void UsrAI::processData(){
    
     
 
-    // ================= [AI] 调试输出: 每 25 帧打一次, 看 A/P/S/T/B 五类 =================
+    // ================= 调试输出: 每 25 帧打一次, 看 A/P/S/T/B 五类 =================
     if(DBG_ON&&info.GameFrame%25==0){
         int idleN=0;
         for(auto&f:info.farmers){ if(f.NowState==HUMAN_STATE_IDLE)idleN++; }
@@ -415,7 +413,7 @@ void UsrAI::centerUpgrade(){
              &&haveBuilding(BUILDING_RANGE)
              &&info.Meat>=BUILDING_CENTER_UPGRADE_BRONZEAGE_FOOD;
 
-    // ===== [AI临时诊断] 定位"为什么没升到铜器" —— 定位结束后整段删除 =====
+    // ===== 定位"为什么没升到铜器"  =====
     static int diagInsId=-1;             // 上一条升级指令的 id
     static int diagTick=-10000;          // 上次报状态的帧
     if(info.GameFrame<50){ diagInsId=-1; diagTick=-10000; }   // 新一局 -> 重置
@@ -441,7 +439,7 @@ void UsrAI::centerUpgrade(){
     static int lastUpgradeFrame=-10000;
     if(ready&&centerState==ACT_NULL){
         if(info.GameFrame-lastUpgradeFrame>20){
-            diagInsId=BuildingAction(centerSN,BUILDING_CENTER_UPGRADE);   // [AI临时诊断] 记下指令id
+            diagInsId=BuildingAction(centerSN,BUILDING_CENTER_UPGRADE);   // 【临时诊断】 记下指令id
             lastUpgradeFrame=info.GameFrame;
         }
     }
@@ -840,9 +838,7 @@ void UsrAI::priestExplore(){
     }
 
     if(bd==-1)return;                                      // 阶段2: 探完, 不再动作
-    // [AI] 目标锁定: 这一段最需要它 —— bd 是"离祭司最近的迷雾边界点",
-    //     祭司自己每走一格 bd 就可能变, 不锁住的话每帧都在换目标,
-    //     路径每帧被清空 -> 祭司在原地无限横跳(实机日志: 每 8 帧换一个目标)。
+    
     static int tgtDR=-1,tgtUR=-1;
     if(bd!=tgtDR||bu!=tgtUR){
         tgtDR=bd;tgtUR=bu;
@@ -899,8 +895,7 @@ void UsrAI::gethomeBuilder(){
 
 // 在(bd,bu)附近找一个 size×size 的空地(返回左下角块坐标)
 // 条件: 全是已探明陆地(Open, 说明没资源没建筑) + 高度一致且不是斜坡 + 没被拉黑
-// 在(bd,bu)附近找一个 size×size 的空地(返回左下角块坐标)
-// 条件: 全是已探明陆地(Open, 说明没资源没建筑) + 高度一致且不是斜坡 + 没被拉黑
+
 
 bool UsrAI::spotBusy(int dr,int ur,int size){
     for(auto&f:info.farmers){
@@ -1100,7 +1095,7 @@ void UsrAI::manageBuild(){
     //市场 以市镇中心为基准
 
     if(!haveBuilding(BUILDING_MARKET)){
-        if(marketGate){                              // [AI] 仓库数>=2 或 打猎阶段已结束 才开建市场
+        if(marketGate){                              // 
             want=BUILDING_MARKET;
             cost=BUILD_MARKET_WOOD;
         }
@@ -1308,7 +1303,7 @@ void UsrAI::manageBuild(){
         
         if(canFarm(f.SN))
         for(auto&b:info.buildings){                       // ① 有空田就去种
-            // [AI] F1: 同上, 去掉 b.Cnt<=0, 否则兜底段也看不见刚盖好/没收割的田
+
             if(b.Type!=BUILDING_FARM||b.Percent<100)continue;
             bool busy=false;
             for(auto&f:info.farmers){ 
@@ -1319,15 +1314,14 @@ void UsrAI::manageBuild(){
             }
             if(busy)continue;
             HumanAction(f.SN,b.SN);
-            // [AI] 原: bushFarmer[f.SN]=true; (把任意闲人也收编进花名册 -> 名册膨胀超过 6 人) 已去掉。
-            //      花名册只由 processData 派浆果工时登记, 保证恒为开局那 6 个人。
+            
             farIsgotten[f.SN]=true;
             
             done=true;
             break;
         }
         if(done)continue;
-        // [AI] 金工上限 3 人: 原来这里会把所有闲人都吸去挖金
+        
         if(info.civilizationStage>=CIVILIZATION_BRONZEAGE){                  // ② 没田就去挖金
             int goldNow=0;                                        // 本帧在挖/去挖的金工数
             unordered_map<int,bool>isGold;
@@ -1664,17 +1658,12 @@ void UsrAI::huntGazelle(){
 }
 
 
-// ================= [AI] 斥候: 拉扯期唯一的"引敌"执行者 =================
-// ================= [AI] 斥候: 专职突击者 =================
-//   ① 视野没敌人        -> 朝对角估算点(探路)
-//   ② 看到但没被锁定    -> 靠近它(勾引)
-//   ③ 被锁定 / 贴到 5 格 -> 朝自家方向后撤 6 格
-// 目标没变不重发; 但"人站着没到目标"时强制重发(防指令丢失后永久卡死)
+
+
 void UsrAI::manageScout(){
-    const int STick=30;
     static int last=-1;
     if(last==-1)last=info.GameFrame;
-    if(info.GameFrame-last<20)return;
+    if(info.GameFrame-last<3)return;
     if(scoutSN==-1)return;
     int dr=-1,ur=-1;
     for(auto&a:info.armies){
@@ -1749,7 +1738,7 @@ void UsrAI::armyAttack(){
     if(ArmylastTick==-1)ArmylastTick=info.GameFrame;
     if(info.GameFrame-ArmylastTick<ArmyTick)return;
     const int ARMY_SIGHT=15;                         // 值得打的范围(射程 7 + 机动余量)
-    // [AI] 集火目标: 锁定"离市中心最近的敌人"; 它死了/不可见了才换下一个(实现"一个接一个")
+    // 集火目标: 锁定"离市中心最近的敌人"; 它死了/不可见了才换下一个(实现"一个接一个")
     {
         bool alive=false;
         for(auto&ea:info.enemy_armies){ if(ea.SN==focusSN){ alive=true; break; } }
@@ -1791,7 +1780,7 @@ void UsrAI::armyAttack(){
         }
         if(a.NowState==HUMAN_STATE_ATTACKING)continue;        // 攻击中 -> 不打扰
         if(d<=ARMY_SIGHT){                               // 自己 15 格内有敌人 才出手
-            // [AI] 集火: 全队共用一个目标(focusSN), 打死了才换下一个 -> 快速减员
+            //集火: 全队共用一个目标(focusSN), 打死了才换下一个 -> 快速减员
             if(focusSN!=-1&&a.WorkObjectSN!=focusSN)HumanAction(a.SN,focusSN);
             continue;
             // ---- 原逻辑(远程优先 + 各自挑最近的)已停用, 需要时取消注释即可 ----
@@ -2024,10 +2013,7 @@ void UsrAI::counterAttack(){
 
 
 
-// ================= [AI] 厂区: 集火拆塔 =================
-//   有守军 -> 交给 armyAttack(野战: 退/打)
-//   没守军 -> 农民+士兵一起集火"离市中心最近的那座塔", 拆掉一座自动换下一座
-//   塔全清光 -> towerReady=true, 祭司由 CalmAndCrazy 带去贴厂转化
+
 void UsrAI::attackTowers(){
     // 塔还活着 -> 所有人一起集火同一座塔; 塔全清光 -> 放祭司上去贴厂转化。
     // 集火的意义: 箭塔各自独立开火(每座 3 伤/秒), 分散打 = 5 座同时输出 15 伤/秒;
@@ -2132,7 +2118,7 @@ void UsrAI::waveBattle(){
     if(counterState<1&&priestTarget!=-1&&!priestExploring){
         for(auto&a:info.armies){
             if(a.SN!=priestSN)continue;
-            if(a.NowState!=HUMAN_STATE_IDLE&&a.NowState!=HUMAN_STATE_WALKING)break;  //[AI]忙(转化中); 理由同 priestConvert
+            if(a.NowState!=HUMAN_STATE_IDLE&&a.NowState!=HUMAN_STATE_WALKING)break;  
             if(a.ConvertCooldown>0)break;                       // 冷却没好 -> 唯一的门
             if(a.WorkObjectSN==priestTarget)break;              // 已经在转它了
             if(priestTarget!=-1){

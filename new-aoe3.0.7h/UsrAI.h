@@ -43,7 +43,7 @@ public:
 
     void CalmAndCrazy();
 
-    // ===== [AI] 反攻阶段新增 =====
+    
     void manageScout();            // 斥候: 找敌 / 贴身勾引 / 带回集结区
     void armyAttack();             // 部队: 退/打/进 (贴脸退, 射程内打, 其余朝行军点走)
     void attackTowers();           // 厂区: 分头拆塔, 塔没了就当肉盾
