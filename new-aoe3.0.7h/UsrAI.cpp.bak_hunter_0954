@@ -394,29 +394,23 @@ bool UsrAI::haveBuilding(int type){
 //时代升级
 void UsrAI::centerUpgrade(){
     if(info.civilizationStage==CIVILIZATION_BRONZEAGE){
-        farmLimit=FARM_MAX_BRONZE; //放宽农田种植
         return;
     }
-    
     //铜器升级事宜
     int centerState=-1;
     for(auto&b:info.buildings){
         if(b.Type==BUILDING_CENTER)centerState=b.Project;
     }
-
-    bool ready=haveBuilding(BUILDING_MARKET)
-             &&haveBuilding(BUILDING_RANGE)
-             &&info.Meat>=BUILDING_CENTER_UPGRADE_BRONZEAGE_FOOD;
-
-    // 加节流：同一条升级指令至少间隔 20 帧再重发，避免每帧塞队列
-    static int lastUpgradeFrame=-10000;
-    if(ready&&centerState==ACT_NULL){
-        if(info.GameFrame-lastUpgradeFrame>20){
+    //考虑前置建筑 食物条件以及建筑物状态
+    if(haveBuilding(BUILDING_MARKET)&&haveBuilding(BUILDING_RANGE)&&info.Meat>=BUILDING_CENTER_UPGRADE_BRONZEAGE_FOOD){
+        if(centerState==ACT_NULL)
             BuildingAction(centerSN,BUILDING_CENTER_UPGRADE);
-            lastUpgradeFrame=info.GameFrame;
-        }
     }
     
+    if(info.civilizationStage==CIVILIZATION_BRONZEAGE){
+        phaseNum=25; //放宽村民人口
+        farmLimit=FARM_MAX_BRONZE; //放宽农田种植
+    }
 }
 
 //本函数用于实时获得祭司的信息
@@ -932,14 +926,9 @@ void UsrAI::manageBuild(){
     }
     bool marketGate=(stockNum>=2||gazelleState==4||info.GameFrame>2000);
     
-
-    // 升级条件满足时，市中心留给升级，不再造农民
-    bool bronzeReady=haveBuilding(BUILDING_MARKET)
-                &&haveBuilding(BUILDING_RANGE)
-                &&info.Meat>=BUILDING_CENTER_UPGRADE_BRONZEAGE_FOOD;
     //造人开关
     //进行一个优化 减少无效指令
-    if(haveNum<phaseNum&&!bronzeReady){
+    if(haveNum<phaseNum){
         int centerProject=ACT_NULL;
         for(auto&b:info.buildings){
             if(b.SN!=centerSN)continue;
@@ -1646,7 +1635,6 @@ void UsrAI::huntGazelle(){
 //   ③ 被锁定 / 贴到 5 格 -> 朝自家方向后撤 6 格
 // 目标没变不重发; 但"人站着没到目标"时强制重发(防指令丢失后永久卡死)
 void UsrAI::manageScout(){
-
     if(scoutSN==-1)return;
     int dr=-1,ur=-1;
     for(auto&a:info.armies){
@@ -1701,26 +1689,13 @@ void UsrAI::manageScout(){
 
 
 void UsrAI::armyAttack(){
-    
-    const int ArmyTick=70;
+    const int ArmyTick=30;
     static int ArmylastTick=-1;
     if(ArmylastTick==-1)ArmylastTick=info.GameFrame;
     if(info.GameFrame-ArmylastTick<ArmyTick)return;
     const int ARMY_SIGHT=15;                         // 值得打的范围(射程 7 + 机动余量)
     for(auto&a:info.armies){
-        
         if(a.SN==priestSN||a.SN==scoutSN)continue;
-        //=========================
-        if(isMeleeSort(a.Sort)&&a.NowState==HUMAN_STATE_IDLE){
-            int d=999,eSN=-1;
-            for(auto&ea:info.enemy_armies){
-                int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
-                if(dd<d){ d=dd; eSN=ea.SN; }
-            }
-            HumanAction(a.SN,eSN);
-            return;
-        }
-        //==========================
         // if(a.NowState!=HUMAN_STATE_IDLE)continue;        // 攻击中 -> 不打扰
         int d=999,ex=-1,ey=-1;
         for(auto&ea:info.enemy_armies){
@@ -1728,7 +1703,7 @@ void UsrAI::armyAttack(){
             if(dd<d){ d=dd; ex=ea.BlockDR; ey=ea.BlockUR; }
         }
         
-        if(d<=2&&isArcherSort(a.Sort)){                   // 只有远程兵风筝; 近战攻击距离=0, 必须贴上去打
+        if(d<=2&&!isMeleeSort(a.Sort)){                   // 只有远程兵风筝; 近战攻击距离=0, 必须贴上去打
             if(a.NowState!=HUMAN_STATE_WALKING)      // 已经在撤的路上 -> 不重发(重发会清空路径)
             HumanMove(a.SN,centerBlockDR*BLOCKSIDELENGTH,
                           centerBlockUR*BLOCKSIDELENGTH);
@@ -1748,9 +1723,8 @@ void UsrAI::armyAttack(){
             if(tSN!=-1&&a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
             continue;
         }
-        if(rallyDR>=0&&max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))>10&&a.NowState==HUMAN_STATE_IDLE)   // 回集结点
+        if(rallyDR>=0&&max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))>3&&a.NowState==HUMAN_STATE_IDLE)   // 回集结点
             HumanMove(a.SN,rallyDR*BLOCKSIDELENGTH,rallyUR*BLOCKSIDELENGTH);
-        
     }
     ArmylastTick=info.GameFrame;
 }
@@ -1786,9 +1760,8 @@ void UsrAI::priestConvert(){
     if(sdr!=-1){
         const int pRange=30*30;
         for(auto&ea:info.enemy_armies){
-            
             // if(ea.WorkObjectSN!=priestSN)continue;
-            int dx=ea.BlockDR-centerBlockDR, dy=ea.BlockUR-centerBlockUR;
+            int dx=ea.BlockDR-sdr, dy=ea.BlockUR-sur;
             if(dx*dx+dy*dy>pRange)continue;
             if(ea.Blood>bestHp){ bestHp=ea.Blood; tSN=ea.SN; }
         }
@@ -1836,7 +1809,6 @@ void UsrAI::counterAttack(){
 
         case 2:{   // ---- 推进: 斥候探路勾引, 主力在集结点附近打"风筝"
             // ① 没斥候 -> 记下新造的; 还是没有就让马厩补一个
-            
             if(scoutSN==-1){
                 for(auto&a:info.armies){
                     if(a.Sort==AT_SCOUT){ 
@@ -1852,13 +1824,10 @@ void UsrAI::counterAttack(){
                         BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
                         break;
                     }
-                    
                 }
                 return;
             }
-            for(auto&b:info.buildings){
-                if(b.Type==BUILDING_STABLE&&info.Gold>=BUILDING_STABLE_CREATE_CAVALRY_GOLD&&info.Meat>=BUILDING_STABLE_CREATE_CAVALRY_FOOD)BuildingAction(b.SN,BUILDING_STABLE_CREATE_CAVALRY);
-            }
+
             // ② 斥候探路 / 勾引 / 被咬就撤
             manageScout();
 
@@ -1905,12 +1874,10 @@ void UsrAI::counterAttack(){
                         BuildingAction(b.SN,BUILDING_STABLE_CREATE_SCOUT);
                         break;
                     }
-                    
+                    if(b.Type==BUILDING_STABLE&&info.Gold>=BUILDING_STABLE_CREATE_CAVALRY_GOLD&&info.Meat>=BUILDING_STABLE_CREATE_CAVALRY_FOOD)BuildingAction(b.SN,BUILDING_STABLE_CREATE_CAVALRY);
                 }
             }
-            for(auto&b:info.buildings){
-                if(b.Type==BUILDING_STABLE&&info.Gold>=BUILDING_STABLE_CREATE_CAVALRY_GOLD&&info.Meat>=BUILDING_STABLE_CREATE_CAVALRY_FOOD)BuildingAction(b.SN,BUILDING_STABLE_CREATE_CAVALRY);
-            }
+            
        
             manageScout();
             attackTowers();        // 有守军先打人; 没守军分头拆塔; 塔没了就贴厂当肉盾
@@ -1936,6 +1903,10 @@ void UsrAI::attackTowers(){
     for(auto&ea:info.enemy_armies){
         if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
     }
+    if(!factoryClear){
+        armyAttack();                                           // 还有守军 -> 先打人
+        return;
+    }
     int n=0;
     int tSN=-1,best=1e9;                                        // 集火目标: 离市中心最近的活塔
     for(auto&eb:info.enemy_buildings){
@@ -1944,17 +1915,9 @@ void UsrAI::attackTowers(){
         int d=max(abs(eb.BlockDR-centerBlockDR),abs(eb.BlockUR-centerBlockUR));
         if(d<best){ best=d; tSN=eb.SN; }
     }
-    // ★ 塔剩<=1座 且 厂区守军清光, 祭司才上。
-    //   守军那条是保命线: 祭司进厂区 20 格内就会被【祭司猎手(3骑兵+2战车弓)】永久锁定,
-    //   猎手合计约 23.8 伤害/秒(骑兵攻8/1.3秒 ×3 + 战车弓攻4/1.5秒 ×2),
-    //   祭司血100、近防0 -> 4 秒死; 且骑兵速度4.07 是祭司2.03 的两倍, 跑不掉。
-    //   所以必须先用部队把守军清掉, 祭司再进(打建筑有保底1点/次, 农民攻速1秒最快)。
-    towerReady=(n<=1&&factoryClear);
-    if(!factoryClear){
-        armyAttack();                                           // 还有守军 -> 先打人(祭司继续等)
-        return;
-    }
-    if(tSN==-1)return;                                          // 塔清光 -> 交给 CalmAndCrazy 贴厂转化
+    
+    towerReady=(n<=1);                                       // ★ 塔全清光才让祭司动
+    if(tSN==-1)return;                                          // 交给 CalmAndCrazy 贴厂转化
 
     // 农民是拆塔主力: atk3 打建筑(×0.2 后不足1, 按保底 1 点), 攻速 1 秒/次
     //   -> 单个农民 1 秒 1 伤, 比复合弓(1.4秒/次=0.71)还快; 20 个农民 ≈ 20 伤/秒。
@@ -2049,34 +2012,27 @@ void UsrAI::waveBattle(){
             towerTarget=ea.SN;
         }
     }
-    static int lastTowerTarget=-1;
-    if(towerTarget==-1){
-        lastTowerTarget=-1;          // 没目标时重置，避免下次同目标被跳过
-    }
-    else if(towerTarget!=lastTowerTarget){
-        HumanAction(arrowTowerSN,towerTarget);
-        lastTowerTarget=towerTarget;
-    }
+    if(towerTarget!=-1)HumanAction(arrowTowerSN,towerTarget);
     
-    // bool isAllIn=true;
-    // for(auto&ea:info.enemy_armies){
-    //     int arrowD=max(abs(ea.BlockDR-arrowTowerBlockDR),abs(ea.BlockUR-arrowTowerBlockUR));//计算距离
-    //     if(arrowD>DIS_ARROWTOWER)continue; //太远了
-    //     if(ea.WorkObjectSN!=arrowTowerSN)isAllIn=false;
-    // }
-    // if(isAllIn){
-    //     int Blood=1e18;
-    //     int tSN=-1;
-    //     for(auto&ea:info.enemy_armies){
-    //         int arrowD=max(abs(ea.BlockDR-arrowTowerBlockDR),abs(ea.BlockUR-arrowTowerBlockUR));//计算距离
-    //         if(arrowD>DIS_ARROWTOWER)continue; //太远了
-    //         if(ea.Blood<Blood){
-    //             Blood=ea.Blood;
-    //             tSN=ea.SN;
-    //         }
-    //     }
-    //     if(tSN!=-1)HumanAction(arrowTowerSN,tSN);   // 换一个血最少的(原来是 towerTarget, 白算 tSN)
-    // }
+    bool isAllIn=true;
+    for(auto&ea:info.enemy_armies){
+        int arrowD=max(abs(ea.BlockDR-arrowTowerBlockDR),abs(ea.BlockUR-arrowTowerBlockUR));//计算距离
+        if(arrowD>DIS_ARROWTOWER)continue; //太远了
+        if(ea.WorkObjectSN!=arrowTowerSN)isAllIn=false;
+    }
+    if(isAllIn){
+        int Blood=1e18;
+        int tSN=-1;
+        for(auto&ea:info.enemy_armies){
+            int arrowD=max(abs(ea.BlockDR-arrowTowerBlockDR),abs(ea.BlockUR-arrowTowerBlockUR));//计算距离
+            if(arrowD>DIS_ARROWTOWER)continue; //太远了
+            if(ea.Blood<Blood){
+                Blood=ea.Blood;
+                tSN=ea.SN;
+            }
+        }
+        if(tSN!=-1)HumanAction(arrowTowerSN,tSN);   // 换一个血最少的(原来是 towerTarget, 白算 tSN)
+    }
 
 
     // ---- 1v1 牵制: 每个敌方单位至少派 1 个我方单位(祭司除外, 祭司专职转化) ----
@@ -2178,7 +2134,7 @@ void UsrAI::waveBattle(){
                 }
             }
             //有这样的敌人并且离得比较近
-            if(ex!=-1&&dist<=100){                               // 10格内才动
+            if(ex!=-1&&dist<=64){                               // 8格内才动
                 static int kdr=-1,kur=-1;//当前方位
                 int ndr=-1,nur=-1,ndist=-1;
                 //一个方形范围
@@ -2284,7 +2240,7 @@ void UsrAI::CalmAndCrazy(){
     }
 }
 void UsrAI::Resort(){
-    const int Tick=100;
+    const int Tick=30;
     static int lastTick=-1;
     for(auto&f:info.farmers){
         
