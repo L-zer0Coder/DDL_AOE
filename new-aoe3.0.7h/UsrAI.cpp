@@ -247,7 +247,10 @@ void UsrAI::processData(){
     };
 
     for(auto&r:info.resources){
-        
+        if(r.Type==RESOURCE_BUSH){
+            int d=max(abs(r.BlockDR-granaryBlockDR),abs(r.BlockUR-granaryBlockUR));
+            if(d>20)continue;
+        }
         if(r.Type==RESOURCE_BUSH&&(bushNow>=6||(int)bushFarmer.size()>=6))continue;
         if(r.Type==RESOURCE_GAZELLE&&gazelleNow>=6)continue;  // [AI] 同上
 
@@ -1757,7 +1760,7 @@ void UsrAI::armyAttack(){
                 if(dd<d){ d=dd; eSN=ea.SN; }
             }
             HumanAction(a.SN,eSN);
-            return;
+            continue;
         }
         //==========================
         // if(a.NowState!=HUMAN_STATE_IDLE)continue;        // 攻击中 -> 不打扰
