@@ -1884,16 +1884,15 @@ void UsrAI::counterAttack(){
 
 
 
-// ================= [AI] 厂区: 集火拆塔 =================
+// ================= [AI] 厂区: 分头拆塔 =================
 //   有守军 -> 交给 armyAttack(野战: 退/打)
-//   没守军 -> 农民+士兵一起集火"离市中心最近的那座塔", 拆掉一座自动换下一座
-//   塔全清光 -> towerReady=true, 祭司由 CalmAndCrazy 带去贴厂转化
+//   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
+//   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
 void UsrAI::attackTowers(){
-    // 塔还活着 -> 所有人一起集火同一座塔; 塔全清光 -> 放祭司上去贴厂转化。
-    // 集火的意义: 箭塔各自独立开火(每座 3 伤/秒), 分散打 = 5 座同时输出 15 伤/秒;
-    //   集中打一座, 拆掉一座火力就少一份, 农民(25血)才站得住。
-    // 目标选"离我方市中心最近的那座" —— 塔不会动, 所以这个排序是固定的,
-    //   天然就是"一座一座打"(前一座没了, 下一座自动成为最近)。
+    // 塔还活着 -> 农民+士兵一起拆塔; 塔全拆完 -> 放祭司上去贴厂转化。
+    // 为什么农民也上: 农民 atk3 打建筑(×0.2 后不足1, 按保底 1 点算), 攻速 1 秒/次
+    //   -> 单个农民 1 秒 1 伤, 比复合弓(1.4秒/次=0.71)还快; 20 个农民 ≈ 20 伤/秒,
+    //   是拆塔主力(5 塔共 625 血 ≈ 20 秒拆完), 同时替大军/祭司挡塔的火力。
     bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
     for(auto&ea:info.enemy_armies){
         if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
@@ -1902,27 +1901,33 @@ void UsrAI::attackTowers(){
         armyAttack();                                           // 还有守军 -> 先打人
         return;
     }
-    int n=0;
-    int tSN=-1,best=1e9;                                        // 集火目标: 离市中心最近的活塔
-    for(auto&eb:info.enemy_buildings){
-        if(eb.Type!=BUILDING_ARROWTOWER)continue;
-        n++;
-        int d=max(abs(eb.BlockDR-centerBlockDR),abs(eb.BlockUR-centerBlockUR));
-        if(d<best){ best=d; tSN=eb.SN; }
-    }
-    
-    towerReady=(n<=1);                                       // ★ 塔全清光才让祭司动
-    if(tSN==-1)return;                                          // 交给 CalmAndCrazy 贴厂转化
 
-    // 农民是拆塔主力: atk3 打建筑(×0.2 后不足1, 按保底 1 点), 攻速 1 秒/次
-    //   -> 单个农民 1 秒 1 伤, 比复合弓(1.4秒/次=0.71)还快; 20 个农民 ≈ 20 伤/秒。
-    for(auto&f:info.farmers){
+    int nTower=0;                                               // 还活着的敌方箭塔数
+    for(auto&eb:info.enemy_buildings){ if(eb.Type==BUILDING_ARROWTOWER)nTower++; }
+    towerReady=(nTower==0);                                     // ★ 塔全清光才让祭司动
+    if(nTower==0)return;                                        // 交给 CalmAndCrazy 贴厂转化
+
+    for(auto&f:info.farmers){                                    // 农民: 拆塔主力
         if(f.NowState!=HUMAN_STATE_IDLE)continue;
-        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
+        int tSN=-1,best=1e9;
+        for(auto&eb:info.enemy_buildings){
+            if(eb.Type!=BUILDING_ARROWTOWER)continue;
+            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
+            if(d<best){ best=d; tSN=eb.SN; }
+        }
+        if(tSN==-1)continue;
+        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }
     }
-    for(auto&a:info.armies){
+    for(auto&a:info.armies){                                     // 兵: 一样, 各打最近的塔
         if(a.SN==priestSN||a.SN==scoutSN)continue;
         if(a.NowState!=HUMAN_STATE_IDLE)continue;
+        int tSN=-1,best=1e9;
+        for(auto&eb:info.enemy_buildings){
+            if(eb.Type!=BUILDING_ARROWTOWER)continue;
+            int d=max(abs(eb.BlockDR-a.BlockDR),abs(eb.BlockUR-a.BlockUR));
+            if(d<best){ best=d; tSN=eb.SN; }
+        }
+        if(tSN==-1)continue;
         if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
     }
 }

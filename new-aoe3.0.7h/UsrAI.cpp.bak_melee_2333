@@ -108,7 +108,7 @@ unordered_map<int,bool>bushFarmer;//采过浆果的农民: 【种田时优先挑
 unordered_map<int,bool>goldFarmer;   //被派去挖金的农民 矿采完自动接下一口, 不闲着
 unordered_map<int,bool>woodFarmer;
 
-const int PRIEST_HARNESS=10;   // 祭司活动范围: 离箭塔不超过5格(塔射程7格, 保证一直在保护圈内)
+const int PRIEST_HARNESS=5;   // 祭司活动范围: 离箭塔不超过5格(塔射程7格, 保证一直在保护圈内)
 //================= 反攻 =================
 int counterState=0;         //  0-前期：抵御三波 1-中期：集结与侦察 2-拉扯 3-大反攻
 int  seekTgtDR=-1,seekTgtUR=-1; // [AI] 斥候推进的锁定目标格(绝对坐标, 避免每帧重发)
@@ -126,10 +126,12 @@ const int SCOUT_LURE_RANGE=3;  // 斥候被逼到多近就后撤(越小=贴得�
 int rallyDR=-1,rallyUR=-1;   // [AI] 集结点(斥候第一次看到敌人时定; 打完一波可重定)
 const int RALLY_BACK=15;     // 集结点 = 敌人位置朝自家方向退这么多格
 int priestGoDR=-1,priestGoUR=-1;    // [AI] 祭司上次被派去的格(避免每帧重发)
+unordered_map<int,int> towerAssign;  // [AI] 兵SN -> 认领的敌方箭塔SN
 bool towerReady=false;               // [AI] 每个兵都认领到塔(= 祭司可以上了)
 
 /////////////////////////////////////////////
 static bool compTech=false,logistics=false; //复合弓 后勤 （科技）
+
 
 // ================= [AI] 调试输出开关: 排查时 1, 平时改 0 即全静音 =================
 #define DBG_ON 0
@@ -540,7 +542,6 @@ bool isArcherSort(int sort){
 }
 
 //本函数主要实现祭司的探索与自主避障功能 回归的前提是当前视野有六只活瞪羚以及金矿地
-
 void UsrAI::priestExplore(){
     getPriest(); //每次进来获取祭司信息
     //如果处于非探索阶段则直接退出
@@ -686,7 +687,7 @@ void UsrAI::priestExplore(){
     
     //偏好探索
     
-    if(liveGazelleNum()<gazelleWantNum&&gazelleHunter1SN==-1){   
+    if(liveGazelleNum()<gazelleWantNum){   
 
         int gdr=-1,gur=-1,gd=1e18; //gazelledr/ur/distance
         //偏好探索 还没探到六只瞪羚
@@ -924,7 +925,7 @@ void UsrAI::manageBuild(){
     for(auto&b:info.buildings){
         if(b.Type==BUILDING_STOCK&&b.Percent>=100)stockNum++;
     }
-    bool marketGate=(stockNum>=2||gazelleState==4||info.GameFrame>2000);
+    bool marketGate=(stockNum>=2||gazelleState==4);
     
     //造人开关
     //进行一个优化 减少无效指令
@@ -1653,19 +1654,9 @@ void UsrAI::manageScout(){
     }
 
     int tdr,tur;
-    if(eDR==-1){       
-        if(centerBlockDR<50&&centerBlockUR<50){
-            tdr=99,tur=99;
-        }                                  
-        if(centerBlockDR<50&&centerBlockUR>50){
-            tdr=99,tur=0;
-        } 
-        if(centerBlockDR>50&&centerBlockUR<50){
-            tdr=0,tur=99;
-        }    
-        if(centerBlockDR>50&&centerBlockUR>50){
-            tdr=0,tur=0;
-        }          
+    if(eDR==-1){                                         // ① 探路
+        tdr=max(0,min(99,100-centerBlockDR));
+        tur=max(0,min(99,100-centerBlockUR));
     }
     else if(locked||best<=SCOUT_LURE_RANGE){             // ③ 被咬住了 -> 后撤
         tdr=centerBlockDR;tur=centerBlockUR;
@@ -1687,7 +1678,11 @@ void UsrAI::manageScout(){
     HumanMove(scoutSN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
 }
 
-
+// ================= [AI] 部队: 退 / 打 / 回集结点 =================
+// 只在兵"站着(IDLE)"时决策 —— 避免每帧重发把寻路反复重置
+//   敌人 <=3 格  -> 背离退 6 格(退出它的攻击范围)
+//   敌人 <=13 格 -> 打("往前走几格"交给引擎: HumanAction 自己会带他到射程内)
+//   其余         -> 回集结点集合; 集结点还没定就原地不动
 void UsrAI::armyAttack(){
     const int ArmyTick=30;
     static int ArmylastTick=-1;
@@ -1703,21 +1698,19 @@ void UsrAI::armyAttack(){
             if(dd<d){ d=dd; ex=ea.BlockDR; ey=ea.BlockUR; }
         }
         
-        if(d<=2&&!isMeleeSort(a.Sort)){                   // 只有远程兵风筝; 近战攻击距离=0, 必须贴上去打
+        if(d<=2){
             if(a.NowState!=HUMAN_STATE_WALKING)      // 已经在撤的路上 -> 不重发(重发会清空路径)
             HumanMove(a.SN,centerBlockDR*BLOCKSIDELENGTH,
                           centerBlockUR*BLOCKSIDELENGTH);
             continue;
         }
         if(a.NowState==HUMAN_STATE_ATTACKING)continue;        // 攻击中 -> 不打扰
-        if(d<=ARMY_SIGHT){                               // 打得着 -> 打
+        if(d<=ARMY_SIGHT){                               // 打得着 -> 打(优先远程兵)
             int tSN=-1,best=1e18;
-            bool melee=isMeleeSort(a.Sort);
             for(auto&ea:info.enemy_armies){
                 int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
                 if(dd>ARMY_SIGHT)continue;
-                // 远程: 优先打敌方远程(射程威胁大); 近战: 只挑最近的(贴上去砍)
-                int score=dd+(melee?0:(isArcherSort(ea.Sort)?0:10000));
+                int score=dd+(isArcherSort(ea.Sort)?0:10000);
                 if(score<best){ best=score; tSN=ea.SN; }
             }
             if(tSN!=-1&&a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
@@ -1734,54 +1727,59 @@ void UsrAI::armyAttack(){
 //  门与原来一致: 不在探索 / 非转化中 / 冷却已好 / 目标不是正在转的那个。
 void UsrAI::priestConvert(){
     if(priestSN==-1||priestExploring)return;
-    if(counterState>=3)return;              // 厂区决战交给 CalmAndCrazy, 别把祭司从去厂的路上拉走
-
-    // 祭司自己现在的状态
-    int pst=HUMAN_STATE_IDLE,pcd=0;
+    const int pRange=30*30;                        // 30 格: 祭司在队尾也够得着前线 -> 自己走过去转, 转完再退回
+    int tSN=-1,bestHp=-1;
+    for(auto&ea:info.enemy_armies){
+        int dx=ea.BlockDR-priestBlockDR, dy=ea.BlockUR-priestBlockUR;
+        if(dx*dx+dy*dy>pRange)continue;          // 只在响应范围内
+        if(ea.Blood>bestHp){ 
+            bestHp=ea.Blood; 
+            tSN=ea.SN; 
+        }
+    }
+    if(tSN==-1)return;
     for(auto&a:info.armies){
         if(a.SN!=priestSN)continue;
-        pst=a.NowState; pcd=a.ConvertCooldown;
+        
+        if(a.NowState!=HUMAN_STATE_IDLE&&a.NowState!=HUMAN_STATE_WALKING)break;   // 忙(转化中)
+        if(a.ConvertCooldown>0)break;                 // 冷却没好
+        if(a.WorkObjectSN==tSN)break;                 // 已经在转它了
+        HumanAction(priestSN,tSN);
         break;
     }
+}
 
-    // 判断中心 = 【斥候】的位置(它在前线). 斥候不在 -> 就没有战场信息
-    int sdr=-1,sur=-1;
-    if(scoutSN!=-1){
-        for(auto&a:info.armies){
-            if(a.SN!=scoutSN)continue;
-            sdr=a.BlockDR; sur=a.BlockUR;
-            break;
+// ================= [AI] 祭司跟随 =================
+//  用户要求: 祭司"始终躲在大军的后面", 与部队的距离不得超过 PRIEST_HARNESS(5 格)。
+//  做法: 找离祭司最近的一个我方战斗单位; 距离超过 5 格就把祭司拉过去(斥候不计入, 它单独在外拉扯)。
+void UsrAI::priestFollow(){
+    
+    // [AI] 新发现A: 祭司忙(转化中/移动中)时不打扰, 否则 HumanMove 会 suspend 旧关系清掉转化进度
+    for(auto&a:info.armies){
+        if(a.SN!=priestSN)continue;
+        if(a.NowState!=HUMAN_STATE_IDLE&&a.NowState!=HUMAN_STATE_WALKING)return;
+        break;
+    }
+    int bestD=1e9,bdr=-1,bur=-1;
+    for(auto&a:info.armies){
+        if(a.SN==priestSN)continue;      // 不含自己
+        if(a.SN==scoutSN)continue;       // 斥候单独在外拉扯, 不算"大军"
+        int d=max(abs(a.BlockDR-priestBlockDR),abs(a.BlockUR-priestBlockUR));
+        if(d<bestD){ 
+            bestD=d; 
+            bdr=a.BlockDR; 
+            bur=a.BlockUR; 
         }
     }
-
-    // 斥候周围 30 格内, 挑血最厚的敌人
-    int tSN=-1,bestHp=-1;
-    if(sdr!=-1){
-        const int pRange=30*30;
-        for(auto&ea:info.enemy_armies){
-            if(ea.WorkObjectSN!=priestSN)continue;
-            int dx=ea.BlockDR-sdr, dy=ea.BlockUR-sur;
-            if(dx*dx+dy*dy>pRange)continue;
-            if(ea.Blood>bestHp){ bestHp=ea.Blood; tSN=ea.SN; }
-        }
-    }
-
-    // 能转就转: 有目标 + 冷却已好 + 没在忙别的(交给引擎带他走过去)
-    if(tSN!=-1&&pcd<=0&&(pst==HUMAN_STATE_IDLE||pst==HUMAN_STATE_WALKING)){
-        for(auto&a:info.armies){
-            if(a.SN!=priestSN)continue;
-            if(a.WorkObjectSN==tSN)return;   // 已在去转/在转 -> 不重发(重发会清空路径)
-            HumanAction(priestSN,tSN);
-            return;
-        }
-    }
-
-    // 没敌人 或 冷却中 -> 回市中心(忙的时候绝不打扰, 免得打断转化)
-    if(pst!=HUMAN_STATE_IDLE&&pst!=HUMAN_STATE_WALKING)return;
-    if(priestBlockDR==centerBlockDR&&priestBlockUR==centerBlockUR)return;
-    if(priestGoDR==centerBlockDR&&priestGoUR==centerBlockUR)return;
-    priestGoDR=centerBlockDR; priestGoUR=centerBlockUR;
-    HumanMove(priestSN,centerBlockDR*BLOCKSIDELENGTH,centerBlockUR*BLOCKSIDELENGTH);
+    if(bdr==-1)return;                   // 没有部队 -> 不动
+    if(bestD<=PRIEST_HARNESS)return;     // 已经贴在大军旁边 -> 不动
+    // [AI] 拉扯期祭司的位置由 rallyPriest() 全权负责(它挑的是"离最近敌人最远"的格子,
+    //   追兵压上来就再退)。这里"贴住最近的一个兵"会把他拉到队伍【前面】去 ——
+    //   拉扯时兵在集结点呈松散阵型, 最近的那个兵可能正在挨打/已经被引开,
+    //   祭司跟过去就是送死(用户: "拉扯时祭司没躲好 被单杀了")。
+    //   所以这里加门: 集结点已定(= 拉扯进行中)时祭司不跟兵, 交给 rallyPriest。
+    if(counterState>=2)return;               // 推进/贴厂由 rallyPriest 管, 这里不插手
+    HumanMove(priestSN,bdr*BLOCKSIDELENGTH,bur*BLOCKSIDELENGTH);
 }
 
 void UsrAI::counterAttack(){
@@ -1852,8 +1850,9 @@ void UsrAI::counterAttack(){
 
             // ④ 全军 退/打/回集结点 + 祭司
             armyAttack();
-            // priestConvert();
-            
+            rallyPriest();
+            priestConvert();
+
             if(factorySN!=-1)counterState=3;             // 看到攻城厂 -> 转贴厂
             break;
         }
@@ -1884,47 +1883,106 @@ void UsrAI::counterAttack(){
 
 
 
-// ================= [AI] 厂区: 集火拆塔 =================
+// ================= [AI] 厂区: 分头拆塔 =================
 //   有守军 -> 交给 armyAttack(野战: 退/打)
-//   没守军 -> 农民+士兵一起集火"离市中心最近的那座塔", 拆掉一座自动换下一座
-//   塔全清光 -> towerReady=true, 祭司由 CalmAndCrazy 带去贴厂转化
+//   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
+//   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
 void UsrAI::attackTowers(){
-    // 塔还活着 -> 所有人一起集火同一座塔; 塔全清光 -> 放祭司上去贴厂转化。
-    // 集火的意义: 箭塔各自独立开火(每座 3 伤/秒), 分散打 = 5 座同时输出 15 伤/秒;
-    //   集中打一座, 拆掉一座火力就少一份, 农民(25血)才站得住。
-    // 目标选"离我方市中心最近的那座" —— 塔不会动, 所以这个排序是固定的,
-    //   天然就是"一座一座打"(前一座没了, 下一座自动成为最近)。
     bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
     for(auto&ea:info.enemy_armies){
         if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
     }
-    if(!factoryClear){
-        armyAttack();                                           // 还有守军 -> 先打人
-        return;
-    }
-    int n=0;
-    int tSN=-1,best=1e9;                                        // 集火目标: 离市中心最近的活塔
-    for(auto&eb:info.enemy_buildings){
-        if(eb.Type!=BUILDING_ARROWTOWER)continue;
-        n++;
-        int d=max(abs(eb.BlockDR-centerBlockDR),abs(eb.BlockUR-centerBlockUR));
-        if(d<best){ best=d; tSN=eb.SN; }
-    }
-    
-    towerReady=(n<=1);                                       // ★ 塔全清光才让祭司动
-    if(tSN==-1)return;                                          // 交给 CalmAndCrazy 贴厂转化
+    if(!factoryClear){ armyAttack(); return; }                   // 厂区还有守军 -> 先打人(兜底)
 
-    // 农民是拆塔主力: atk3 打建筑(×0.2 后不足1, 按保底 1 点), 攻速 1 秒/次
-    //   -> 单个农民 1 秒 1 伤, 比复合弓(1.4秒/次=0.71)还快; 20 个农民 ≈ 20 伤/秒。
-    for(auto&f:info.farmers){
+    for(auto&f:info.farmers){                                    // 农民也去打塔(人海: 塔一次只打一个)
         if(f.NowState!=HUMAN_STATE_IDLE)continue;
+        int tSN=-1,best=1e9;
+        for(auto&eb:info.enemy_buildings){
+            if(eb.Type!=BUILDING_ARROWTOWER)continue;
+            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
+            if(d<best){ best=d; tSN=eb.SN; }
+        }
+        if(tSN==-1)continue;
         if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
     }
+
     for(auto&a:info.armies){
         if(a.SN==priestSN||a.SN==scoutSN)continue;
+        int tSN=-1;
+        auto it=towerAssign.find(a.SN);
+        if(it!=towerAssign.end()){                               // 认领过的: 塔还在就继续打
+            for(auto&eb:info.enemy_buildings){
+                if(eb.SN==it->second&&eb.Type==BUILDING_ARROWTOWER){ tSN=it->second; break; }
+            }
+        }
+        if(tSN==-1){                                             // 没认领 / 塔没了 -> 找最近的活塔
+            int best=1e9;
+            for(auto&eb:info.enemy_buildings){
+                if(eb.Type!=BUILDING_ARROWTOWER)continue;
+                int d=max(abs(eb.BlockDR-a.BlockDR),abs(eb.BlockUR-a.BlockUR));
+                if(d<best){ best=d; tSN=eb.SN; }
+            }
+            if(tSN!=-1)towerAssign[a.SN]=tSN;
+        }
+        if(tSN==-1)continue;                                     // 一座塔都没有了
+        int tDR=-1,tUR=-1;                                       // 这座塔在哪
+        for(auto&eb:info.enemy_buildings){
+            if(eb.SN==tSN){ tDR=eb.BlockDR; tUR=eb.BlockUR; break; }
+        }
+        if(tDR==-1)continue;
+        if(max(abs(tDR-a.BlockDR),abs(tUR-a.BlockUR))>4){         // 还没贴上去 -> 先走到塔边当肉盾
+            if(a.NowState==HUMAN_STATE_IDLE){
+                int sx=(a.BlockDR>tDR?1:(a.BlockDR<tDR?-1:0));
+                int sy=(a.BlockUR>tUR?1:(a.BlockUR<tUR?-1:0));
+                HumanMove(a.SN,max(2,min(97,tDR+sx*4))*BLOCKSIDELENGTH,
+                                max(2,min(97,tUR+sy*4))*BLOCKSIDELENGTH);
+            }
+            continue;
+        }
         if(a.NowState!=HUMAN_STATE_IDLE)continue;
-        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
+        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);             // 贴住了再打
     }
+
+    int nTower=0;                                                // 还活着的敌方箭塔数
+    for(auto&eb:info.enemy_buildings){ if(eb.Type==BUILDING_ARROWTOWER)nTower++; }
+    bool farmerIn=false;                                         // 有没有农民已经冲到厂区附近
+    for(auto&f:info.farmers){
+        if(max(abs(f.BlockDR-factoryBlockDR),abs(f.BlockUR-factoryBlockUR))<=10){ farmerIn=true; break; }
+    }
+    towerReady=(nTower==0||farmerIn);                            // 塔清光 或 农民已到 -> 祭司可以上
+    if(nTower>0&&!farmerIn)return;                              // 还有塔没拆完(农民也没到) -> 继续拆
+    for(auto&a:info.armies){                                     // 往厂靠, 挡在祭司前面
+        if(a.SN==priestSN||a.SN==scoutSN)continue;
+        if(a.NowState!=HUMAN_STATE_IDLE)continue;
+        if(max(abs(a.BlockDR-factoryBlockDR),abs(a.BlockUR-factoryBlockUR))>4)
+            HumanMove(a.SN,factoryBlockDR*BLOCKSIDELENGTH,factoryBlockUR*BLOCKSIDELENGTH);
+    }
+}
+// ================= [AI] 祭司 =================
+//   冷却好了 -> 交给 priestConvert 上前转化(他那边会挑目标)
+//   冷却中   -> 躲到"离最近敌人最远的那个我方兵"旁边
+void UsrAI::rallyPriest(){
+    if(priestSN==-1)return;
+    bool canConvert=false;
+    for(auto&a:info.armies){
+        if(a.SN!=priestSN)continue;
+        canConvert=(a.ConvertCooldown<=0);
+        break;
+    }
+    if(canConvert&&!info.enemy_armies.empty())return;    // 能转 -> priestConvert 会带他上
+
+    int bestDR=-1,bestUR=-1,bestD=-1;                    // 离最近敌人最远的那个兵
+    for(auto&a:info.armies){
+        if(a.SN==priestSN||a.SN==scoutSN)continue;
+        int d=1e9;
+        for(auto&ea:info.enemy_armies)
+            d=min(d,max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR)));
+        if(d>bestD){ bestD=d; bestDR=a.BlockDR; bestUR=a.BlockUR; }
+    }
+    if(bestDR==-1){ bestDR=centerBlockDR; bestUR=centerBlockUR; }
+    if(bestDR==priestGoDR&&bestUR==priestGoUR)return;     // 目标没变 -> 不重发
+    priestGoDR=bestDR; priestGoUR=bestUR;
+    HumanMove(priestSN,bestDR*BLOCKSIDELENGTH,bestUR*BLOCKSIDELENGTH);
 }
 
 
@@ -1959,7 +2017,6 @@ void UsrAI::waveBattle(){
     if(priestTarget==-1&&counterState==0){ //没投石车 -> 塔下拉扯时优先转远程兵
        
         for(auto&ea:info.enemy_armies){
-            if(ea.WorkObjectSN!=priestSN)continue;
             if(!isArcherSort(ea.Sort))continue;
             int ex=ea.BlockDR-priestBlockDR, ey=ea.BlockUR-priestBlockUR;
             int d=ex*ex+ey*ey;
@@ -2115,11 +2172,10 @@ void UsrAI::waveBattle(){
     if(counterState<1){
         for(auto&a:info.armies){
             if(a.SN!=priestSN)continue;
-            // if(a.NowState!=HUMAN_STATE_IDLE)break;
+            if(a.NowState!=HUMAN_STATE_IDLE)break;
             if(a.ConvertCooldown<=0)break;
             int ex=-1,ey=-1,dist=1e18;
             for(auto&ea:info.enemy_armies){
-                if(ea.WorkObjectSN!=priestSN)continue;
                 int dx=ea.BlockDR-priestBlockDR,dy=ea.BlockUR-priestBlockUR;
                 int d=dx*dx+dy*dy;
                 if(d<dist){
@@ -2224,6 +2280,13 @@ void UsrAI::CalmAndCrazy(){
     }
     if(factorySN==-1||counterState<3)return;
 
+    // ---- [AI] 贴厂保护 ----
+    //  策略原文: "如果祭司满血, 能抗几轮箭塔射击。但不满血或者箭塔密集,
+    //            那还是要靠军队吸引火力, 或者干脆拆掉两三个再进去。"
+    //  这里落成两道门:
+    //    ① 血量不到一半 -> 先跟住大军(等部队吸火), 不冲;
+    //    ② 离厂超过祭司响应范围 -> 先跟着大军推进, 等靠近了再下令
+    //       (否则祭司会自己从集结区一路走过去, 进敌厂 20 格就被猎手围杀)。
     for(auto&a:info.armies){
         if(a.SN!=priestSN)continue;
         if(a.NowState!=HUMAN_STATE_IDLE)break;      // 忙(转化中/走路中) -> 不打扰
@@ -2238,12 +2301,11 @@ void UsrAI::Resort(){
     const int Tick=30;
     static int lastTick=-1;
     for(auto&f:info.farmers){
-        
         if(lastTick==-1){
             lastTick=info.GameFrame;
         }
         else{
-            if(info.GameFrame-lastTick<Tick)break;
+            
         }
         if(f.WorkObjectSN==-1&&f.Resource!=0){
             if(f.ResourceSort==HUMAN_WOOD||f.ResourceSort==HUMAN_STOCKFOOD||f.ResourceSort==HUMAN_GOLD)HumanAction(f.SN,oriStockSN);

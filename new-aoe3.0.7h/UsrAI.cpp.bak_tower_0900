@@ -124,13 +124,21 @@ int scoutSN=-1;             // 侦察骑兵
       //   3 格足够让敌人看见斥候(VISION 7-9)并追出来, 又不会提前撤回。
 const int SCOUT_LURE_RANGE=3;  // 斥候被逼到多近就后撤(越小=贴得越近再跑, 更容易把敌人勾出来)
 int rallyDR=-1,rallyUR=-1;   // [AI] 集结点(斥候第一次看到敌人时定; 打完一波可重定)
+// [AI] 厂区决战的待命点 = 斥候【第一次】看到敌人时它自己的坐标。
+//   为什么单独存: 集结点(rallyDR)在"视野清空"时会被重定, 而待命点必须固定不动。
+int gatherDR=-1,gatherUR=-1;
+int gatherPhase=0;                    // 0未开始 1集结 2冲锋
+int gatherFrame=0;                    // 集结起始帧(算超时兜底)
+unordered_map<int,bool> gatherSent;   // 已通知过去集合的单位(只通知一次, 重发会清空路径)
 const int RALLY_BACK=15;     // 集结点 = 敌人位置朝自家方向退这么多格
 int priestGoDR=-1,priestGoUR=-1;    // [AI] 祭司上次被派去的格(避免每帧重发)
+unordered_map<int,int> towerAssign;  // [AI] 兵SN -> 认领的敌方箭塔SN
 bool towerReady=false;               // [AI] 每个兵都认领到塔(= 祭司可以上了)
 
 /////////////////////////////////////////////
 static bool compTech=false,logistics=false; //复合弓 后勤 （科技）
 
+unordered_map<int,int>Tazhanyong;
 // ================= [AI] 调试输出开关: 排查时 1, 平时改 0 即全静音 =================
 #define DBG_ON 0
 #define DBG(x) do{ if(DBG_ON) DebugText(x); }while(0)
@@ -1846,6 +1854,7 @@ void UsrAI::counterAttack(){
                     if(eDR!=-1){
                         rallyDR=sdr;
                         rallyUR=sur;
+                        if(gatherDR==-1){ gatherDR=sdr; gatherUR=sur; }   // ★只在第一次记下(厂区决战的待命点)
                     }
                 }
             }
@@ -1884,46 +1893,109 @@ void UsrAI::counterAttack(){
 
 
 
-// ================= [AI] 厂区: 集火拆塔 =================
+// ================= [AI] 厂区: 分头拆塔 =================
 //   有守军 -> 交给 armyAttack(野战: 退/打)
-//   没守军 -> 农民+士兵一起集火"离市中心最近的那座塔", 拆掉一座自动换下一座
-//   塔全清光 -> towerReady=true, 祭司由 CalmAndCrazy 带去贴厂转化
+//   没守军 -> 每个兵认领"离自己最近的活塔"去打; 塔全清光 -> 往厂靠(<=4格)当肉盾
+//   每个兵都有塔可打(或塔没了) -> towerReady=true, 祭司可以上
 void UsrAI::attackTowers(){
-    // 塔还活着 -> 所有人一起集火同一座塔; 塔全清光 -> 放祭司上去贴厂转化。
-    // 集火的意义: 箭塔各自独立开火(每座 3 伤/秒), 分散打 = 5 座同时输出 15 伤/秒;
-    //   集中打一座, 拆掉一座火力就少一份, 农民(25血)才站得住。
-    // 目标选"离我方市中心最近的那座" —— 塔不会动, 所以这个排序是固定的,
-    //   天然就是"一座一座打"(前一座没了, 下一座自动成为最近)。
+    
     bool factoryClear=true;                                     // 厂区空了? (厂区 20 格内没有敌军)
     for(auto&ea:info.enemy_armies){
         if(max(abs(ea.BlockDR-factoryBlockDR),abs(ea.BlockUR-factoryBlockUR))<=20){ factoryClear=false; break; }
     }
-    if(!factoryClear){
-        armyAttack();                                           // 还有守军 -> 先打人
-        return;
+    if(!factoryClear){ 
+        armyAttack(); 
+        return; 
     }
-    int n=0;
-    int tSN=-1,best=1e9;                                        // 集火目标: 离市中心最近的活塔
-    for(auto&eb:info.enemy_buildings){
-        if(eb.Type!=BUILDING_ARROWTOWER)continue;
-        n++;
-        int d=max(abs(eb.BlockDR-centerBlockDR),abs(eb.BlockUR-centerBlockUR));
-        if(d<best){ best=d; tSN=eb.SN; }
-    }
-    
-    towerReady=(n<=1);                                       // ★ 塔全清光才让祭司动
-    if(tSN==-1)return;                                          // 交给 CalmAndCrazy 贴厂转化
 
-    // 农民是拆塔主力: atk3 打建筑(×0.2 后不足1, 按保底 1 点), 攻速 1 秒/次
-    //   -> 单个农民 1 秒 1 伤, 比复合弓(1.4秒/次=0.71)还快; 20 个农民 ≈ 20 伤/秒。
-    for(auto&f:info.farmers){
+    // ===== 阶段1: 全体去待命点集合(待命点=斥候第一次看到敌人时它自己的坐标) =====
+    if(gatherPhase==0){ 
+        gatherPhase=1; 
+        gatherFrame=info.GameFrame; 
+        gatherSent.clear(); 
+    }
+    if(gatherPhase==1){
+        towerReady=false;                                        // 祭司先等着
+        if(gatherDR<0)gatherPhase=2;                             // 待命点没记下 -> 直接冲
+        else{
+            int total=0,ready=0;
+            for(auto&a:info.armies){
+                if(a.SN==priestSN||a.SN==scoutSN)continue;
+                total++;
+                if(max(abs(a.BlockDR-gatherDR),abs(a.BlockUR-gatherUR))<=6)ready++;
+                else if(!gatherSent.count(a.SN)){                // 只通知一次(重发会清空路径)
+                    gatherSent[a.SN]=true;
+                    HumanMove(a.SN,gatherDR*BLOCKSIDELENGTH,gatherUR*BLOCKSIDELENGTH);
+                }
+            }
+            for(auto&f:info.farmers){                            // 农民: 不管它在干嘛, 通知它过去
+                total++;
+                if(max(abs(f.BlockDR-gatherDR),abs(f.BlockUR-gatherUR))<=6)ready++;
+                else if(!gatherSent.count(f.SN)){
+                    gatherSent[f.SN]=true;
+                    farIsgotten[f.SN]=true;                      // 免得被经济模块抢回去干活
+                    HumanMove(f.SN,gatherDR*BLOCKSIDELENGTH,gatherUR*BLOCKSIDELENGTH);
+                }
+            }
+            if(ready>=total||info.GameFrame-gatherFrame>1000)gatherPhase=2;   // 全员到位 或 20秒兜底
+            if(gatherPhase==1)return;
+        }
+    }
+
+    // ===== 阶段2: 全体冲进去打塔(祭司跟着一起) =====
+    
+    towerReady=true;
+    for(auto&f:info.farmers){                                    // 农民也去打塔(人海: 塔一次只打一个)
         if(f.NowState!=HUMAN_STATE_IDLE)continue;
-        if(f.WorkObjectSN!=tSN){ HumanAction(f.SN,tSN); farIsgotten[f.SN]=true; }   // 标已派活, 免得被经济模块抢走
+        int tSN=-1,best=1e9;
+        for(auto&eb:info.enemy_buildings){
+            if(eb.Type!=BUILDING_ARROWTOWER)continue;
+            if(Tazhanyong[eb.SN]>=5)continue;
+            int d=max(abs(eb.BlockDR-f.BlockDR),abs(eb.BlockUR-f.BlockUR));
+            if(d<best){ best=d; tSN=eb.SN; }
+        }
+        if(tSN==-1)continue;
+        if(f.WorkObjectSN!=tSN){ 
+            HumanAction(f.SN,tSN); 
+            farIsgotten[f.SN]=true; 
+            Tazhanyong[tSN]++;
+        }   // 标已派活, 免得被经济模块抢走
     }
     for(auto&a:info.armies){
         if(a.SN==priestSN||a.SN==scoutSN)continue;
+        int tSN=-1;
+        auto it=towerAssign.find(a.SN);
+        if(it!=towerAssign.end()){                               // 认领过的: 塔还在就继续打
+            for(auto&eb:info.enemy_buildings){
+                if(eb.SN==it->second&&eb.Type==BUILDING_ARROWTOWER){ tSN=it->second; break; }
+            }
+        }
+        if(tSN==-1){                                             // 没认领 / 塔没了 -> 找最近的活塔
+            int best=1e9;
+            for(auto&eb:info.enemy_buildings){
+                if(eb.Type!=BUILDING_ARROWTOWER)continue;
+                int d=max(abs(eb.BlockDR-a.BlockDR),abs(eb.BlockUR-a.BlockUR));
+                if(d<best){ best=d; tSN=eb.SN; }
+            }
+            if(tSN!=-1)towerAssign[a.SN]=tSN;
+        }
+        if(tSN==-1)continue;                                     // 一座塔都没有了
+        int tDR=-1,tUR=-1;                                       // 这座塔在哪
+        for(auto&eb:info.enemy_buildings){
+            if(eb.SN==tSN){ tDR=eb.BlockDR; tUR=eb.BlockUR; break; }
+        }
+        if(tDR==-1)continue;
+        if(max(abs(tDR-a.BlockDR),abs(tUR-a.BlockUR))>2){         // 贴到塔边2格当肉盾(要比祭司更靠近塔)
+            if(a.NowState==HUMAN_STATE_IDLE){
+                int sx=(a.BlockDR>tDR?1:(a.BlockDR<tDR?-1:0));
+                int sy=(a.BlockUR>tUR?1:(a.BlockUR<tUR?-1:0));
+                HumanMove(a.SN,max(2,min(97,tDR+sx*2))*BLOCKSIDELENGTH,
+                                max(2,min(97,tUR+sy*2))*BLOCKSIDELENGTH);
+            }
+            continue;
+        }
         if(a.NowState!=HUMAN_STATE_IDLE)continue;
-        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
+        if(a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);             // 贴住了再打
     }
 }
 
