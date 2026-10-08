@@ -117,7 +117,6 @@ int factorySN=-1;           // 敌方攻城武器厂
 int factoryBlockDR=-1;      // 攻城武器厂坐标
 int factoryBlockUR=-1;
 int scoutSN=-1;             // 侦察骑兵
-int focusSN=-1;             // [AI] 弓兵集火目标: 全队共用一个, 打死了才换下一个
 
 
 // [AI] 原值 6 -> 改 3。理由: 斥候是"直走推进"去找敌营, 用切比雪夫 6 格当诱敌距离太远,
@@ -1750,19 +1749,6 @@ void UsrAI::armyAttack(){
     if(ArmylastTick==-1)ArmylastTick=info.GameFrame;
     if(info.GameFrame-ArmylastTick<ArmyTick)return;
     const int ARMY_SIGHT=15;                         // 值得打的范围(射程 7 + 机动余量)
-    // [AI] 集火目标: 锁定"离市中心最近的敌人"; 它死了/不可见了才换下一个(实现"一个接一个")
-    {
-        bool alive=false;
-        for(auto&ea:info.enemy_armies){ if(ea.SN==focusSN){ alive=true; break; } }
-        if(!alive){
-            focusSN=-1;
-            int bd=1e9;
-            for(auto&ea:info.enemy_armies){
-                int dd=max(abs(ea.BlockDR-centerBlockDR),abs(ea.BlockUR-centerBlockUR));
-                if(dd<bd){ bd=dd; focusSN=ea.SN; }
-            }
-        }
-    }
     for(auto&a:info.armies){
         
         if(a.SN==priestSN||a.SN==scoutSN)continue;
@@ -1791,20 +1777,18 @@ void UsrAI::armyAttack(){
             continue;
         }
         if(a.NowState==HUMAN_STATE_ATTACKING)continue;        // 攻击中 -> 不打扰
-        if(d<=ARMY_SIGHT){                               // 自己 15 格内有敌人 才出手
-            // [AI] 集火: 全队共用一个目标(focusSN), 打死了才换下一个 -> 快速减员
-            if(focusSN!=-1&&a.WorkObjectSN!=focusSN)HumanAction(a.SN,focusSN);
+        if(d<=ARMY_SIGHT){                               // 打得着 -> 打
+            int tSN=-1,best=1e18;
+            bool melee=isMeleeSort(a.Sort);
+            for(auto&ea:info.enemy_armies){
+                int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
+                if(dd>ARMY_SIGHT)continue;
+                // 远程: 优先打敌方远程(射程威胁大); 近战: 只挑最近的(贴上去砍)
+                int score=dd+(melee?0:(isArcherSort(ea.Sort)?0:10000));
+                if(score<best){ best=score; tSN=ea.SN; }
+            }
+            if(tSN!=-1&&a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
             continue;
-            // ---- 原逻辑(远程优先 + 各自挑最近的)已停用, 需要时取消注释即可 ----
-            // int tSN=-1,best=1e18;
-            // for(auto&ea:info.enemy_armies){
-            //     int dd=max(abs(ea.BlockDR-a.BlockDR),abs(ea.BlockUR-a.BlockUR));
-            //     if(dd>ARMY_SIGHT)continue;
-            //     int score=dd+(isArcherSort(ea.Sort)?0:10000);
-            //     if(score<best){ best=score; tSN=ea.SN; }
-            // }
-            // if(tSN!=-1&&a.WorkObjectSN!=tSN)HumanAction(a.SN,tSN);
-            // continue;
         }
         if(rallyDR>=0&&max(abs(a.BlockDR-rallyDR),abs(a.BlockUR-rallyUR))>8&&a.NowState!=HUMAN_STATE_ATTACKING)   // 回集结点
             HumanMove(a.SN,rallyDR*BLOCKSIDELENGTH,rallyUR*BLOCKSIDELENGTH);
