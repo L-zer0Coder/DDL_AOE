@@ -1462,19 +1462,25 @@ int UsrAI::assignGoldMiner(){
     //检查有没有第三个仓库（金库）
 
     if(goldStockSN==-1){
-        // ★候选点: 从"金矿四周 ±5 的 4 个固定点"改成"金矿周围 ±5 内任意 3×3 空地"。
-        //   原来那 4 个固定点实测在 map1 上有 11% 的金矿全被树/别的金矿占住 -> 直接放弃;
-        //   findBuildSpot 会遍历整个方框, 命中率高得多。
-        //   半径必须 <=5: processData 里"离金矿<=5格的在建仓库才算金库"用的就是 5, 超了就识别不到。
+        int dx_stock[]={-5,0,5,0};
+        int dy_stock[]={0,5,0,-5};
         for(auto&r:info.resources){
             if(r.Type!=RESOURCE_GOLD||r.Cnt<=0)continue;
-            int ox=-1,oy=-1;
-            if(!findBuildSpot(r.BlockDR,r.BlockUR,3,2,5,ox,oy))continue;   // ★方框内任意空地
-            int fSN=findFarmer(ox,oy);
-            if(fSN==-1)return -1;                              // ★没人就别发
-            if(info.Wood>=BUILD_STOCK_WOOD)HumanBuild(fSN,BUILDING_STOCK,ox,oy);              // ★落点=空地
-            farIsgotten[fSN]=true;
-            return -1;                                         // 本帧只干这一件事
+            for(int i=0;i<4;i++){
+                int nDR=r.BlockDR+dx_stock[i];
+                int nUR=r.BlockUR+dy_stock[i];
+                if(nDR<0||nUR<0||nDR+3>100||nUR+3>100)continue;   // ★3×3 越界直接跳过
+                bool can=true;                                     // ★每方向独立判断
+                for(int a=0;a<3&&can;a++)
+                    for(int b=0;b<3;b++)
+                        if(MAP[nDR+a][nUR+b]!=Open){can=false;break;}
+                if(!can)continue;                                  // ★换方向, 不是全局放弃
+                int fSN=findFarmer(nDR,nUR);
+                if(fSN==-1)return -1;                              // ★没人就别发
+                HumanBuild(fSN,BUILDING_STOCK,nDR,nUR);            // ★落点=空地
+                farIsgotten[fSN]=true;
+                return -1;                                         // 本帧只干这一件事
+            }
         }
         return -1;
     }
@@ -1671,10 +1677,7 @@ void UsrAI::huntGazelle(){
 //   ③ 被锁定 / 贴到 5 格 -> 朝自家方向后撤 6 格
 // 目标没变不重发; 但"人站着没到目标"时强制重发(防指令丢失后永久卡死)
 void UsrAI::manageScout(){
-    const int STick=30;
-    static int last=-1;
-    if(last==-1)last=info.GameFrame;
-    if(info.GameFrame-last<20)return;
+
     if(scoutSN==-1)return;
     int dr=-1,ur=-1;
     for(auto&a:info.armies){
@@ -1738,7 +1741,6 @@ void UsrAI::manageScout(){
     if(!send)return;
     seekTgtDR=tdr; seekTgtUR=tur;
     HumanMove(scoutSN,tdr*BLOCKSIDELENGTH,tur*BLOCKSIDELENGTH);
-    last=info.GameFrame;
 }
 
 
@@ -1783,7 +1785,7 @@ void UsrAI::armyAttack(){
             if(dd<d){ d=dd; ex=ea.BlockDR; ey=ea.BlockUR; }
         }
         
-        if(d<=4&&isArcherSort(a.Sort)){                   // 只有远程兵风筝; 近战攻击距离=0, 必须贴上去打
+        if(d<=2&&isArcherSort(a.Sort)){                   // 只有远程兵风筝; 近战攻击距离=0, 必须贴上去打
             if(a.NowState!=HUMAN_STATE_WALKING)      // 已经在撤的路上 -> 不重发(重发会清空路径)
             HumanMove(a.SN,centerBlockDR*BLOCKSIDELENGTH,
                           centerBlockUR*BLOCKSIDELENGTH);
@@ -1955,9 +1957,9 @@ void UsrAI::counterAttack(){
                 if(rallyDR>=0&&rangeNum<2&&info.Wood>=BUILD_RANGE_WOOD+60){
                     int ox=-1,oy=-1;
                     
-                    if(findBuildSpot(centerBlockDR,centerBlockUR,3,2,8,ox,oy)){
+                    if(findBuildSpot(rallyDR,rallyUR,3,2,8,ox,oy)){
                         for(auto&f:info.farmers){
-                            if(f.NowState==HUMAN_STATE_IDLE){
+                            if(f.NowState!=HUMAN_STATE_IDLE){
                                 HumanBuild(f.SN,BUILDING_RANGE,ox,oy);
                                 break;
                             }
@@ -1967,24 +1969,7 @@ void UsrAI::counterAttack(){
                     }
                 }
             }
-            {
-                int rangeNum=0;
-                for(auto&b:info.buildings){ if(b.Type==BUILDING_RANGE)rangeNum++; }   // 在建的也算
-                if(rallyDR>=0&&rangeNum<3&&info.Wood>=BUILD_RANGE_WOOD+60){
-                    int ox=-1,oy=-1;
-                    
-                    if(findBuildSpot(marketBlockDR,marketBlockUR,3,2,8,ox,oy)){
-                        for(auto&f:info.farmers){
-                            if(f.NowState==HUMAN_STATE_IDLE){
-                                HumanBuild(f.SN,BUILDING_RANGE,ox,oy);
-                                break;
-                            }
-                        }
-                        
-                       
-                    }
-                }
-            }
+            
             // ⑤ 全军 退/打/回集结点 + 祭司
             armyAttack();
             priestConvert();
